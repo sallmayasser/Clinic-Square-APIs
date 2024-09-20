@@ -20,6 +20,11 @@ const pharmacySchema = new mongoose.Schema(
       type: [String],
       required: [true, "license is required"],
     },
+    role: {
+      type: String,
+      default: "Pharmacy",
+      immutable: true,
+    },
     password: {
       type: String,
       required: [true, "password required"],
@@ -37,7 +42,13 @@ const pharmacySchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-
+pharmacySchema.pre("save", function (next) {
+  if (this.isModified("role")) {
+    next(new ApiError("Role is read only field !", 400));
+  } else {
+    next();
+  }
+});
 // 2- Create model
 const PharmacyModel = mongoose.model("Pharmacy", pharmacySchema);
 

@@ -27,6 +27,11 @@ const patientSchema = new mongoose.Schema(
       required: [true, "password required"],
       minlength: [6, "Too short password"],
     },
+    role: {
+      type: String,
+      default: "Patient",
+      immutable: true,
+    },
     passwordChangedAt: Date,
     passwordResetCode: String,
     passwordResetExpires: Date,
@@ -39,7 +44,13 @@ const patientSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-
+patientSchema.pre("save", function (next) {
+  if (this.isModified("role")) {
+    next(new ApiError("Role is read only field !", 400));
+  } else {
+    next();
+  }
+});
 // 2- Create model
 const PatientModel = mongoose.model("Patient", patientSchema);
 

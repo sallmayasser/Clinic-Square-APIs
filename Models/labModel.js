@@ -58,6 +58,11 @@ const labSchema = new mongoose.Schema(
         min: 0, // Ensure cost is non-negative
       },
     },
+    role: {
+      type: String,
+      default: "Lab",
+      immutable: true,
+    },
     password: {
       type: String,
       required: [true, "password required"],
@@ -68,6 +73,7 @@ const labSchema = new mongoose.Schema(
     passwordResetExpires: Date,
     passwordResetVerified: Boolean,
   },
+
   {
     timestamps: true,
 
@@ -76,6 +82,13 @@ const labSchema = new mongoose.Schema(
   }
 );
 
+labSchema.pre("save", function (next) {
+  if (this.isModified("role")) {
+    next(new ApiError("Role is read only field !", 400));
+  } else {
+    next();
+  }
+});
 // 2- Create model
 const LabModel = mongoose.model("Lab", labSchema);
 
