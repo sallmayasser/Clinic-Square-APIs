@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ApiError = require("../utils/apiError");
 // const scheduleSchema = require("./scheduleModel");
 
 // 1- Create Schema
@@ -78,6 +79,11 @@ const doctorSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    role: {
+      type: String,
+      default: "Doctor",
+      immutable: true,
+    },
     password: {
       type: String,
       required: [true, "password required"],
@@ -96,6 +102,13 @@ const doctorSchema = new mongoose.Schema(
   }
 );
 
+doctorSchema.pre("save", function (next) {
+  if (this.isModified("role")) {
+    next(new ApiError("Role is read only field !", 400));
+  } else {
+    next();
+  }
+});
 // 2- Create model
 const DoctorModel = mongoose.model("Doctor", doctorSchema);
 
