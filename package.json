@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon server.js",
+    "start:dev": "nodemon -L server.js",
     "start:prod": "NODE_ENV=production BASE_URL={server-url} node server.js"
   },
   "author": "",
