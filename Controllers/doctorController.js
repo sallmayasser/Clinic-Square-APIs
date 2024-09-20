@@ -1,4 +1,3 @@
-const { request } = require("express");
 const DoctorModel = require("../Models/doctorModel");
 const factory = require("../Controllers/handlerFactory");
 

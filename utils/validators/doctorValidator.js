@@ -24,8 +24,6 @@ exports.createDoctorValidator = [
 
   // Email validation
   check("email")
-    .notEmpty()
-    .withMessage("Email required")
     .isEmail()
     .withMessage("Invalid email address")
     .custom((val) =>
@@ -133,6 +131,7 @@ exports.createDoctorValidator = [
 exports.updateDoctorValidator = [
   check("id").isMongoId().withMessage("Invalid Doctor id format"),
   check("email")
+    .optional()
     .notEmpty()
     .withMessage("Email required")
     .isEmail()
