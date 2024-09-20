@@ -73,6 +73,10 @@ const doctorSchema = new mongoose.Schema({
       min: 0, // Ensure cost is non-negative
     },
   },
+  points: {
+    type: Number,
+    default : 0 
+  }, 
   password: {
     type: String,
     required: [true, "password required"],
