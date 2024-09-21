@@ -17,11 +17,11 @@ const scheduleSchema = new mongoose.Schema({
       "saturday",
     ], // Restrict to valid days
   },
-  starttime: {
+  startTime: {
     type: Date,
     required: true,
   },
-  endtime: {
+  endTime: {
     type: Date,
     required: true,
   },

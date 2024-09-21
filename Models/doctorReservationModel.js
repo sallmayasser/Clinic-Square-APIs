@@ -11,6 +11,10 @@ const doctorReservationSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Doctor",
     },
+    date: {
+      type: String,
+      required: [true, "you must enter reservation date "],
+    },
     state: {
       type: String,
       enum: ["completed", "consaltation", "pending"],
@@ -18,12 +22,13 @@ const doctorReservationSchema = new mongoose.Schema(
     },
 
     report: {
-      diagnose: { type: String },
+      diagnose: { type: String, default: null },
       medicine: [
         {
-          name: { type: String },
+          name: { type: String, default: null },
           dose: {
             type: String,
+            default: null,
           },
         },
       ],

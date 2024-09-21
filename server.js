@@ -13,6 +13,8 @@ dotenv.config({ path: "config.env" });
 //routes
 const doctorRoute = require("./Routes/doctorRoute");
 const patientRoute = require("./Routes/patientRoute");
+const doctorReservationRoute = require("./Routes/doctorReservationRoute");
+
 // connect with db
 dbConnection();
 
@@ -35,7 +37,7 @@ app.options("*", cors());
 
 app.use("/api/v1/doctor", doctorRoute);
 app.use("/api/v1/patient", patientRoute);
-
+app.use("/api/v1/doctor-Reservation", doctorReservationRoute);
 
 app.all("*", (req, res, next) => {
   next(new ApiError(`can't find this route:${req.originalUrl}`, 400));
