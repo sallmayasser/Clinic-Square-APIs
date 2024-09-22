@@ -8,4 +8,4 @@ COPY . .
 
 EXPOSE 8001
 
-CMD [ "npm" ,"start:dev"]
+CMD [ "npm" ,"run","dev"]

@@ -6,12 +6,15 @@ class ApiFeatures {
 
   filter() {
     const queryStringObj = { ...this.queryString };
-    const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
+    const excludesFields = ["page", "sort", "limit", "fields", "keyword", "populate"];
     excludesFields.forEach((field) => delete queryStringObj[field]);
-    //Apply filteration using [gte,gt,lte,lt]
+
+    // Apply filteration using [gte,gt,lte,lt]
     let queryStr = JSON.stringify(queryStringObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
     this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
+
     return this;
   }
 
@@ -55,22 +58,46 @@ class ApiFeatures {
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 50;
     const skip = (page - 1) * limit;
-    const endIndex = page * limit; //2*10=20
-    //pagination results
+    const endIndex = page * limit;
+
+    // Pagination results
     const pagination = {};
     pagination.currentPage = page;
     pagination.limit = limit;
     pagination.numberOfPages = Math.ceil(countDocuments / limit);
-    ///next page
+
+    // Next page
     if (endIndex < countDocuments) {
       pagination.next = page + 1;
     }
+
     if (skip > 0) {
       pagination.prev = page - 1;
     }
+
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
     this.paginationResult = pagination;
+
+    return this;
+  }
+
+  // New populate method
+  populate() {
+    if (this.queryString.populate) {
+      const fieldsToPopulate = this.queryString.populate.split(",").map((field) => {
+        if (field.includes(".")) {
+          const [path, subfields] = field.split(".");
+          return { path, select: subfields };
+        }
+        return { path: field };
+      });
+  
+      fieldsToPopulate.forEach((populateOption) => {
+        this.mongooseQuery = this.mongooseQuery.populate(populateOption);
+      });
+    }
     return this;
   }
 }
+
 module.exports = ApiFeatures;

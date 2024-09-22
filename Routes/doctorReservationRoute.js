@@ -19,7 +19,7 @@ router
 router
   .route("/:id")
   .get(validator.getReservationValidator, getDoctorReservation)
-  .put(validator.updateReservationValidator, updateDoctorReservation)
+  .patch(validator.updateReservationValidator, updateDoctorReservation)
   .delete(validator.deleteReservationValidator, deleteDoctorReservation);
 
 module.exports = router;

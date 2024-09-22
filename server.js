@@ -12,6 +12,7 @@ dotenv.config({ path: "config.env" });
 
 //routes
 const doctorRoute = require("./Routes/doctorRoute");
+const questionRoute = require("./Routes/questionRoute");
 const patientRoute = require("./Routes/patientRoute");
 const doctorReservationRoute = require("./Routes/doctorReservationRoute");
 
@@ -36,6 +37,7 @@ if (process.env.Node_ENV === "development") {
 app.options("*", cors());
 
 app.use("/api/v1/doctor", doctorRoute);
+app.use("/api/v1/questions", questionRoute);
 app.use("/api/v1/patient", patientRoute);
 app.use("/api/v1/doctor-Reservation", doctorReservationRoute);
 

@@ -41,17 +41,20 @@ exports.createOne = (Model) =>
     res.status(201).json({ data: newDoc });
   });
 
-exports.getOne = (Model, populationOpt) =>
+exports.getOne = (Model) =>
   asyncHandler(async (req, res, next) => {
+    let filter = {};
+    if (req.filterObj) {
+      filter = req.filterObj;
+    }
     const { id } = req.params;
     // 1) Build query
-    let query = Model.findById(id);
-    if (populationOpt) {
-      query = query.populate(populationOpt);
-    }
-
+    // let query = Model.findById(id);
+    const apiFeatures = new ApiFeatures(Model.findById(id,filter), req.query)
+      .populate();
+      const { mongooseQuery } = apiFeatures;
     // 2) Execute query
-    const document = await query;
+    const document = await mongooseQuery;
 
     if (!document) {
       return next(new ApiError(`No document for this id ${id}`, 404));
@@ -68,11 +71,12 @@ exports.getAll = (Model, modelName = "") =>
     // Build query
     const documentsCounts = await Model.countDocuments();
     const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
-      .paginate(documentsCounts)
       .filter()
+      .paginate(documentsCounts)
       .search(modelName)
       .limitFields()
-      .sort();
+      .sort()
+      .populate();
 
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;
