@@ -18,11 +18,13 @@ router
   .get(getQuestions)
   .post(validator.createQuestionValidator, addQuestion);
 
-router.route("/answer/:id").post(validator.createAnswerValidator, addAnswer);
-
 router
-  .route("/:questionId/answer/:answerId")
+  .route("/answer")
+  //  @@/questions/answer/questionId = <Question Id>
+  .post(validator.createAnswerValidator, addAnswer)
+  // /questions/answer/?questionId =<Question Id>&answerId = <Answer Id>
   .put(validator.updateAnswerValidator, updateAnswer);
+
 
 router
   .route("/:id")
