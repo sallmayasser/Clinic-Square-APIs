@@ -73,6 +73,45 @@ exports.createAnswerValidator = [
 
   check("answer").notEmpty().withMessage("answer field is Missing"),
 
+  check("question").isEmpty().withMessage("You Can not add/update question "),
+
+  validatorMiddleware,
+];
+exports.updateAnswerValidator = [
+  param("questionId")
+    .notEmpty()
+    .withMessage("Question ID is required in param")
+    .isMongoId()
+    .withMessage("Invalid question id format")
+    .custom(async (val) => {
+      const questionExists = await QuestionModel.findById(val);
+      if (!questionExists) {
+        throw new Error("Question not found");
+      }
+      return true;
+    }),
+  param("answerId")
+    .notEmpty()
+    .withMessage("Answer ID is required in param")
+    .isMongoId()
+    .withMessage("Invalid answer ID format")
+    .custom(async (val, { req }) => {
+      const question = await QuestionModel.findById(req.params.questionId);
+      if (!question) {
+        throw new Error("Question not found");
+      }
+
+      const answerExists = question.answers.id(val);
+      if (!answerExists) {
+        throw new Error("Answer not found");
+      }
+      return true;
+    }),
+
+  check("answer").notEmpty().withMessage("answer field is Missing"),
+
+  check("question").isEmpty().withMessage("You Can not add/update question "),
+
   validatorMiddleware,
 ];
 exports.updateQuestionValidator = [
@@ -84,6 +123,9 @@ exports.updateQuestionValidator = [
     .withMessage("Question Should have at least 6 characters")
     .isLength({ max: 250 })
     .withMessage("Question Should not exceed 250 characters"),
+
+  check("answers").isEmpty().withMessage("You Can not add Answer "),
+
   validatorMiddleware,
 ];
 
