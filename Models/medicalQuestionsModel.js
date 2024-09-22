@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // 1- Create Schema
 const questionSchema = new mongoose.Schema(
   {
-    question:{
+    question: {
       required: true,
       type: String,
       minlength: [6, "Question Should have at least 6 characters"],
@@ -15,7 +15,7 @@ const questionSchema = new mongoose.Schema(
     },
     answers: [
       {
-        Doctor: {
+        doctor: {
           type: mongoose.Schema.ObjectId,
           ref: "Doctor",
         },
