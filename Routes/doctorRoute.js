@@ -19,7 +19,7 @@ router
 router
   .route("/:id")
   .get(validator.getDoctorValidator, getDoctor)
-  .put(validator.updateDoctorValidator, updateDoctor)
+  .patch(validator.updateDoctorValidator, updateDoctor)
   .delete(validator.deleteDoctorValidator, deleteDoctor);
 
 module.exports = router;
