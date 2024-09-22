@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "79676af3-64e1-474b-a54b-fcb9a94b6fd7",
+    "_postman_id": "fa9670c2-1c28-48ae-9ebc-defc84f29a1e",
     "name": "Clinic Square APIs",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": ""
@@ -56,25 +56,9 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}/info?id=1",
-              "query": [
-                {
-                  "key": "id",
-                  "value": "1"
-                }
-              ],
-              "variable": [],
-              "path": ["info"],
+              "raw": "{{base_url}}/api/v1/doctor/66ee1356afd40ba13adbb9a4",
+              "path": ["api", "v1", "doctor", "66ee1356afd40ba13adbb9a4"],
               "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": ""
             }
           }
         },
@@ -258,15 +242,16 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/questions?populate=patient.name&fields=question",
+              "raw": "{{base_url}}/api/v1/questions?populate=patient.name email",
               "query": [
                 {
                   "key": "populate",
-                  "value": "patient.name"
+                  "value": "patient.name email"
                 },
                 {
                   "key": "fields",
-                  "value": "question"
+                  "value": "question",
+                  "disabled": true
                 },
                 {
                   "key": "populate",
@@ -296,7 +281,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n    \"question\":\"ddssssss\",\n    \"patient\": \"66f027d3378e557f4d32eb07\"\n\n}"
+              "raw": "{\n    \"question\":\"Question 1\",\n    \"patient\": \"66f027d3378e557f4d32eb07\"\n\n}"
             }
           }
         },
@@ -305,7 +290,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/questions/66f03be98094cc5aa7d97bd8",
+              "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
               "query": [
                 {
                   "key": "populate",
@@ -314,8 +299,92 @@
                 }
               ],
               "variable": [],
-              "path": ["api", "v1", "questions", "66f03be98094cc5aa7d97bd8"],
+              "path": ["api", "v1", "questions", "66f064352ec6726023d2e6d9"],
               "host": ["{{base_url}}"]
+            }
+          }
+        },
+        {
+          "name": "add Answer",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/v1/questions/answer/66f064352ec6726023d2e6d9",
+              "path": [
+                "api",
+                "v1",
+                "questions",
+                "answer",
+                "66f064352ec6726023d2e6d9"
+              ],
+              "host": ["{{base_url}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"answer\":\"this is answer 1\",\n  \"doctor\":\"66f05e60791ccd434870030f\"\n}"
+            }
+          }
+        },
+        {
+          "name": "delete Question",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
+              "path": ["api", "v1", "questions", "66f064352ec6726023d2e6d9"],
+              "host": ["{{base_url}}"]
+            }
+          }
+        },
+        {
+          "name": "update Question",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
+              "path": ["api", "v1", "questions", "66f064352ec6726023d2e6d9"],
+              "host": ["{{base_url}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"question\": \"Question 1 \"\n  //, \"answers\": {\n  //   \"answer\": \"this is answer 2\",\n  //   \"doctor\": \"66f05e60791ccd434870030f\"\n  // }\n}"
+            }
+          }
+        },
+        {
+          "name": "update Answer",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9/answer/66f06fa595b925f23baeee96",
+              "path": [
+                "api",
+                "v1",
+                "questions",
+                "66f064352ec6726023d2e6d9",
+                "answer",
+                "66f06fa595b925f23baeee96"
+              ],
+              "host": ["{{base_url}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  // \"question\": \"Question  \",\n    \"answer\": \"this is answer 1\"\n}"
             }
           }
         }
