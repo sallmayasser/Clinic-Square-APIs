@@ -111,10 +111,10 @@ exports.createDoctorValidator = [
         ) {
           throw new Error("Invalid day of the week");
         }
-        if (!day.starttime || !day.endtime) {
+        if (!day.startTime || !day.endTime) {
           throw new Error("Start time and end time are required");
         }
-        if (new Date(day.starttime) >= new Date(day.endtime)) {
+        if (new Date(day.startTime) >= new Date(day.endTime)) {
           throw new Error("Start time must be before end time");
         }
         if (day.limit < 1) {
