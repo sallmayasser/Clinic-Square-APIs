@@ -1,5 +1,5 @@
 const slugify = require("slugify");
-const { check, body, param } = require("express-validator");
+const { check, body, query } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validatorMiddleware");
 const QuestionModel = require("../../Models/medicalQuestionsModel");
 const PatientModel = require("../../Models/patientModel");
@@ -37,9 +37,9 @@ exports.createQuestionValidator = [
 ];
 
 exports.createAnswerValidator = [
-  param("id")
+  query("questionId")
     .notEmpty()
-    .withMessage("Question ID is required in param")
+    .withMessage("Question ID is required in query")
     .isMongoId()
     .withMessage("Invalid question id format")
     .custom(async (val) => {
@@ -56,7 +56,7 @@ exports.createAnswerValidator = [
     .isMongoId()
     .withMessage("Invalid doctor id format")
     .custom(async (val, { req }) => {
-      const question = await QuestionModel.findById(req.params.id);
+      const question = await QuestionModel.findById(req.query.questionId);
       if (!question) {
         throw new Error("Question not found");
       }
@@ -78,9 +78,9 @@ exports.createAnswerValidator = [
   validatorMiddleware,
 ];
 exports.updateAnswerValidator = [
-  param("questionId")
+  query("questionId")
     .notEmpty()
-    .withMessage("Question ID is required in param")
+    .withMessage("Question ID is required in query")
     .isMongoId()
     .withMessage("Invalid question id format")
     .custom(async (val) => {
@@ -90,13 +90,13 @@ exports.updateAnswerValidator = [
       }
       return true;
     }),
-  param("answerId")
+  query("answerId")
     .notEmpty()
-    .withMessage("Answer ID is required in param")
+    .withMessage("Answer ID is required in query")
     .isMongoId()
     .withMessage("Invalid answer ID format")
     .custom(async (val, { req }) => {
-      const question = await QuestionModel.findById(req.params.questionId);
+      const question = await QuestionModel.findById(req.query.questionId);
       if (!question) {
         throw new Error("Question not found");
       }
