@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "41b83716-3e9d-45bb-a731-84d681244066",
+        "_postman_id": "3e3e406b-3e23-428e-a98d-c7c60af3b401",
         "name": "Clinic Square APIs",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "description": ""
@@ -66,7 +66,7 @@
                                     "language": "json"
                                 }
                             },
-                            "raw": "{\n      \"schedule\": {\n        \"days\": [\n          {\n            \"day\": \"monday\",\n            \"startTime\": \"2024-09-23T09:00:00.000Z\",\n            \"endTime\": \"2024-09-23T17:00:00.000Z\",\n            \"limit\": 20\n          },\n          {\n            \"day\": \"wednesday\",\n            \"startTime\": \"2024-09-25T09:00:00.000Z\",\n            \"endTime\": \"2024-09-25T17:00:00.000Z\",\n            \"limit\": 15\n          }\n        ],\n        \"cost\": 300\n      },\n      \"profilePic\": \"https://example.com/path/to/profile-pic.jpg\",\n      \"name\": \"Dr. Hazem samir\",\n      \"address\": [\n        \"1234 Elm Street, City, Country\",\n        \"5678 Oak Avenue, City, Country\"\n      ],\n      \"email\": \"hazim@gmail.com\",\n      \"phone\": \"01023092573\",\n      \"about\": \"Specialist in internal medicine\",\n      \"specialization\": \"Endocrinology\",\n      \"gender\": \"male\",\n      \"license\": [\n        \"MD123456\",\n        \"BOARD1234\"\n      ],\n      \"dateOfBirth\": \"1975-05-15T00:00:00.000Z\",\n      \"points\": 0,\n      \"password\": \"password123\",\n      \"passwordConfirm\": \"password123\"\n  \n    }"
+                            "raw": "{\n      \"schedule\": {\n        \"days\": [\n          {\n            \"day\": \"monday\",\n            \"startTime\": \"2024-09-23T09:00:00.000Z\",\n            \"endTime\": \"2024-09-23T17:00:00.000Z\",\n            \"limit\": 20\n          },\n          {\n            \"day\": \"wednesday\",\n            \"startTime\": \"2024-09-25T09:00:00.000Z\",\n            \"endTime\": \"2024-09-25T17:00:00.000Z\",\n            \"limit\": 15\n          }\n        ],\n        \"cost\": 300\n      },\n      \"profilePic\": \"https://example.com/path/to/profile-pic.jpg\",\n      \"name\": \"Dr. salma yasser\",\n      \"address\": [\n        \"1234 Elm Street, City, Country\",\n        \"5678 Oak Avenue, City, Country\"\n      ],\n      \"email\": \"salma@gmail.com\",\n      \"phone\": \"01023092573\",\n      \"about\": \"Specialist in internal medicine\",\n      \"specialization\": \"Endocrinology\",\n      \"gender\": \"female\",\n      \"license\": [\n        \"MD123456\",\n        \"BOARD1234\"\n      ],\n      \"dateOfBirth\": \"1975-05-15T00:00:00.000Z\",\n      \"points\": 0,\n      \"password\": \"password123\",\n      \"passwordConfirm\": \"password123\"\n  \n    }"
                         }
                     }
                 },
@@ -317,11 +317,12 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{base_url}}/api/v1/questions?populate=patient.name email",
+                            "raw": "{{base_url}}/api/v1/questions",
                             "query": [
                                 {
                                     "key": "populate",
-                                    "value": "patient.name email"
+                                    "value": "patient.name email",
+                                    "disabled": true
                                 },
                                 {
                                     "key": "fields",
@@ -351,11 +352,12 @@
                     "request": {
                         "method": "POST",
                         "url": {
-                            "raw": "{{base_url}}/api/v1/questions",
+                            "raw": "{{base_url}}/api/v1/questions/66f144b8dc0492c508c39525",
                             "path": [
                                 "api",
                                 "v1",
-                                "questions"
+                                "questions",
+                                "66f144b8dc0492c508c39525"
                             ],
                             "host": [
                                 "{{base_url}}"
@@ -377,7 +379,7 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
+                            "raw": "{{base_url}}/api/v1/questions/66f144b8dc0492c508c39525",
                             "query": [
                                 {
                                     "key": "populate",
@@ -390,7 +392,7 @@
                                 "api",
                                 "v1",
                                 "questions",
-                                "66f064352ec6726023d2e6d9"
+                                "66f144b8dc0492c508c39525"
                             ],
                             "host": [
                                 "{{base_url}}"
@@ -403,14 +405,7 @@
                     "request": {
                         "method": "POST",
                         "url": {
-                            "raw": "{{base_url}}/api/v1/questions/answer?questionId=66f064352ec6726023d2e6d9",
-                            "query": [
-                                {
-                                    "key": "questionId",
-                                    "value": "66f064352ec6726023d2e6d9"
-                                }
-                            ],
-                            "variable": [],
+                            "raw": "{{base_url}}/api/v1/questions/answer",
                             "path": [
                                 "api",
                                 "v1",
@@ -428,7 +423,7 @@
                                     "language": "json"
                                 }
                             },
-                            "raw": "{\n  \"answer\":\"this is answer 1\",\n  \"doctor\":\"66f07b2a3ae3488bfc418762\"\n}"
+                            "raw": "{\n  \"questionID\":\"66f144b8dc0492c508c39525\",\n  \"answer\":\"this is answer 1\",\n  \"doctor\":\"66f05e60791ccd434870030f\"\n}"
                         }
                     }
                 },
@@ -473,7 +468,7 @@
                                     "language": "json"
                                 }
                             },
-                            "raw": "{\n  \"question\": \"Question 1 \"\n  //, \"answers\": {\n  //   \"answer\": \"this is answer 2\",\n  //   \"doctor\": \"66f05e60791ccd434870030f\"\n  // }\n}"
+                            "raw": "{\n  \"question\": \"Updated Question 1 \"\n  // , \"answers\": {\n  //   \"answer\": \"this is answer 2\",\n  //   \"doctor\": \"66f05e60791ccd434870030f\"\n  // }\n}"
                         }
                     }
                 },
@@ -482,18 +477,7 @@
                     "request": {
                         "method": "PUT",
                         "url": {
-                            "raw": "{{base_url}}/api/v1/questions/answer/?questionId=66f064352ec6726023d2e6d9&answerId=66f07b3b3ae3488bfc418770",
-                            "query": [
-                                {
-                                    "key": "questionId",
-                                    "value": "66f064352ec6726023d2e6d9"
-                                },
-                                {
-                                    "key": "answerId",
-                                    "value": "66f07b3b3ae3488bfc418770"
-                                }
-                            ],
-                            "variable": [],
+                            "raw": "{{base_url}}/api/v1/questions/answer",
                             "path": [
                                 "api",
                                 "v1",
@@ -511,7 +495,7 @@
                                     "language": "json"
                                 }
                             },
-                            "raw": "{\n  // \"question\": \"Question  \",\n    \"answer\": \"this is answer 2\"\n}"
+                            "raw": "{\n    \"questionID\":\"66f144b8dc0492c508c39525\",\n    \"answerID\":\"66f148d8c8e2b01bd6af51ee\",\n    \"answer\": \"this is updated answer\"\n}"
                         }
                     }
                 }

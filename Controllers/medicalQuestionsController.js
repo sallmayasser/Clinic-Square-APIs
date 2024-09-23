@@ -12,11 +12,10 @@ exports.getQuestionById = factory.getOne(QuestionModel);
 exports.updateQuestion = factory.updateOne(QuestionModel);
 
 exports.updateAnswer = asyncHandler(async (req, res, next) => {
-  const { questionId, answerId } = req.query;
-  const { answer } = req.body;
+  const { questionID, answerID ,answer } = req.body;
 
-  const question = await QuestionModel.findById(questionId);
-  const answerToUpdate = question.answers.id(answerId);
+  const question = await QuestionModel.findById(questionID);
+  const answerToUpdate = question.answers.id(answerID);
   answerToUpdate.answer = answer;
 
   await question.save();
@@ -26,12 +25,11 @@ exports.updateAnswer = asyncHandler(async (req, res, next) => {
 
 // Add an answer to a specific question
 exports.addAnswer = async (req, res) => {
-  const { questionId } = req.query;
-  const { doctor, answer } = req.body;
+  const { doctor, answer ,questionID} = req.body;
 
   try {
     // Find the question by its ID
-    const question = await QuestionModel.findById(questionId);
+    const question = await QuestionModel.findById(questionID);
     let Doctor = await DoctorModel.findById(doctor);
 
     Doctor.points += 10;

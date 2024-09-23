@@ -1,5 +1,5 @@
 const slugify = require("slugify");
-const { check, body, query } = require("express-validator");
+const { check } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validatorMiddleware");
 const QuestionModel = require("../../Models/medicalQuestionsModel");
 const PatientModel = require("../../Models/patientModel");
@@ -37,7 +37,7 @@ exports.createQuestionValidator = [
 ];
 
 exports.createAnswerValidator = [
-  query("questionId")
+  check("questionID")
     .notEmpty()
     .withMessage("Question ID is required in query")
     .isMongoId()
@@ -47,6 +47,7 @@ exports.createAnswerValidator = [
       if (!questionExists) {
         throw new Error("Question not found");
       }
+      console.log(questionExists);
       return true;
     }),
 
@@ -56,7 +57,7 @@ exports.createAnswerValidator = [
     .isMongoId()
     .withMessage("Invalid doctor id format")
     .custom(async (val, { req }) => {
-      const question = await QuestionModel.findById(req.query.questionId);
+      const question = await QuestionModel.findById(req.body.questionID);
       if (!question) {
         throw new Error("Question not found");
       }
@@ -78,7 +79,7 @@ exports.createAnswerValidator = [
   validatorMiddleware,
 ];
 exports.updateAnswerValidator = [
-  query("questionId")
+  check("questionID")
     .notEmpty()
     .withMessage("Question ID is required in query")
     .isMongoId()
@@ -90,13 +91,13 @@ exports.updateAnswerValidator = [
       }
       return true;
     }),
-  query("answerId")
+  check("answerID")
     .notEmpty()
     .withMessage("Answer ID is required in query")
     .isMongoId()
     .withMessage("Invalid answer ID format")
     .custom(async (val, { req }) => {
-      const question = await QuestionModel.findById(req.query.questionId);
+      const question = await QuestionModel.findById(req.body.questionID);
       if (!question) {
         throw new Error("Question not found");
       }
