@@ -1,414 +1,525 @@
 {
-  "info": {
-    "_postman_id": "fa9670c2-1c28-48ae-9ebc-defc84f29a1e",
-    "name": "Clinic Square APIs",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": ""
-  },
-  "item": [
-    {
-      "name": "Doctors",
-      "item": [
-        {
-          "name": "Get All doctor",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor",
-              "path": ["api", "v1", "doctor"],
-              "host": ["{{base_url}}"]
-            }
-          }
-        },
-        {
-          "name": "Get Doctor by ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor/66ee1356afd40ba13adbb9a4",
-              "path": ["api", "v1", "doctor", "66ee1356afd40ba13adbb9a4"],
-              "host": ["{{base_url}}"]
-            }
-          }
-        },
-        {
-          "name": "Add Doctor",
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor",
-              "path": ["api", "v1", "doctor"],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": "{\n      \"schedule\": {\n        \"days\": [\n          {\n            \"day\": \"monday\",\n            \"startTime\": \"2024-09-23T09:00:00.000Z\",\n            \"endTime\": \"2024-09-23T17:00:00.000Z\",\n            \"limit\": 20\n          },\n          {\n            \"day\": \"wednesday\",\n            \"startTime\": \"2024-09-25T09:00:00.000Z\",\n            \"endTime\": \"2024-09-25T17:00:00.000Z\",\n            \"limit\": 15\n          }\n        ],\n        \"cost\": 300\n      },\n      \"profilePic\": \"https://example.com/path/to/profile-pic.jpg\",\n      \"name\": \"Dr. salma yasser\",\n      \"address\": [\n        \"1234 Elm Street, City, Country\",\n        \"5678 Oak Avenue, City, Country\"\n      ],\n      \"email\": \"salma@gmail.com\",\n      \"phone\": \"01023092573\",\n      \"about\": \"Specialist in internal medicine\",\n      \"specialization\": \"Endocrinology\",\n      \"gender\": \"female\",\n      \"license\": [\n        \"MD123456\",\n        \"BOARD1234\"\n      ],\n      \"dateOfBirth\": \"1975-05-15T00:00:00.000Z\",\n      \"points\": 0,\n      \"password\": \"password123\",\n      \"passwordConfirm\": \"password123\"\n  \n    }"
-            }
-          }
-        },
-        {
-          "name": "Delete Doctor",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor/66ee1356afd40ba13adbb9a4",
-              "path": ["api", "v1", "doctor", "66ee1356afd40ba13adbb9a4"],
-              "host": ["{{base_url}}"]
-            }
-          }
-        },
-        {
-          "name": "Update Doctor",
-          "request": {
-            "method": "PATCH",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor/66eddc618f899b5734c49cde",
-              "path": ["api", "v1", "doctor", "66eddc618f899b5734c49cde"],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": "{\n\t\"name\": \"hazem\"\n}"
-            }
-          }
-        }
-      ]
+    "info": {
+        "_postman_id": "3e3e406b-3e23-428e-a98d-c7c60af3b401",
+        "name": "Clinic Square APIs",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
     },
-    {
-      "name": "Patients",
-      "item": [
+    "item": [
         {
-          "name": "Get All patients",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/patient",
-              "path": ["api", "v1", "patient"],
-              "host": ["{{base_url}}"]
-            }
-          }
-        },
-        {
-          "name": "Get  patient by ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/patient/66ee136eafd40ba13adbb9a9",
-              "path": ["api", "v1", "patient", "66ee136eafd40ba13adbb9a9"],
-              "host": ["{{base_url}}"]
-            }
-          }
-        },
-        {
-          "name": "Add Patient",
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{base_url}}/api/v1/patient",
-              "path": ["api", "v1", "patient"],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": "{\n  \"profilePic\": \"https://example.com/path-to-profile-picture.jpg\",\n  \"name\": \"patient 1\",\n  \"address\": [\n    \"123 Main St, City, Country\",\n    \"456 Another St, City, Country\"\n  ],\n  \"email\": \"patient2@example.com\",\n  \"phone\": \"01234567890\",\n  \"gender\": \"male\",\n  \"dateOfBirth\": \"1990-06-15\",\n  \"password\": \"password123\",\n  \"passwordConfirm\": \"password123\"\n}\n"
-            }
-          }
-        },
-        {
-          "name": "Update Patient",
-          "request": {
-            "method": "PATCH",
-            "url": {
-              "raw": "{{base_url}}/api/v1/patient/66ee136eafd40ba13adbb9a9",
-              "path": ["api", "v1", "patient", "66ee136eafd40ba13adbb9a9"],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": "{\n\t\"name\": \"haaazem s\"\n}"
-            }
-          }
-        },
-        {
-          "name": "Delete Patient",
-          "request": {
-            "method": "DELETE",
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": ""
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Doctor Reservation",
-      "item": [
-        {
-          "name": "create Reservation",
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor-Reservation",
-              "path": ["api", "v1", "doctor-Reservation"],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": "{\n  \"doctor\":\"66ee1356afd40ba13adbb9a4\",\n  \"patient\":\"66ee136eafd40ba13adbb9a9\",\n  \"date\":\"2024-09-28T09:00:00.000Z\"\n}"
-            }
-          }
-        },
-        {
-          "name": "Get All Reservations ",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor-Reservation",
-              "path": ["api", "v1", "doctor-Reservation"],
-              "host": ["{{base_url}}"]
-            }
-          }
-        },
-        {
-          "name": "Delete Reservation",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor-Reservation/66f02812378e557f4d32eb1b",
-              "path": [
-                "api",
-                "v1",
-                "doctor-Reservation",
-                "66f02812378e557f4d32eb1b"
-              ],
-              "host": ["{{base_url}}"]
-            }
-          }
-        },
-        {
-          "name": "Get Reservation by ID ",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/doctor-Reservation/66ee1cca07676067af2d1bb9",
-              "path": [
-                "api",
-                "v1",
-                "doctor-Reservation",
-                "66ee1cca07676067af2d1bb9"
-              ],
-              "host": ["{{base_url}}"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Questions",
-      "item": [
-        {
-          "name": "Get All Questions",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/questions?populate=patient.name email",
-              "query": [
+            "name": "Doctors",
+            "item": [
                 {
-                  "key": "populate",
-                  "value": "patient.name email"
+                    "name": "Get All doctor",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
                 },
                 {
-                  "key": "fields",
-                  "value": "question",
-                  "disabled": true
+                    "name": "Get Doctor by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor/66ee1356afd40ba13adbb9a4",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor",
+                                "66ee1356afd40ba13adbb9a4"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
                 },
                 {
-                  "key": "populate",
-                  "value": "patient",
-                  "disabled": true
-                }
-              ],
-              "variable": [],
-              "path": ["api", "v1", "questions"],
-              "host": ["{{base_url}}"]
-            }
-          }
-        },
-        {
-          "name": "AddQuestion",
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{base_url}}/api/v1/questions",
-              "path": ["api", "v1", "questions"],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": "{\n    \"question\":\"Question 1\",\n    \"patient\": \"66f027d3378e557f4d32eb07\"\n\n}"
-            }
-          }
-        },
-        {
-          "name": "Get Question by ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
-              "query": [
+                    "name": "Add Doctor",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n      \"schedule\": {\n        \"days\": [\n          {\n            \"day\": \"monday\",\n            \"startTime\": \"2024-09-23T09:00:00.000Z\",\n            \"endTime\": \"2024-09-23T17:00:00.000Z\",\n            \"limit\": 20\n          },\n          {\n            \"day\": \"wednesday\",\n            \"startTime\": \"2024-09-25T09:00:00.000Z\",\n            \"endTime\": \"2024-09-25T17:00:00.000Z\",\n            \"limit\": 15\n          }\n        ],\n        \"cost\": 300\n      },\n      \"profilePic\": \"https://example.com/path/to/profile-pic.jpg\",\n      \"name\": \"Dr. salma yasser\",\n      \"address\": [\n        \"1234 Elm Street, City, Country\",\n        \"5678 Oak Avenue, City, Country\"\n      ],\n      \"email\": \"salma@gmail.com\",\n      \"phone\": \"01023092573\",\n      \"about\": \"Specialist in internal medicine\",\n      \"specialization\": \"Endocrinology\",\n      \"gender\": \"female\",\n      \"license\": [\n        \"MD123456\",\n        \"BOARD1234\"\n      ],\n      \"dateOfBirth\": \"1975-05-15T00:00:00.000Z\",\n      \"points\": 0,\n      \"password\": \"password123\",\n      \"passwordConfirm\": \"password123\"\n  \n    }"
+                        }
+                    }
+                },
                 {
-                  "key": "populate",
-                  "value": "patient",
-                  "disabled": true
+                    "name": "Delete Doctor",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor/66ee1356afd40ba13adbb9a4",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor",
+                                "66ee1356afd40ba13adbb9a4"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Doctor",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor/66eddc618f899b5734c49cde",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor",
+                                "66eddc618f899b5734c49cde"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n\t\"name\": \"hazem\"\n}"
+                        }
+                    }
                 }
-              ],
-              "variable": [],
-              "path": ["api", "v1", "questions", "66f064352ec6726023d2e6d9"],
-              "host": ["{{base_url}}"]
-            }
-          }
+            ]
         },
         {
-          "name": "add Answer",
-          "request": {
-            "method": "POST",
-            "url": {
-              "raw": "{{base_url}}/api/v1/questions/answer/66f064352ec6726023d2e6d9",
-              "path": [
-                "api",
-                "v1",
-                "questions",
-                "answer",
-                "66f064352ec6726023d2e6d9"
-              ],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
+            "name": "Patients",
+            "item": [
+                {
+                    "name": "Get All patients",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get  patient by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient/66ee136eafd40ba13adbb9a9",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient",
+                                "66ee136eafd40ba13adbb9a9"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Patient",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"profilePic\": \"https://example.com/path-to-profile-picture.jpg\",\n  \"name\": \"patient 1\",\n  \"address\": [\n    \"123 Main St, City, Country\",\n    \"456 Another St, City, Country\"\n  ],\n  \"email\": \"patient2@example.com\",\n  \"phone\": \"01234567890\",\n  \"gender\": \"male\",\n  \"dateOfBirth\": \"1990-06-15\",\n  \"password\": \"password123\",\n  \"passwordConfirm\": \"password123\"\n}\n"
+                        }
+                    }
+                },
+                {
+                    "name": "Update Patient",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient/66ee136eafd40ba13adbb9a9",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient",
+                                "66ee136eafd40ba13adbb9a9"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n\t\"name\": \"haaazem s\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Patient",
+                    "request": {
+                        "method": "DELETE",
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": ""
+                        }
+                    }
                 }
-              },
-              "raw": "{\n  \"answer\":\"this is answer 1\",\n  \"doctor\":\"66f05e60791ccd434870030f\"\n}"
-            }
-          }
+            ]
         },
         {
-          "name": "delete Question",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
-              "path": ["api", "v1", "questions", "66f064352ec6726023d2e6d9"],
-              "host": ["{{base_url}}"]
-            }
-          }
+            "name": "Doctor Reservation",
+            "item": [
+                {
+                    "name": "create Reservation",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor-Reservation",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor-Reservation"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"doctor\":\"66ee1356afd40ba13adbb9a4\",\n  \"patient\":\"66ee136eafd40ba13adbb9a9\",\n  \"date\":\"2024-09-28T09:00:00.000Z\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Reservations ",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor-Reservation",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor-Reservation"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Reservation",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor-Reservation/66f02812378e557f4d32eb1b",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor-Reservation",
+                                "66f02812378e557f4d32eb1b"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Reservation by ID ",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor-Reservation/66ee1cca07676067af2d1bb9",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor-Reservation",
+                                "66ee1cca07676067af2d1bb9"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                }
+            ]
         },
         {
-          "name": "update Question",
-          "request": {
-            "method": "PUT",
-            "url": {
-              "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
-              "path": ["api", "v1", "questions", "66f064352ec6726023d2e6d9"],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
+            "name": "Questions",
+            "item": [
+                {
+                    "name": "Get All Questions",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/questions",
+                            "query": [
+                                {
+                                    "key": "populate",
+                                    "value": "patient.name email",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "fields",
+                                    "value": "question",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "populate",
+                                    "value": "patient",
+                                    "disabled": true
+                                }
+                            ],
+                            "variable": [],
+                            "path": [
+                                "api",
+                                "v1",
+                                "questions"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "AddQuestion",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/questions/66f144b8dc0492c508c39525",
+                            "path": [
+                                "api",
+                                "v1",
+                                "questions",
+                                "66f144b8dc0492c508c39525"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n    \"question\":\"Question 1\",\n    \"patient\": \"66f027d3378e557f4d32eb07\"\n\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Question by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/questions/66f144b8dc0492c508c39525",
+                            "query": [
+                                {
+                                    "key": "populate",
+                                    "value": "patient",
+                                    "disabled": true
+                                }
+                            ],
+                            "variable": [],
+                            "path": [
+                                "api",
+                                "v1",
+                                "questions",
+                                "66f144b8dc0492c508c39525"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "add Answer",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/questions/answer",
+                            "path": [
+                                "api",
+                                "v1",
+                                "questions",
+                                "answer"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"questionID\":\"66f144b8dc0492c508c39525\",\n  \"answer\":\"this is answer 1\",\n  \"doctor\":\"66f05e60791ccd434870030f\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "delete Question",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
+                            "path": [
+                                "api",
+                                "v1",
+                                "questions",
+                                "66f064352ec6726023d2e6d9"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "update Question",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9",
+                            "path": [
+                                "api",
+                                "v1",
+                                "questions",
+                                "66f064352ec6726023d2e6d9"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"question\": \"Updated Question 1 \"\n  // , \"answers\": {\n  //   \"answer\": \"this is answer 2\",\n  //   \"doctor\": \"66f05e60791ccd434870030f\"\n  // }\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "update Answer",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/questions/answer",
+                            "path": [
+                                "api",
+                                "v1",
+                                "questions",
+                                "answer"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n    \"questionID\":\"66f144b8dc0492c508c39525\",\n    \"answerID\":\"66f148d8c8e2b01bd6af51ee\",\n    \"answer\": \"this is updated answer\"\n}"
+                        }
+                    }
                 }
-              },
-              "raw": "{\n  \"question\": \"Question 1 \"\n  //, \"answers\": {\n  //   \"answer\": \"this is answer 2\",\n  //   \"doctor\": \"66f05e60791ccd434870030f\"\n  // }\n}"
-            }
-          }
+            ]
         },
         {
-          "name": "update Answer",
-          "request": {
-            "method": "PUT",
-            "url": {
-              "raw": "{{base_url}}/api/v1/questions/66f064352ec6726023d2e6d9/answer/66f06fa595b925f23baeee96",
-              "path": [
-                "api",
-                "v1",
-                "questions",
-                "66f064352ec6726023d2e6d9",
-                "answer",
-                "66f06fa595b925f23baeee96"
-              ],
-              "host": ["{{base_url}}"]
-            },
-            "body": {
-              "mode": "raw",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              },
-              "raw": "{\n  // \"question\": \"Question  \",\n    \"answer\": \"this is answer 1\"\n}"
-            }
-          }
+            "name": "Pharmacies",
+            "item": []
+        },
+        {
+            "name": "Labs",
+            "item": []
+        },
+        {
+            "name": "tests",
+            "item": []
+        },
+        {
+            "name": "Medicines",
+            "item": []
+        },
+        {
+            "name": "Labs Reservation",
+            "item": []
         }
-      ]
-    },
-    {
-      "name": "Pharmacies",
-      "item": []
-    },
-    {
-      "name": "Labs",
-      "item": []
-    },
-    {
-      "name": "tests",
-      "item": []
-    },
-    {
-      "name": "Medicines",
-      "item": []
-    },
-    {
-      "name": "Labs Reservation",
-      "item": []
-    }
-  ]
+    ]
 }
