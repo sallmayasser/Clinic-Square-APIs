@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "3e3e406b-3e23-428e-a98d-c7c60af3b401",
+        "_postman_id": "2fc5ea5c-0e6e-4702-981a-ec1528791cde",
         "name": "Clinic Square APIs",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "description": ""
@@ -10,7 +10,7 @@
             "name": "Doctors",
             "item": [
                 {
-                    "name": "Get All doctor",
+                    "name": "Get All Doctors",
                     "request": {
                         "method": "GET",
                         "url": {
@@ -121,7 +121,7 @@
             "name": "Patients",
             "item": [
                 {
-                    "name": "Get All patients",
+                    "name": "Get All Patients",
                     "request": {
                         "method": "GET",
                         "url": {
@@ -138,7 +138,7 @@
                     }
                 },
                 {
-                    "name": "Get  patient by ID",
+                    "name": "Get  Patient by ID",
                     "request": {
                         "method": "GET",
                         "url": {
@@ -229,7 +229,7 @@
             "name": "Doctor Reservation",
             "item": [
                 {
-                    "name": "create Reservation",
+                    "name": "Create Reservation",
                     "request": {
                         "method": "POST",
                         "url": {
@@ -401,7 +401,7 @@
                     }
                 },
                 {
-                    "name": "add Answer",
+                    "name": "Add Answer",
                     "request": {
                         "method": "POST",
                         "url": {
@@ -428,7 +428,7 @@
                     }
                 },
                 {
-                    "name": "delete Question",
+                    "name": "Delete Question",
                     "request": {
                         "method": "DELETE",
                         "url": {
@@ -446,7 +446,7 @@
                     }
                 },
                 {
-                    "name": "update Question",
+                    "name": "Update Question",
                     "request": {
                         "method": "PUT",
                         "url": {
@@ -473,7 +473,7 @@
                     }
                 },
                 {
-                    "name": "update Answer",
+                    "name": "Update Answer",
                     "request": {
                         "method": "PUT",
                         "url": {
@@ -506,10 +506,6 @@
             "item": []
         },
         {
-            "name": "Labs",
-            "item": []
-        },
-        {
             "name": "tests",
             "item": []
         },
@@ -520,6 +516,117 @@
         {
             "name": "Labs Reservation",
             "item": []
+        },
+        {
+            "name": "Labs",
+            "item": [
+                {
+                    "name": "Get All Labs",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/lab",
+                            "path": [
+                                "api",
+                                "v1",
+                                "lab"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Lab by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/lab/66fc1c97e7dbfc95eef9c5f1",
+                            "path": [
+                                "api",
+                                "v1",
+                                "lab",
+                                "66fc1c97e7dbfc95eef9c5f1"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Lab",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/lab",
+                            "path": [
+                                "api",
+                                "v1",
+                                "lab"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n      \"schedule\": {\n        \"days\": [\n          {\n            \"day\": \"monday\",\n            \"startTime\": \"2024-09-23T09:00:00.000Z\",\n            \"endTime\": \"2024-09-23T17:00:00.000Z\",\n            \"limit\": 20\n          },\n          {\n            \"day\": \"wednesday\",\n            \"startTime\": \"2024-09-25T09:00:00.000Z\",\n            \"endTime\": \"2024-09-25T17:00:00.000Z\",\n            \"limit\": 15\n          }\n        ],\n        \"cost\": 300\n      },\n      \"profilePic\": \"https://example.com/path/to/profile-pic.jpg\",\n      \"name\": \"Pharma Labs\",\n      \"address\": [\n        \"1234 Elm Street, City, Country\",\n        \"5678 Oak Avenue, City, Country\"\n      ],\n      \"email\": \"salma2@gmail.com\",\n      \"phone\": \"01023092573\",\n      \"about\": \"Specialist in internal medicine\",\n\n      \"license\": [\n        \"MD123456\",\n        \"BOARD1234\"\n      ],\n      \"dateOfBirth\": \"1975-05-15T00:00:00.000Z\",\n      \"points\": 0,\n      \"password\": \"password123\",\n      \"passwordConfirm\": \"password123\"\n  \n    }"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Lab",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/lab/66fc1c97e7dbfc95eef9c5f1",
+                            "path": [
+                                "api",
+                                "v1",
+                                "lab",
+                                "66fc1c97e7dbfc95eef9c5f1"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Lab",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/lab/66fc1cc7e7dbfc95eef9c5fb",
+                            "path": [
+                                "api",
+                                "v1",
+                                "lab",
+                                "66fc1cc7e7dbfc95eef9c5fb"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n\t\"name\": \"Alph1a Scan\"\n}"
+                        }
+                    }
+                }
+            ]
         }
     ]
 }
