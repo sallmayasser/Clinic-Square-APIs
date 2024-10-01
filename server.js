@@ -14,6 +14,7 @@ dotenv.config({ path: "config.env" });
 const doctorRoute = require("./Routes/doctorRoute");
 const questionRoute = require("./Routes/questionRoute");
 const patientRoute = require("./Routes/patientRoute");
+const labRoute = require("./Routes/labRoute");
 const doctorReservationRoute = require("./Routes/doctorReservationRoute");
 
 // connect with db
@@ -39,6 +40,7 @@ app.options("*", cors());
 app.use("/api/v1/doctor", doctorRoute);
 app.use("/api/v1/questions", questionRoute);
 app.use("/api/v1/patient", patientRoute);
+app.use("/api/v1/lab", labRoute);
 app.use("/api/v1/doctor-Reservation", doctorReservationRoute);
 
 app.all("*", (req, res, next) => {
