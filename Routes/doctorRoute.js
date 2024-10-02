@@ -54,9 +54,9 @@ router.put(
 router.route("/My-Reservation").get(
   getLoggedUserData,
   (req, res, next) => {
-    createFilterObj(req, res, next, "dermatologist");
+    createFilterObj(req, res, next, "doctor");
   },
-  authController.allowedTo("dermatologist"),
+  authController.allowedTo("doctor"),
   getDoctorReservations
 );
 
