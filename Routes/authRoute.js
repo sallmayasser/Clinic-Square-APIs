@@ -8,8 +8,8 @@ const {
   checkRole,
   logout,
   signup,
-} = require("../controllers/authController");
-const { resizeImage, uploadImage } = require("../controllers/imageController");
+} = require("../Controllers/authController");
+const { resizeImage, uploadImage } = require("../Controllers/imageController");
 const validateMiddleware = require("../Middlewares/newValidatorMiddleware");
 const AdminModel = require("../Models/AdminModel");
 
@@ -30,7 +30,7 @@ router.post(
 );
 
 router.post("/login", loginValidator, login);
-router.get("/logout", logout);
+router.post("/logout", logout);
 router.post("/forgotPassword", forgotPassword);
 router.post("/verifyResetCode", verifyPassResetCode);
 router.put("/resetPassword", resetPassword);

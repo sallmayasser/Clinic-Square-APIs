@@ -8,7 +8,7 @@ const {
   updateDoctorReservation,
 } = require("../Controllers/doctorReservationController");
 const validator = require("../utils/validators/doctorReservationValidator");
-const authController = require("../controllers/authController");
+const authController = require("../Controllers/authController");
 const {
   setPatientToBody,
   setPatientIdToBody,

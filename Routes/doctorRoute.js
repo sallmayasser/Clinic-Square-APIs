@@ -15,8 +15,8 @@ const {
 } = require("../Controllers/doctorController");
 const validators = require("../utils/validators/doctorValidator");
 
-const { resizeImage, uploadImage } = require("../controllers/imageController");
-const authController = require("../controllers/authController");
+const { resizeImage, uploadImage } = require("../Controllers/imageController");
+const authController = require("../Controllers/authController");
 const DoctorModel = require("../Models/doctorModel");
 const {
   getDoctorReservations,
@@ -51,7 +51,7 @@ router.put(
 );
 
 // nested Route
-router.route("/My-Reservation").get(
+router.route("/My-Reservations").get(
   getLoggedUserData,
   (req, res, next) => {
     createFilterObj(req, res, next, "doctor");

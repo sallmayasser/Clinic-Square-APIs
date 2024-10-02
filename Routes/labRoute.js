@@ -15,8 +15,8 @@ const {
 } = require("../Controllers/labController");
 const validators = require("../utils/validators/labValidator");
 
-const { resizeImage, uploadImage } = require("../controllers/imageController");
-const authController = require("../controllers/authController");
+const { resizeImage, uploadImage } = require("../Controllers/imageController");
+const authController = require("../Controllers/authController");
 const LabModel = require("../Models/labModel");
 
 const router = express.Router({ mergeParams: true });

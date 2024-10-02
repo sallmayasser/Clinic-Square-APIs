@@ -15,7 +15,7 @@ const {
   setPatientIdToBody,
 } = require("../Controllers/PatientController");
 
-const authController = require("../controllers/authController");
+const authController = require("../Controllers/authController");
 const { setDoctorIdToBody } = require("../Controllers/doctorController");
 const router = express.Router({ mergeParams: true });
 

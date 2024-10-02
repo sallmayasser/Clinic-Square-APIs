@@ -15,8 +15,8 @@ const {
   setPatientIdToBody,
 } = require("../Controllers/PatientController");
 const validators = require("../utils/validators/patientValidator");
-const { resizeImage, uploadImage } = require("../controllers/imageController");
-const authController = require("../controllers/authController");
+const { resizeImage, uploadImage } = require("../Controllers/imageController");
+const authController = require("../Controllers/authController");
 const PatientModel = require("../Models/patientModel");
 const {
   getDoctorReservations,
