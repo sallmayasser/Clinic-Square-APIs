@@ -73,7 +73,7 @@ exports.createPatientValidator = [
       }
       return true;
     }),
-  validatorMiddleware, // This should handle sending validation results to the client
+
 ];
 
 exports.updatePatientValidator = [
@@ -100,5 +100,60 @@ exports.updatePatientValidator = [
 
 exports.deletePatientValidator = [
   check("id").isMongoId().withMessage("Invalid Patient id format"),
+  validatorMiddleware,
+];
+
+exports.changePatientPasswordValidator = [
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("You must enter your current password"),
+  body("passwordConfirm")
+    .notEmpty()
+    .withMessage("You must enter the password confirm"),
+  body("newPassword")
+    .notEmpty()
+    .withMessage("You must enter new password")
+    .custom(async (val, { req }) => {
+      // 1) Verify current password
+      const patient = await PatientModel.findById(req.user._id);
+      if (!patient) {
+        throw new Error("There is no patient for this id");
+      }
+      const isCorrectPassword = await bcrypt.compare(
+        req.body.currentPassword,
+        patient.password
+      );
+      if (!isCorrectPassword) {
+        throw new Error("Incorrect current password");
+      }
+
+      // 2) Verify password confirm
+      if (val !== req.body.passwordConfirm) {
+        throw new Error("Password Confirmation incorrect");
+      }
+      if (val === req.body.currentPassword) {
+        throw new Error("Please enter new password !");
+      }
+      return true;
+    }),
+  validatorMiddleware,
+];
+exports.updateLoggedPatientValidator = [
+  check("email")
+    .optional()
+    .isEmail()
+    .withMessage("Invalid email address")
+    .custom((val) =>
+      PatientModel.findOne({ email: val }).then((patient) => {
+        if (patient) {
+          return Promise.reject(new Error("E-mail already in patient"));
+        }
+      })
+    ),
+  check("phone")
+    .optional()
+    .isMobilePhone(["ar-EG", "ar-SA"])
+    .withMessage("Invalid phone number only accepted Egy and SA Phone numbers"),
+
   validatorMiddleware,
 ];

@@ -1,5 +1,5 @@
 const express = require("express");
-
+const { getLoggedUserData } = require("../Controllers/handlerFactory");
 const {
   addQuestion,
   getQuestions,
@@ -10,26 +10,59 @@ const {
   updateQuestion,
 } = require("../Controllers/medicalQuestionsController");
 const validator = require("../utils/validators/questionValidator");
+const {
+  setPatientToBody,
+  setPatientIdToBody,
+} = require("../Controllers/PatientController");
 
+const authController = require("../controllers/authController");
+const { setDoctorIdToBody } = require("../Controllers/doctorController");
 const router = express.Router({ mergeParams: true });
+
+router.use(authController.protect);
 
 router
   .route("/")
-  .get(getQuestions)
-  .post(validator.createQuestionValidator, addQuestion);
+  .get(authController.allowedTo("doctor", "admin", "patient"), getQuestions)
+  .post(
+    authController.allowedTo("patient"),
+    setPatientIdToBody,
+    validator.createQuestionValidator,
+    addQuestion
+  );
 
 router
   .route("/answer")
   //  @@/questions/answer/questionId = <Question Id>
-  .post(validator.createAnswerValidator, addAnswer)
+  .post(
+    authController.allowedTo("doctor"),
+    setDoctorIdToBody,
+    validator.createAnswerValidator,
+    addAnswer
+  )
   // /questions/answer/?questionId =<Question Id>&answerId = <Answer Id>
-  .put(validator.updateAnswerValidator, updateAnswer);
-
+  .put(
+    authController.allowedTo("doctor"),
+    validator.updateAnswerValidator,
+    updateAnswer
+  );
 
 router
   .route("/:id")
-  .get(validator.getQuestionValidator, getQuestionById)
-  .delete(validator.deleteQuestionValidator, deleteQuestion)
-  .put(validator.updateQuestionValidator, updateQuestion);
+  .get(
+    authController.allowedTo("doctor", "patient", "admin"),
+    validator.getQuestionValidator,
+    getQuestionById
+  )
+  .delete(
+    authController.allowedTo("patient", "admin"),
+    validator.deleteQuestionValidator,
+    deleteQuestion
+  )
+  .put(
+    authController.allowedTo("patient"),
+    validator.updateQuestionValidator,
+    updateQuestion
+  );
 
 module.exports = router;

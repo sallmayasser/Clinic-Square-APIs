@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 const ApiError = require("../utils/apiError");
 const { default: scheduleSchema } = require("./scheduleModel");
+const bcrypt = require("bcryptjs");
 // const scheduleSchema = require("./scheduleModel");
-
-
 
 const doctorSchema = new mongoose.Schema(
   {
@@ -54,8 +53,12 @@ const doctorSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "Doctor",
+      default: "doctor",
       immutable: true,
+    },
+    state: {
+      type: Boolean,
+      default: false,
     },
     password: {
       type: String,
@@ -75,13 +78,21 @@ const doctorSchema = new mongoose.Schema(
   }
 );
 
-doctorSchema.pre("save", function (next) {
-  if (this.isModified("role")) {
-    next(new ApiError("Role is read only field !", 400));
-  } else {
-    next();
-  }
+// doctorSchema.pre("save", function (next) {
+//   if (this.isModified("role")) {
+//     next(new ApiError("Role is read only field !", 400));
+//   } else {
+//     next();
+//   }
+// });
+
+doctorSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  // Hashing user password
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
 });
+
 // 2- Create model
 const DoctorModel = mongoose.model("Doctor", doctorSchema);
 

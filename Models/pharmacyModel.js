@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const bcrypt = require("bcryptjs");
 // 1- Create Schema
 
 const pharmacySchema = new mongoose.Schema(
@@ -22,8 +22,12 @@ const pharmacySchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "Pharmacy",
+      default: "pharmacy",
       immutable: true,
+    },
+    state: {
+      type: Boolean,
+      default: false,
     },
     password: {
       type: String,
@@ -42,13 +46,21 @@ const pharmacySchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-pharmacySchema.pre("save", function (next) {
-  if (this.isModified("role")) {
-    next(new ApiError("Role is read only field !", 400));
-  } else {
-    next();
-  }
+// pharmacySchema.pre("save", function (next) {
+//   if (this.isModified("role")) {
+//     next(new ApiError("Role is read only field !", 400));
+//   } else {
+//     next();
+//   }
+// });
+
+pharmacySchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  // Hashing user password
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
 });
+
 // 2- Create model
 const PharmacyModel = mongoose.model("Pharmacy", pharmacySchema);
 

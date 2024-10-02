@@ -17,7 +17,7 @@ exports.createLabValidator = [
     .withMessage("Too short Lab name")
     .isLength({ max: 32 })
     .withMessage("Too long Lab name")
-    .custom((val, { req }) => 
+    .custom((val, { req }) =>
       LabModel.findOne({ name: val }).then((Lab) => {
         if (Lab) {
           return Promise.reject(new Error("Name already in Labs"));
@@ -64,8 +64,6 @@ exports.createLabValidator = [
     .withMessage(
       "Invalid phone number, only accepted Egyptian and Saudi Arabian phone numbers"
     ),
-
-
 
   // License validation
   check("license")
@@ -119,7 +117,7 @@ exports.createLabValidator = [
       return true;
     }),
   check("license").notEmpty(),
-  validatorMiddleware, // This should handle sending validation results to the client
+
 ];
 
 exports.updateLabValidator = [
@@ -137,7 +135,7 @@ exports.updateLabValidator = [
         }
       })
     ),
-    check("name")
+  check("name")
     .optional()
     .notEmpty()
     .withMessage("Lab name required")
@@ -145,7 +143,7 @@ exports.updateLabValidator = [
     .withMessage("Too short Lab name")
     .isLength({ max: 32 })
     .withMessage("Too long Lab name")
-    .custom((val, { req }) => 
+    .custom((val, { req }) =>
       LabModel.findOne({ name: val }).then((Lab) => {
         if (Lab) {
           return Promise.reject(new Error("Name already in Labs"));
@@ -165,5 +163,60 @@ exports.updateLabValidator = [
 
 exports.deleteLabValidator = [
   check("id").isMongoId().withMessage("Invalid Lab id format"),
+  validatorMiddleware,
+];
+
+exports.changeLabPasswordValidator = [
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("You must enter your current password"),
+  body("passwordConfirm")
+    .notEmpty()
+    .withMessage("You must enter the password confirm"),
+  body("newPassword")
+    .notEmpty()
+    .withMessage("You must enter new password")
+    .custom(async (val, { req }) => {
+      // 1) Verify current password
+      const lab = await LabModel.findById(req.user._id);
+      if (!lab) {
+        throw new Error("There is no lab for this id");
+      }
+      const isCorrectPassword = await bcrypt.compare(
+        req.body.currentPassword,
+        lab.password
+      );
+      if (!isCorrectPassword) {
+        throw new Error("Incorrect current password");
+      }
+
+      // 2) Verify password confirm
+      if (val !== req.body.passwordConfirm) {
+        throw new Error("Password Confirmation incorrect");
+      }
+      if (val === req.body.currentPassword) {
+        throw new Error("Please enter new password !");
+      }
+      return true;
+    }),
+  validatorMiddleware,
+];
+exports.updateLoggedLabValidator = [
+  check("email")
+    .optional()
+    .isEmail()
+    .withMessage("Invalid email address")
+    .custom((val) =>
+      LabModel.findOne({ email: val }).then((lab) => {
+        if (lab) {
+          return Promise.reject(new Error("E-mail already in lab"));
+        }
+      })
+    ),
+  check("phone")
+    .optional()
+    .isMobilePhone(["ar-EG", "ar-SA"])
+    .withMessage("Invalid phone number only accepted Egy and SA Phone numbers"),
+
   validatorMiddleware,
 ];

@@ -1,25 +1,89 @@
 const express = require("express");
-
+const {
+  createFilterObj,
+  updateLoggedUserPassword,
+  deleteLoggedUserData,
+  getLoggedUserData,
+} = require("../Controllers/handlerFactory");
 const {
   getPatient,
   getPatients,
-  createPatient,
   deletePatient,
   updatePatient,
+  setPatientToBody,
+  updateLoggedPatientData,
+  setPatientIdToBody,
 } = require("../Controllers/PatientController");
-const validator = require("../utils/validators/patientValidator");
+const validators = require("../utils/validators/patientValidator");
+const { resizeImage, uploadImage } = require("../controllers/imageController");
+const authController = require("../controllers/authController");
+const PatientModel = require("../Models/patientModel");
+const {
+  getDoctorReservations,
+} = require("../Controllers/doctorReservationController");
 
 const router = express.Router({ mergeParams: true });
 
-router
-  .route("/")
-  .get(getPatients)
-  .post(validator.createPatientValidator, createPatient);
+router.use(authController.protect);
+
+// patient routes
+
+router.get(
+  "/getMe",
+  authController.allowedTo("patient"),
+  getLoggedUserData,
+  getPatient
+);
+
+router.put(
+  "/updateMe",
+  authController.allowedTo("patient"),
+  getLoggedUserData,
+  uploadImage,
+  setPatientToBody,
+  resizeImage,
+  validators.updateLoggedPatientValidator,
+  updateLoggedPatientData
+);
+
+router.put(
+  "/changeMyPassword",
+  authController.allowedTo("patient"),
+  validators.changePatientPasswordValidator,
+  updateLoggedUserPassword(PatientModel)
+);
+
+// nested Route
+
+router.get(
+  "/Patient-reservation",
+  authController.allowedTo("patient"),
+  getLoggedUserData,
+  (req, res, next) => {
+    createFilterObj(req, res, next, "patient");
+  },
+  getDoctorReservations
+);
+
+// admin routes
+
+router.route("/").get(authController.allowedTo("admin"), getPatients);
 
 router
   .route("/:id")
-  .get(validator.getPatientValidator, getPatient)
-  .patch(validator.updatePatientValidator, updatePatient)
-  .delete(validator.deletePatientValidator, deletePatient);
+  .get(validators.getPatientValidator, getPatient)
+  .put(
+    authController.allowedTo("admin"),
+    uploadImage,
+    resizeImage,
+    validators.updatePatientValidator,
+    updatePatient
+  )
+  .delete(
+    authController.allowedTo("admin"),
+    validators.deletePatientValidator,
+    deletePatient
+  );
+
 
 module.exports = router;
