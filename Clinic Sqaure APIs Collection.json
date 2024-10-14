@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "2fc5ea5c-0e6e-4702-981a-ec1528791cde",
+        "_postman_id": "a7d39c15-9284-43d0-a6bb-5f6ced4294ff",
         "name": "Clinic Square APIs",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "description": ""
@@ -23,6 +23,16 @@
                             "host": [
                                 "{{base_url}}"
                             ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
                 },
@@ -40,6 +50,16 @@
                             ],
                             "host": [
                                 "{{base_url}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
                             ]
                         }
                     }
@@ -67,6 +87,16 @@
                                 }
                             },
                             "raw": "{\n      \"schedule\": {\n        \"days\": [\n          {\n            \"day\": \"monday\",\n            \"startTime\": \"2024-09-23T09:00:00.000Z\",\n            \"endTime\": \"2024-09-23T17:00:00.000Z\",\n            \"limit\": 20\n          },\n          {\n            \"day\": \"wednesday\",\n            \"startTime\": \"2024-09-25T09:00:00.000Z\",\n            \"endTime\": \"2024-09-25T17:00:00.000Z\",\n            \"limit\": 15\n          }\n        ],\n        \"cost\": 300\n      },\n      \"profilePic\": \"https://example.com/path/to/profile-pic.jpg\",\n      \"name\": \"Dr. salma yasser\",\n      \"address\": [\n        \"1234 Elm Street, City, Country\",\n        \"5678 Oak Avenue, City, Country\"\n      ],\n      \"email\": \"salma@gmail.com\",\n      \"phone\": \"01023092573\",\n      \"about\": \"Specialist in internal medicine\",\n      \"specialization\": \"Endocrinology\",\n      \"gender\": \"female\",\n      \"license\": [\n        \"MD123456\",\n        \"BOARD1234\"\n      ],\n      \"dateOfBirth\": \"1975-05-15T00:00:00.000Z\",\n      \"points\": 0,\n      \"password\": \"password123\",\n      \"passwordConfirm\": \"password123\"\n  \n    }"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
                 },
@@ -84,6 +114,16 @@
                             ],
                             "host": [
                                 "{{base_url}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
                             ]
                         }
                     }
@@ -112,86 +152,63 @@
                                 }
                             },
                             "raw": "{\n\t\"name\": \"hazem\"\n}"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
                 }
             ]
         },
         {
-            "name": "Patients",
+            "name": "logged Patient",
             "item": [
                 {
-                    "name": "Get All Patients",
+                    "name": "Get my data",
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{base_url}}/api/v1/patient",
-                            "path": [
-                                "api",
-                                "v1",
-                                "patient"
-                            ],
-                            "host": [
-                                "{{base_url}}"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get  Patient by ID",
-                    "request": {
-                        "method": "GET",
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/patient/66ee136eafd40ba13adbb9a9",
+                            "raw": "{{base_url}}/api/v1/patient/getMe",
                             "path": [
                                 "api",
                                 "v1",
                                 "patient",
-                                "66ee136eafd40ba13adbb9a9"
-                            ],
-                            "host": [
-                                "{{base_url}}"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Add Patient",
-                    "request": {
-                        "method": "POST",
-                        "url": {
-                            "raw": "{{base_url}}/api/v1/patient",
-                            "path": [
-                                "api",
-                                "v1",
-                                "patient"
+                                "getMe"
                             ],
                             "host": [
                                 "{{base_url}}"
                             ]
                         },
-                        "body": {
-                            "mode": "raw",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
                                 }
-                            },
-                            "raw": "{\n  \"profilePic\": \"https://example.com/path-to-profile-picture.jpg\",\n  \"name\": \"patient 1\",\n  \"address\": [\n    \"123 Main St, City, Country\",\n    \"456 Another St, City, Country\"\n  ],\n  \"email\": \"patient2@example.com\",\n  \"phone\": \"01234567890\",\n  \"gender\": \"male\",\n  \"dateOfBirth\": \"1990-06-15\",\n  \"password\": \"password123\",\n  \"passwordConfirm\": \"password123\"\n}\n"
+                            ]
                         }
                     }
                 },
                 {
-                    "name": "Update Patient",
+                    "name": "Update my data",
                     "request": {
-                        "method": "PATCH",
+                        "method": "PUT",
                         "url": {
-                            "raw": "{{base_url}}/api/v1/patient/66ee136eafd40ba13adbb9a9",
+                            "raw": "{{base_url}}/api/v1/patient/updateMe",
                             "path": [
                                 "api",
                                 "v1",
                                 "patient",
-                                "66ee136eafd40ba13adbb9a9"
+                                "updateMe"
                             ],
                             "host": [
                                 "{{base_url}}"
@@ -212,6 +229,36 @@
                     "name": "Delete Patient",
                     "request": {
                         "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient/deleteMe",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient",
+                                "deleteMe"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "change my Password",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient/changeMyPassword",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient",
+                                "changeMyPassword"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
                         "body": {
                             "mode": "raw",
                             "options": {
@@ -219,7 +266,7 @@
                                     "language": "json"
                                 }
                             },
-                            "raw": ""
+                            "raw": "{\n  \"currentPassword\":\"\",\n  \"passwordConfirm\":\"\",\n  \"newPassword\":\"\"\n}"
                         }
                     }
                 }
@@ -623,6 +670,547 @@
                                 }
                             },
                             "raw": "{\n\t\"name\": \"Alph1a Scan\"\n}"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Patients",
+            "item": [
+                {
+                    "name": "Get All Patients",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get  Patient by ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient/66ee136eafd40ba13adbb9a9",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient",
+                                "66ee136eafd40ba13adbb9a9"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Patient",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"profilePic\": \"https://example.com/path-to-profile-picture.jpg\",\n  \"name\": \"patient 1\",\n  \"address\": [\n    \"123 Main St, City, Country\",\n    \"456 Another St, City, Country\"\n  ],\n  \"email\": \"patient2@example.com\",\n  \"phone\": \"01234567890\",\n  \"gender\": \"male\",\n  \"dateOfBirth\": \"1990-06-15\",\n  \"password\": \"password123\",\n  \"passwordConfirm\": \"password123\"\n}\n"
+                        }
+                    }
+                },
+                {
+                    "name": "Update Patient",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/patient/66ee136eafd40ba13adbb9a9",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patient",
+                                "66ee136eafd40ba13adbb9a9"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n\t\"name\": \"haaazem s\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Patient",
+                    "request": {
+                        "method": "DELETE",
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": ""
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "logged Doctor",
+            "item": [
+                {
+                    "name": "Get my data",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor/getMe",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor",
+                                "getMe"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update my data",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor/updateMe",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor",
+                                "updateMe"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "name",
+                                    "value": "Dr.Salma",
+                                    "type": "default"
+                                }
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Patient",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor/deleteMe",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor",
+                                "deleteMe"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "change my Password",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/doctor/changeMyPassword",
+                            "path": [
+                                "api",
+                                "v1",
+                                "doctor",
+                                "changeMyPassword"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"currentPassword\":\"\",\n  \"passwordConfirm\":\"\",\n  \"newPassword\":\"\"\n}"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "signUp",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/signUp",
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "signUp"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "schedule[days][0][day]",
+                                    "value": "monday",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "schedule[days][0][startTime]",
+                                    "value": "2024-09-23T09:00:00.000Z",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "schedule[days][0][endTime]",
+                                    "value": "2024-09-23T17:00:00.000Z",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "schedule[days][0][limit]",
+                                    "value": "20",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "schedule[days][1][day]",
+                                    "value": "wednesday",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "schedule[days][1][startTime]",
+                                    "value": "2024-09-25T09:00:00.000Z",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "schedule[days][1][endTime]",
+                                    "value": "2024-09-25T17:00:00.000Z",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "schedule[days][1][limit]",
+                                    "value": "15",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "schedule[cost]",
+                                    "value": "300",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "name",
+                                    "value": "Dr. salma yasser",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "address[0]",
+                                    "value": "1234 Elm Street, City, Country",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "address[1]",
+                                    "value": "5678 Oak Avenue, City, Country",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "email",
+                                    "value": "salma@gmail.com",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "phone",
+                                    "value": "01023092573",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "about",
+                                    "value": "Specialist in internal medicine",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "specialization",
+                                    "value": "Endocrinology",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "gender",
+                                    "value": "female",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "license[0]",
+                                    "value": "MD123456",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "license[1]",
+                                    "value": "BOARD1234",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "dateOfBirth",
+                                    "value": "1975-05-15T00:00:00.000Z",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "points",
+                                    "value": "0",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "password123",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "passwordConfirm",
+                                    "value": "password123",
+                                    "type": "default"
+                                },
+                                {
+                                    "key": "profilePic",
+                                    "src": "c:\\Users\\Salma\\Downloads\\Screenshot 2024-05-10 222416.png",
+                                    "type": "file"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "login",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/login",
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "login"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"email\":\"salma@gmail.com\",\n  \"password\":\"password123\",\n  \"role\":\"doctor\"\n}"
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "logout",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/logout",
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "logout"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "forget password",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/forgotPassword",
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "forgotPassword"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "verify resest code",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/verifyResetCode",
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "verifyResetCode"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "reset Password",
+                    "request": {
+                        "method": "PUT",
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/auth/resetPassword",
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "resetPassword"
+                            ],
+                            "host": [
+                                "{{base_url}}"
+                            ]
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
                 }

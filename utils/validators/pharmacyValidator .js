@@ -1,22 +1,22 @@
 const slugify = require("slugify");
 const { check, body } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validatorMiddleware");
-const DoctorModel = require("../../Models/doctorModel");
+const PharmacyModel = require("../../Models/pharmacyModel");
 
-exports.getDoctorValidator = [
-  check("id").isMongoId().withMessage("Invalid Doctor id format"),
+exports.getPharmacyValidator = [
+  check("id").isMongoId().withMessage("Invalid Pharmacy id format"),
   validatorMiddleware,
 ];
 
-exports.createDoctorValidator = [
+exports.createPharmacyValidator = [
   // Name validation
   check("name")
     .notEmpty()
-    .withMessage("Doctor name required")
+    .withMessage("Pharmacy name required")
     .isLength({ min: 3 })
-    .withMessage("Too short Doctor name")
+    .withMessage("Too short Pharmacy name")
     .isLength({ max: 32 })
-    .withMessage("Too long Doctor name")
+    .withMessage("Too long Pharmacy name")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -24,12 +24,14 @@ exports.createDoctorValidator = [
 
   // Email validation
   check("email")
+    .notEmpty()
+    .withMessage("Email required")
     .isEmail()
     .withMessage("Invalid email address")
     .custom((val) =>
-      DoctorModel.findOne({ email: val }).then((doctor) => {
-        if (doctor) {
-          return Promise.reject(new Error("E-mail already in doctors"));
+      PharmacyModel.findOne({ email: val }).then((Pharmacy) => {
+        if (Pharmacy) {
+          return Promise.reject(new Error("E-mail already in Pharmacys"));
         }
       })
     ),
@@ -59,20 +61,6 @@ exports.createDoctorValidator = [
     .withMessage(
       "Invalid phone number, only accepted Egyptian and Saudi Arabian phone numbers"
     ),
-
-  // Gender validation
-  check("gender")
-    .notEmpty()
-    .withMessage("Gender required")
-    .custom((gender, { req }) => {
-      const lowercaseVal = gender.toLowerCase();
-      if (lowercaseVal !== "male" && lowercaseVal !== "female") {
-        throw new Error("Please enter male or female");
-      }
-      return true;
-    }),
-
-  // License validation
   check("license")
     .isArray({ min: 1 })
     .withMessage("At least one license is required")
@@ -83,63 +71,19 @@ exports.createDoctorValidator = [
       return true;
     }),
 
-  // Cost validation in schedule
-  check("schedule.cost")
-    .notEmpty()
-    .withMessage("Consultation cost is required")
-    .isNumeric()
-    .withMessage("Consultation cost must be a number")
-    .isFloat({ min: 0 })
-    .withMessage("Consultation cost cannot be negative"),
-
-  // Schedule validation
-  check("schedule.days")
-    .isArray({ min: 1 })
-    .withMessage("At least one schedule day is required")
-    .custom((scheduleArray) => {
-      scheduleArray.forEach((day) => {
-        if (
-          ![
-            "sunday",
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-          ].includes(day.day)
-        ) {
-          throw new Error("Invalid day of the week");
-        }
-        if (!day.startTime || !day.endTime) {
-          throw new Error("Start time and end time are required");
-        }
-        if (new Date(day.startTime) >= new Date(day.endTime)) {
-          throw new Error("Start time must be before end time");
-        }
-        if (day.limit < 1) {
-          throw new Error("Limit must be at least 1");
-        }
-      });
-      return true;
-    }),
-  check("license").notEmpty(),
-  check("specialization").notEmpty().withMessage("Specialization is required"),
 
 ];
 
-exports.updateDoctorValidator = [
-  check("id").isMongoId().withMessage("Invalid Doctor id format"),
+exports.updatePharmacyValidator = [
+  check("id").isMongoId().withMessage("Invalid Pharmacy id format"),
   check("email")
     .optional()
-    .notEmpty()
-    .withMessage("Email required")
     .isEmail()
     .withMessage("Invalid email address")
     .custom((val) =>
-      DoctorModel.findOne({ email: val }).then((doctor) => {
-        if (doctor) {
-          return Promise.reject(new Error("E-mail already in doctors"));
+      PharmacyModel.findOne({ email: val }).then((Pharmacy) => {
+        if (Pharmacy) {
+          return Promise.reject(new Error("E-mail already in Pharmacys"));
         }
       })
     ),
@@ -152,11 +96,12 @@ exports.updateDoctorValidator = [
   validatorMiddleware,
 ];
 
-exports.deleteDoctorValidator = [
-  check("id").isMongoId().withMessage("Invalid Doctor id format"),
+exports.deletePharmacyValidator = [
+  check("id").isMongoId().withMessage("Invalid Pharmacy id format"),
   validatorMiddleware,
 ];
-exports.changeDoctorPasswordValidator = [
+
+exports.changePharmacyPasswordValidator = [
   body("currentPassword")
     .notEmpty()
     .withMessage("You must enter your current password"),
@@ -168,13 +113,13 @@ exports.changeDoctorPasswordValidator = [
     .withMessage("You must enter new password")
     .custom(async (val, { req }) => {
       // 1) Verify current password
-      const doctor = await DoctorModel.findById(req.user._id);
-      if (!doctor) {
-        throw new Error("There is no doctor for this id");
+      const pharmacy = await PharmacyModel.findById(req.user._id);
+      if (!pharmacy) {
+        throw new Error("There is no pharmacy for this id");
       }
       const isCorrectPassword = await bcrypt.compare(
         req.body.currentPassword,
-        doctor.password
+        pharmacy.password
       );
       if (!isCorrectPassword) {
         throw new Error("Incorrect current password");
@@ -191,15 +136,15 @@ exports.changeDoctorPasswordValidator = [
     }),
   validatorMiddleware,
 ];
-exports.updateLoggedDoctorValidator = [
+exports.updateLoggedpharmacyValidator = [
   check("email")
     .optional()
     .isEmail()
     .withMessage("Invalid email address")
     .custom((val) =>
-      DoctorModel.findOne({ email: val }).then((doctor) => {
-        if (doctor) {
-          return Promise.reject(new Error("E-mail already in doctor"));
+      PharmacyModel.findOne({ email: val }).then((pharmacy) => {
+        if (pharmacy) {
+          return Promise.reject(new Error("E-mail already in pharmacy"));
         }
       })
     ),

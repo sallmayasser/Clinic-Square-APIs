@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const { default: scheduleSchema } = require("./scheduleModel");
-
+const bcrypt = require("bcryptjs");
 // 1- Create Schema
-
 
 const labSchema = new mongoose.Schema(
   {
@@ -26,16 +25,15 @@ const labSchema = new mongoose.Schema(
         type: [scheduleSchema], // Array of schedule objects
         required: true,
       },
-      cost: {
-        type: Number,
-        required: true,
-        min: 0, // Ensure cost is non-negative
-      },
     },
     role: {
       type: String,
-      default: "Lab",
+      default: "lab",
       immutable: true,
+    },
+    state: {
+      type: Boolean,
+      default: false,
     },
     password: {
       type: String,
@@ -56,13 +54,20 @@ const labSchema = new mongoose.Schema(
   }
 );
 
-labSchema.pre("save", function (next) {
-  if (this.isModified("role")) {
-    next(new ApiError("Role is read only field !", 400));
-  } else {
-    next();
-  }
+// labSchema.pre("save", function (next) {
+//   if (this.isModified("role")) {
+//     next(new ApiError("Role is read only field !", 400));
+//   } else {
+//     next();
+//   }
+// });
+labSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  // Hashing user password
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
 });
+
 // 2- Create model
 const LabModel = mongoose.model("Lab", labSchema);
 
