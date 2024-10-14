@@ -30,13 +30,13 @@ router.get(
   getLoggedUserData,
   getLab
 );
-router.put(
+router.patch(
   "/changeMyPassword",
   authController.allowedTo("lab"),
   validators.changeLabPasswordValidator,
   updateLoggedUserPassword(LabModel)
 );
-router.put(
+router.patch(
   "/updateMe",
   authController.allowedTo("lab"),
   getLoggedUserData,
@@ -47,7 +47,6 @@ router.put(
   updateLoggedLabData
 );
 
-
 // admin routes
 
 router.route("/").get(authController.allowedTo("admin"), getLabs);
@@ -55,7 +54,7 @@ router.route("/").get(authController.allowedTo("admin"), getLabs);
 router
   .route("/:id")
   .get(validators.getLabValidator, getLab)
-  .put(
+  .patch(
     authController.allowedTo("admin"),
     uploadImage,
     resizeImage,

@@ -39,7 +39,7 @@ router.put(
   validators.changeDoctorPasswordValidator,
   updateLoggedUserPassword(DoctorModel)
 );
-router.put(
+router.patch(
   "/updateMe",
   authController.allowedTo("doctor"),
   getLoggedUserData,
@@ -67,7 +67,7 @@ router.route("/").get(authController.allowedTo("admin", "patient"), getDoctors);
 router
   .route("/:id")
   .get(validators.getDoctorValidator, getDoctor)
-  .put(
+  .patch(
     authController.allowedTo("admin"),
     uploadImage,
     resizeImage,

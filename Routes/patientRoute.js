@@ -35,7 +35,7 @@ router.get(
   getPatient
 );
 
-router.put(
+router.patch(
   "/updateMe",
   authController.allowedTo("patient"),
   getLoggedUserData,
@@ -46,7 +46,7 @@ router.put(
   updateLoggedPatientData
 );
 
-router.put(
+router.patch(
   "/changeMyPassword",
   authController.allowedTo("patient"),
   validators.changePatientPasswordValidator,
@@ -72,7 +72,7 @@ router.route("/").get(authController.allowedTo("admin"), getPatients);
 router
   .route("/:id")
   .get(validators.getPatientValidator, getPatient)
-  .put(
+  .patch(
     authController.allowedTo("admin"),
     uploadImage,
     resizeImage,
@@ -84,6 +84,5 @@ router
     validators.deletePatientValidator,
     deletePatient
   );
-
 
 module.exports = router;
