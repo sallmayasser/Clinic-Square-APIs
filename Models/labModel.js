@@ -11,11 +11,13 @@ const labSchema = new mongoose.Schema(
     name: String,
     address: [String],
     email: String,
-    phone: {
-      type: String,
-      min: [11, "incorrect mobile number"],
-      max: [11, "incorrect mobile number "],
-    },
+    phone: [
+      {
+        type: String,
+        min: [11, "incorrect mobile number"],
+        max: [11, "incorrect mobile number "],
+      },
+    ],
     license: {
       type: [String],
       required: [true, "license is required"],
