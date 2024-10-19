@@ -9,11 +9,13 @@ const patientSchema = new mongoose.Schema(
     name: String,
     address: [String],
     email: String,
-    phone: {
-      type: String,
-      min: [11, "incorrect mobile number"],
-      max: [11, "incorrect mobile number "],
-    },
+    phone: [
+      {
+        type: String,
+        min: [11, "incorrect mobile number"],
+        max: [11, "incorrect mobile number "],
+      },
+    ],
     gender: {
       type: String,
       required: [true, "gender required"],
