@@ -12,11 +12,13 @@ const doctorSchema = new mongoose.Schema(
     name: String,
     address: [String],
     email: String,
-    phone: {
-      type: String,
-      min: [11, "incorrect mobile number"],
-      max: [11, "incorrect mobile number "],
-    },
+    phone: [
+      {
+        type: String,
+        min: [11, "incorrect mobile number"],
+        max: [11, "incorrect mobile number "],
+      },
+    ],
     about: {
       type: String,
       default: "Doctor",
