@@ -48,17 +48,17 @@ exports.checkRole = (req, res, next) => {
   try {
     switch (query) {
       case "patient":
-        signup(Patients, req, res, next);
+        this.signup(Patients, req, res, next);
         break;
       case "doctor":
-        signup(Doctors, req, res, next);
+        this.signup(Doctors, req, res, next);
         console.log("hereee");
         break;
       case "lab":
-        signup(Labs, req, res, next);
+        this.signup(Labs, req, res, next);
         break;
       case "pharmacy":
-        signup(Pharmacies, req, res, next);
+        this.signup(Pharmacies, req, res, next);
         break;
       default:
         return next(new ApiError("this role is incorrect ", 401));
