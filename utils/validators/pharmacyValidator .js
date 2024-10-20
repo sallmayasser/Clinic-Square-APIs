@@ -54,13 +54,13 @@ exports.createPharmacyValidator = [
     .notEmpty()
     .withMessage("Password confirmation required"),
 
-  // Phone validation
-  check("phone")
-    .optional()
-    .isMobilePhone(["ar-EG", "ar-SA"])
-    .withMessage(
-      "Invalid phone number, only accepted Egyptian and Saudi Arabian phone numbers"
-    ),
+   // Phone validation
+   check('phoneNumbers')
+   .isArray().withMessage('Phone numbers must be an array'),
+ 
+ // Validate each phone number in the array
+ check('phoneNumbers.*')
+   .isMobilePhone().withMessage('Invalid phone number'),
   check("license")
     .isArray({ min: 1 })
     .withMessage("At least one license is required")
@@ -87,12 +87,13 @@ exports.updatePharmacyValidator = [
         }
       })
     ),
-  check("phone")
-    .optional()
-    .isMobilePhone(["ar-EG", "ar-SA"])
-    .withMessage(
-      "Invalid phone number, only accepted Egyptian and Saudi Arabian phone numbers"
-    ),
+   // Phone validation
+   check('phoneNumbers')
+   .isArray().withMessage('Phone numbers must be an array'),
+ 
+ // Validate each phone number in the array
+ check('phoneNumbers.*')
+   .isMobilePhone().withMessage('Invalid phone number'),
   validatorMiddleware,
 ];
 
@@ -148,10 +149,13 @@ exports.updateLoggedpharmacyValidator = [
         }
       })
     ),
-  check("phone")
-    .optional()
-    .isMobilePhone(["ar-EG", "ar-SA"])
-    .withMessage("Invalid phone number only accepted Egy and SA Phone numbers"),
+   // Phone validation
+   check('phoneNumbers')
+   .isArray().withMessage('Phone numbers must be an array'),
+ 
+ // Validate each phone number in the array
+ check('phoneNumbers.*')
+   .isMobilePhone().withMessage('Invalid phone number'),
 
   validatorMiddleware,
 ];
