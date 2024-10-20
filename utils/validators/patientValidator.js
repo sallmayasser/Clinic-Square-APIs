@@ -53,14 +53,13 @@ exports.createPatientValidator = [
   check("passwordConfirm")
     .notEmpty()
     .withMessage("Password confirmation required"),
-
-  // Phone validation
-  check("phone")
-    .optional()
-    .isMobilePhone(["ar-EG", "ar-SA"])
-    .withMessage(
-      "Invalid phone number, only accepted Egyptian and Saudi Arabian phone numbers"
-    ),
+   // Phone validation
+   check('phoneNumbers')
+   .isArray().withMessage('Phone numbers must be an array'),
+ 
+ // Validate each phone number in the array
+ check('phoneNumbers.*')
+   .isMobilePhone().withMessage('Invalid phone number'),
 
   // Gender validation
   check("gender")
@@ -89,12 +88,13 @@ exports.updatePatientValidator = [
         }
       })
     ),
-  check("phone")
-    .optional()
-    .isMobilePhone(["ar-EG", "ar-SA"])
-    .withMessage(
-      "Invalid phone number, only accepted Egyptian and Saudi Arabian phone numbers"
-    ),
+   // Phone validation
+   check('phoneNumbers')
+   .isArray().withMessage('Phone numbers must be an array'),
+ 
+ // Validate each phone number in the array
+ check('phoneNumbers.*')
+   .isMobilePhone().withMessage('Invalid phone number'),
   validatorMiddleware,
 ];
 
@@ -150,10 +150,12 @@ exports.updateLoggedPatientValidator = [
         }
       })
     ),
-  check("phone")
-    .optional()
-    .isMobilePhone(["ar-EG", "ar-SA"])
-    .withMessage("Invalid phone number only accepted Egy and SA Phone numbers"),
-
+   // Phone validation
+   check('phoneNumbers')
+   .isArray().withMessage('Phone numbers must be an array'),
+ 
+ // Validate each phone number in the array
+ check('phoneNumbers.*')
+   .isMobilePhone().withMessage('Invalid phone number'),
   validatorMiddleware,
 ];

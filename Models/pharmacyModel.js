@@ -10,8 +10,9 @@ const pharmacySchema = new mongoose.Schema(
     name: String,
     address: [String],
     email: String,
-    phone: [
+    phoneNumbers: [
       {
+        required:[true,"Phone Number is Required"],
         type: String,
         min: [11, "incorrect mobile number"],
         max: [11, "incorrect mobile number "],
