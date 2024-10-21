@@ -77,13 +77,7 @@ exports.createLabValidator = [
     }),
 
   // Cost validation in schedule
-  check("schedule.cost")
-    .notEmpty()
-    .withMessage("Consultation cost is required")
-    .isNumeric()
-    .withMessage("Consultation cost must be a number")
-    .isFloat({ min: 0 })
-    .withMessage("Consultation cost cannot be negative"),
+
 
   // Schedule validation
   check("schedule.days")
