@@ -52,8 +52,6 @@ exports.createDoctorValidator = [
     .notEmpty()
     .withMessage("Password confirmation required"),
 
- 
-
   // Gender validation
   check("gender")
     .notEmpty()
@@ -119,13 +117,11 @@ exports.createDoctorValidator = [
     }),
   check("license").notEmpty(),
   check("specialization").notEmpty().withMessage("Specialization is required"),
-   // Phone validation
-  check('phoneNumbers')
-  .isArray().withMessage('Phone numbers must be an array'),
+  // Phone validation
+  check("phoneNumbers").isArray().withMessage("Phone numbers must be an array"),
 
-// Validate each phone number in the array
-check('phoneNumbers.*')
-  .isMobilePhone().withMessage('Invalid phone number'),
+  // Validate each phone number in the array
+  check("phoneNumbers.*").isMobilePhone().withMessage("Invalid phone number"),
 ];
 
 exports.updateDoctorValidator = [
@@ -143,13 +139,11 @@ exports.updateDoctorValidator = [
         }
       })
     ),
-   // Phone validation
-   check('phoneNumbers')
-   .isArray().withMessage('Phone numbers must be an array'),
- 
- // Validate each phone number in the array
- check('phoneNumbers.*')
-   .isMobilePhone().withMessage('Invalid phone number'),
+  // Phone validation
+  check("phoneNumbers").isArray().withMessage("Phone numbers must be an array"),
+
+  // Validate each phone number in the array
+  check("phoneNumbers.*").isMobilePhone().withMessage("Invalid phone number"),
 ];
 
 exports.deleteDoctorValidator = [
@@ -203,13 +197,111 @@ exports.updateLoggedDoctorValidator = [
         }
       })
     ),
-   // Phone validation
-   check('phoneNumbers')
-   .isArray().withMessage('Phone numbers must be an array'),
- 
- // Validate each phone number in the array
- check('phoneNumbers.*')
-   .isMobilePhone().withMessage('Invalid phone number'),
+  // Phone validation
+  check("phoneNumbers").isArray().withMessage("Phone numbers must be an array"),
+
+  // Validate each phone number in the array
+  check("phoneNumbers.*").isMobilePhone().withMessage("Invalid phone number"),
+
+  validatorMiddleware,
+];
+
+exports.updateScheduleValidator = [
+  check("day")
+    .notEmpty()
+    .withMessage("Day is required")
+    .isIn([
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ])
+    .withMessage("Invalid day"),
+
+  // Custom validator to check if the day already exists in the schedule
+  check("day").custom(async (value, { req }) => {
+    const doctorId = req.params.id;
+
+    const doctor = await DoctorModel.findById(doctorId);
+    if (!doctor) {
+      throw new Error("Doctor not found");
+    }
+
+    // Check if the day already exists in the schedule
+    const dayExists = doctor.schedule.days.some(
+      (dayObj) => dayObj.day === value
+    );
+    if (!dayExists) {
+      throw new Error("Day does not exist in the schedule");
+    }
+
+    // return true;
+  }),
+  validatorMiddleware,
+];
+
+exports.addScheduleValidator = [
+  check("day")
+    .isIn([
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ])
+    .withMessage("Please provide a valid day of the week"),
+
+  check("startTime")
+    .notEmpty()
+    .withMessage("Start time is required")
+    .isISO8601()
+    .withMessage("Start time must be a valid ISO 8601 date"),
+
+  check("endTime")
+    .notEmpty()
+    .withMessage("End time is required")
+    .isISO8601()
+    .withMessage("End time must be a valid ISO 8601 date"),
+
+  // Custom validation for time logic
+  body("startTime").custom((value, { req }) => {
+    const start = new Date(value);
+    const end = new Date(req.body.endTime);
+
+    if (start >= end) {
+      throw new Error("Start time must be before end time");
+    }
+    return true;
+  }),
+
+  // Custom validation to check that the day does not already exist
+  body("day").custom(async (value, { req }) => {
+    const doctor = await DoctorModel.findById(req.user.id);
+
+    if (!doctor) {
+      throw new Error("Doctor not found");
+    }
+
+    const existingDay = doctor.schedule.days.find(
+      (scheduleDay) => scheduleDay.day === value.toLowerCase()
+    );
+
+    if (existingDay) {
+      throw new Error(
+        `Schedule for ${value} already exists you can update it `
+      );
+    }
+    return true;
+  }),
+
+  check("limit")
+    .isInt({ min: 1 })
+    .withMessage("Limit must be an integer greater than 0"),
 
   validatorMiddleware,
 ];
