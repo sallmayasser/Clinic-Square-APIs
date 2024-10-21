@@ -12,6 +12,9 @@ const {
   updateDoctor,
   setDoctorToBody,
   updateLoggedDoctorData,
+  updateSchedule,
+  addNewSchedule,
+  deleteSchedule,
 } = require("../Controllers/doctorController");
 const validators = require("../utils/validators/doctorValidator");
 
@@ -50,6 +53,26 @@ router.patch(
   updateLoggedDoctorData
 );
 
+router.put(
+  "/update-day",
+  authController.allowedTo("doctor"),
+  getLoggedUserData,
+  validators.updateScheduleValidator,
+  updateSchedule
+);
+router.post(
+  "/add-day",
+  authController.allowedTo("doctor"),
+  getLoggedUserData,
+  validators.addScheduleValidator,
+  addNewSchedule
+);
+router.delete(
+  "/delete-schedule-day",
+  authController.allowedTo("doctor"),
+  getLoggedUserData,
+  deleteSchedule
+);
 // nested Route
 router.route("/My-Reservations").get(
   getLoggedUserData,
