@@ -82,16 +82,18 @@ class ApiFeatures {
   }
 
   // New populate method
-  populate() {
+populate() {
     if (this.queryString.populate) {
         const fieldsToPopulate = this.queryString.populate.split(",").map((field) => {
             if (field.includes(".")) {
                 const [path, subfields] = field.split(".");
-                if (path === 'patient' || path === 'doctor' || path === 'lab' ||path === 'pharmacy') {
+         
+                if (path === 'patient' || path === 'doctor' || path === 'lab' ||path === 'pharmacy') { 
                     subfields = subfields ? `${subfields} -password` : '-password';
                 }
                 return { path, select: subfields };
             }
+          
             if (field === 'patient' || field === 'doctor' || field === 'lab' ||field === 'pharmacy') {
                 return { path: field, select: '-password' };
             }
