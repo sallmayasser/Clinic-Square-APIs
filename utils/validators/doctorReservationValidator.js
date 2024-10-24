@@ -58,9 +58,9 @@ exports.createDoctorReservationValidator = [
 
   check("state")
     .optional()
-    .isIn(["completed", "consaltation", "pending"])
+    .isIn(["completed", "consultaion", "pending"])
     .withMessage(
-      "Invalid state. Must be either 'completed', 'consaltation', or 'pending'"
+      "Invalid state. Must be either 'completed', 'consultaion', or 'pending'"
     ),
 
   check("report.diagnose")

@@ -17,7 +17,7 @@ const doctorReservationSchema = new mongoose.Schema(
     },
     state: {
       type: String,
-      enum: ["completed", "consaltation", "pending"],
+      enum: ["completed", "consultaion", "pending"],
       default: "pending",
     },
 
