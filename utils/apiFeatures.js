@@ -6,7 +6,14 @@ class ApiFeatures {
 
   filter() {
     const queryStringObj = { ...this.queryString };
-    const excludesFields = ["page", "sort", "limit", "fields", "keyword", "populate"];
+    const excludesFields = [
+      "page",
+      "sort",
+      "limit",
+      "fields",
+      "keyword",
+      "populate",
+    ];
     excludesFields.forEach((field) => delete queryStringObj[field]);
 
     // Apply filteration using [gte,gt,lte,lt]
@@ -82,31 +89,44 @@ class ApiFeatures {
   }
 
   // New populate method
-populate() {
+  populate() {
     if (this.queryString.populate) {
-        const fieldsToPopulate = this.queryString.populate.split(",").map((field) => {
-            if (field.includes(".")) {
-                const [path, subfields] = field.split(".");
-         
-                if (path === 'patient' || path === 'doctor' || path === 'lab' ||path === 'pharmacy') { 
-                    subfields = subfields ? `${subfields} -password` : '-password';
-                }
-                return { path, select: subfields };
+      const fieldsToPopulate = this.queryString.populate
+        .split(",")
+        .map((field) => {
+          if (field.includes(".")) {
+            let [path, subfields] = field.split(".");
+
+            if (
+              path === "patient" ||
+              path === "doctor" ||
+              path === "lab" ||
+              path === "pharmacy"
+            ) {
+              const substringToRemove = "password";
+              subfields = subfields.replace(substringToRemove, "");
+              subfields = subfields ? `${subfields} ` : "-password";
             }
-          
-            if (field === 'patient' || field === 'doctor' || field === 'lab' ||field === 'pharmacy') {
-                return { path: field, select: '-password' };
-            }
-            return { path: field };
+            return { path, select: subfields };
+          }
+
+          if (
+            field === "patient" ||
+            field === "doctor" ||
+            field === "lab" ||
+            field === "pharmacy"
+          ) {
+            return { path: field, select: "-password" };
+          }
+          return { path: field };
         });
 
-        fieldsToPopulate.forEach((populateOption) => {
-            this.mongooseQuery = this.mongooseQuery.populate(populateOption);
-        });
+      fieldsToPopulate.forEach((populateOption) => {
+        this.mongooseQuery = this.mongooseQuery.populate(populateOption);
+      });
     }
     return this;
-}
-
+  }
 }
 
 module.exports = ApiFeatures;
