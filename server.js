@@ -7,30 +7,19 @@ const cors = require("cors");
 const ApiError = require("./utils/apiError");
 const globalError = require("./Middlewares/errorMiddleware");
 const dbConnection = require("./configs/Database");
+const mountRoutes = require("./routes"); // Import the route mounting function
 
+// Load environment variables
 dotenv.config({ path: "config.env" });
 
-//routes
-const doctorRoute = require("./Routes/doctorRoute");
-const questionRoute = require("./Routes/questionRoute");
-const patientRoute = require("./Routes/patientRoute");
-const labRoute = require("./Routes/labRoute");
-const pharmacyRoute = require("./Routes/pharmacyRoute ");
-const adminRoute = require("./Routes/adminRoute");
-const doctorReservationRoute = require("./Routes/doctorReservationRoute");
-const labReservationRoute = require("./Routes/labReservationRoute");
-const authRoute = require("./Routes/authRoute");
-const testRoute = require("./Routes/testRoute");
-const medicineRoute = require("./Routes/medicineRoute");
-// connect with db
+// Connect to the database
 dbConnection();
 
-///express app
+// Initialize express app
 const app = express();
 
-/////middleware
+// Middleware
 app.use(cors());
-
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "uploads")));
 
@@ -39,32 +28,22 @@ if (process.env.Node_ENV === "development") {
   console.log(`node:${process.env.Node_ENV}`);
 }
 
-////Mount Routes
-app.options("*", cors());
+// Mount Routes using the function
+mountRoutes(app);
 
-app.use("/api/v1/doctor", doctorRoute);
-app.use("/api/v1/questions", questionRoute);
-app.use("/api/v1/patient", patientRoute);
-app.use("/api/v1/lab", labRoute);
-app.use("/api/v1/pharmacy", pharmacyRoute);
-app.use("/api/v1/admin", adminRoute);
-app.use("/api/v1/doctor-Reservation", doctorReservationRoute);
-app.use("/api/v1/lab-Reservation", labReservationRoute);
-app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/tests", testRoute);
-app.use("/api/v1/medicines", medicineRoute);
+// Handle 404 errors
 app.all("*", (req, res, next) => {
-  next(new ApiError(`can't find this route:${req.originalUrl}`, 400));
+  next(new ApiError(`can't find this route: ${req.originalUrl}`, 400));
 });
 
-// global error handling middelware for express
+// Global error handling middleware for express
 app.use(globalError);
 
-//handle rejections outside express
-process.on("unhandleRejection", (err) => {
-  console.error(`unhandleRejection Errors:${err.name}|${err.message}`);
+// Handle rejections outside express
+process.on("unhandledRejection", (err) => {
+  console.error(`unhandledRejection Errors: ${err.name}|${err.message}`);
   server.close(() => {
-    console.log("shuting  down....");
+    console.log("shutting down....");
     process.exit(1);
   });
 });
