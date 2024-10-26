@@ -12,6 +12,7 @@ const { initializeApp } = require("firebase/app");
 const { uploadMixOfImages } = require("../Middlewares/uploadImageMiddleware");
 const ApiError = require("../utils/apiError");
 const config = require("../configs/firebase");
+const LabReservationModel = require("../Models/labReservationModel");
 
 // Initialize a firebase application
 initializeApp(config.firebaseConfig);
@@ -29,64 +30,144 @@ exports.uploadImage = uploadMixOfImages([
     maxCount: 1,
   },
   {
+    name: "report.results",
+    maxCount: 20,
+  },
+  {
     name: "testResult",
-    maxCount: 30,
+    maxCount: 10,
   },
 ]);
-
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-  if (
-    req.body.role === "patient" ||
-    req.body.role === "doctor" ||
-    req.body.role === "lab" ||
-    req.body.role === "pharmacy" 
-  ) {
-    if (req.files.profilePic) {
-      const filename = `${req.body.role}-${uuidv4()}-${Date.now()}.jpeg`;
-      const storageRef = ref(storage, `uploads/${req.body.role}s/${filename}`);
-      const metadata = {
-        contentType: req.files.profilePic[0].mimetype,
-      };
-      // Upload the file in the bucket storage
-      const snapshot = await uploadBytesResumable(
-        storageRef,
-        req.files.profilePic[0].buffer,
-        metadata
-      );
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      req.body.profilePic = downloadURL;
-    }
+  const { role } = req.body;
+  // console.log(req.files);
 
-    if (req.files.license) {
-      req.body.license = [];
-      await Promise.all(
-        req.files.license.map(async (img, index) => {
-          const filename = `${req.body.role}-${uuidv4()}-${Date.now()}-${
-            index + 1
-          }.jpeg`;
-          const storageRef = ref(
-            storage,
-            `uploads/${req.body.role}s/${filename}`
-          );
-
-          const metadata = {
-            contentType: img.mimetype,
-          };
-
-          // Upload the file in the bucket storage
-          const snapshot = await uploadBytesResumable(
-            storageRef,
-            img.buffer,
-            metadata
-          );
-
-          const downloadURL = await getDownloadURL(snapshot.ref);
-          req.body.license.push(downloadURL);
-        })
-      );
-    }
-    next();
-  } else {
-    return next(new ApiError("incorrect role found ", 401));
+  // Validate the role
+  if (!["patient", "doctor", "lab", "pharmacy"].includes(role)) {
+    return next(new ApiError("Incorrect role found", 401));
   }
+
+  // Handle profile picture upload
+  if (req.files.profilePic) {
+    const profilePic = req.files.profilePic[0];
+
+    // Validate profile picture type
+    if (!profilePic.mimetype.startsWith("image/")) {
+      return next(new ApiError("Profile picture must be an image", 400));
+    }
+
+    const filename = `${role}-${uuidv4()}-${Date.now()}.jpeg`;
+    const storageRef = ref(storage, `uploads/${role}s/${filename}`);
+    const metadata = { contentType: profilePic.mimetype };
+
+    // Upload the profile picture
+    const snapshot = await uploadBytesResumable(
+      storageRef,
+      profilePic.buffer,
+      metadata
+    );
+    req.body.profilePic = await getDownloadURL(snapshot.ref);
+  }
+
+  // Handle license uploads
+  if (req.files.license) {
+    req.body.license = [];
+
+    await Promise.all(
+      req.files.license.map(async (img, index) => {
+        // Validate license image type
+        if (!img.mimetype.startsWith("image/")) {
+          throw new ApiError("All license files must be images", 400);
+        }
+
+        const filename = `${role}-${uuidv4()}-${Date.now()}-${index + 1}.jpeg`;
+        const storageRef = ref(storage, `uploads/${role}s/${filename}`);
+        const metadata = { contentType: img.mimetype };
+
+        // Upload the license image
+        const snapshot = await uploadBytesResumable(
+          storageRef,
+          img.buffer,
+          metadata
+        );
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        req.body.license.push(downloadURL);
+      })
+    );
+  }
+  
+  // Handle results uploads
+  if (req.files["report.results"]) {
+    req.body.report = req.body.report || {};
+    req.body.report.results = [];
+
+    await Promise.all(
+      req.files["report.results"].map(async (pdf, index) => {
+        // Validate file type for results
+        if (pdf.mimetype !== "application/pdf") {
+          throw new ApiError("All results must be PDF files", 400);
+        }
+
+        // Define storage path and metadata
+        const filename = `results-${uuidv4()}-${Date.now()}-${index + 1}.pdf`;
+        const storageRef = ref(storage, `uploads/results/${filename}`);
+        const metadata = { contentType: pdf.mimetype };
+
+        // Upload the PDF file
+        const snapshot = await uploadBytesResumable(
+          storageRef,
+          pdf.buffer,
+          metadata
+        );
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        req.body.report.results.push(downloadURL);
+      })
+    );
+  }
+
+  if (req.files.testResult) {
+    const { testId } = req.body;
+    const reservationId = req.params.id;
+    await Promise.all(
+      req.files.testResult.map(async (pdf, index) => {
+        // Ensure the uploaded file is a PDF
+        if (pdf.mimetype !== "application/pdf") {
+          return next(new ApiError("Test result must be a PDF file", 400));
+        }
+
+        // Fetch the reservation by reservationId
+        const reservation = await LabReservationModel.findById(reservationId);
+        if (!reservation) {
+          return next(new ApiError("Reservation not found", 404));
+        }
+
+        // Locate the test within requestedTests array by testId
+        const test = reservation.requestedTests.id(testId);
+        if (!test) {
+          return next(new ApiError("Test not found in reservation", 404));
+        }
+
+        // Upload PDF to Firebase
+        const filename = `testResult-${uuidv4()}-${Date.now()}-${
+          index + 1
+        }.pdf`;
+        const storageRef = ref(storage, `uploads/testResults/${filename}`);
+        const metadata = { contentType: pdf.mimetype };
+
+        const snapshot = await uploadBytesResumable(
+          storageRef,
+          pdf.buffer,
+          metadata
+        );
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        // Add the file URL to testResult array in the requested test
+        test.testResult.push(downloadURL);
+        await reservation.save();
+      })
+    );
+  }
+
+  // Proceed to the next middleware
+  next();
 });

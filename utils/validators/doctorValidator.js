@@ -140,10 +140,16 @@ exports.updateDoctorValidator = [
       })
     ),
   // Phone validation
-  check("phoneNumbers").isArray().withMessage("Phone numbers must be an array"),
+  check("phoneNumbers")
+    .optional()
+    .isArray()
+    .withMessage("Phone numbers must be an array"),
 
   // Validate each phone number in the array
-  check("phoneNumbers.*").isMobilePhone().withMessage("Invalid phone number"),
+  check("phoneNumbers.*")
+    .optional()
+    .isMobilePhone()
+    .withMessage("Invalid phone number"),
 ];
 
 exports.deleteDoctorValidator = [
@@ -198,10 +204,16 @@ exports.updateLoggedDoctorValidator = [
       })
     ),
   // Phone validation
-  check("phoneNumbers").isArray().withMessage("Phone numbers must be an array"),
+  check("phoneNumbers")
+    .optional()
+    .isArray()
+    .withMessage("Phone numbers must be an array"),
 
   // Validate each phone number in the array
-  check("phoneNumbers.*").isMobilePhone().withMessage("Invalid phone number"),
+  check("phoneNumbers.*")
+    .optional()
+    .isMobilePhone()
+    .withMessage("Invalid phone number"),
 
   validatorMiddleware,
 ];

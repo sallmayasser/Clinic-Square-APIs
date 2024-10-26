@@ -4,6 +4,8 @@ const ApiError = require("../utils/apiError");
 const sendEmail = require("../utils/sendEmail");
 const DoctorModel = require("../Models/doctorModel");
 const PharmacyModel = require("../Models/pharmacyModel");
+const MedicineModel = require("../Models/medicineModel");
+const TestModel = require("../Models/testModel");
 
 exports.Approve = asyncHandler(async (req, res, next) => {
   // Execute both queries concurrently using Promise.all
@@ -139,4 +141,84 @@ The ClinicSquare application Team
       // If there's an error with database operation or sending email, send error response
       next(new ApiError("Server failed", 500));
     });
+});
+
+exports.verifingObject = asyncHandler(async (req, res, next) => {
+  const { type, id } = req.body; // Expecting { type: 'medicine' or 'test', id: <objectId> }
+
+  // Validate input
+  if (!type || !id) {
+    return next(new ApiError("Type and ID are required", 400));
+  }
+
+  if (type === "medicine") {
+    // Update the medicine to verified
+    const medicine = await MedicineModel.findByIdAndUpdate(
+      id,
+      { $set: { state: "verified" } }, // Assuming you have a 'state' field in the Medicine schema
+      { new: true } // Return the updated document
+    );
+
+    if (!medicine) {
+      return next(new ApiError("Medicine not found", 404));
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: {
+        medicine,
+      },
+    });
+  } else if (type === "test") {
+    // Update the test to verified
+    const test = await TestModel.findByIdAndUpdate(
+      id,
+      { $set: { state: "verified" } }, // Assuming you have a 'state' field in the Test schema
+      { new: true } // Return the updated document
+    );
+
+    if (!test) {
+      return next(new ApiError("Test not found", 404));
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: {
+        test,
+      },
+    });
+  } else {
+    return next(new ApiError("Invalid type provided", 400));
+  }
+});
+
+
+exports.unverifiedObject = asyncHandler(async (req, res, next) => {
+  const { type, id } = req.body;
+
+  // Check if type is either "medicine" or "test"
+  if (!["medicine", "test"].includes(type)) {
+    return next(
+      new ApiError("Invalid type. Must be 'medicine' or 'test'", 400)
+    );
+  }
+
+  // Determine the model to use based on type
+  const Model = type === "medicine" ? MedicineModel : TestModel;
+
+  // Delete the document with the provided ID
+  const deletedRecord = await Model.findByIdAndDelete(id);
+
+  // Check if a record was found and deleted
+  if (!deletedRecord) {
+    return next(new ApiError(`${type} with ID ${id} not found`, 404));
+  }
+
+  // Send a success response
+  res.status(200).json({
+    status: "success",
+    message: `${
+      type.charAt(0).toUpperCase() + type.slice(1)
+    } deleted successfully`,
+  });
 });

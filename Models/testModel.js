@@ -6,6 +6,10 @@ const testSchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    state: {
+      type: String,
+      default: "pending",
+    },
   },
   {
     timestamps: true,
