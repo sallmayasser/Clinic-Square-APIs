@@ -10,10 +10,12 @@ const medicineSchema = new mongoose.Schema(
     cost: {
       type: String,
     },
-    
+    user: {
+      type: String,
+    },
     state: {
       type: String,
-      default:"pending"
+      default: "pending",
     },
   },
 

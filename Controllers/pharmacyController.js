@@ -51,3 +51,4 @@ exports.setPharmacyToBody = (req, res, next) => {
   if (!req.body.role) req.body.role = "pharmacy";
   next();
 };
+

@@ -4,6 +4,7 @@ const {
   updateLoggedUserPassword,
   deleteLoggedUserData,
   getLoggedUserData,
+  setMailToBody,
 } = require("../Controllers/handlerFactory");
 const {
   getLab,
@@ -26,7 +27,9 @@ const {
   addTest,
 } = require("../Controllers/lab-testController");
 const newTest = require("../Controllers/testController");
-const { getLabReservations } = require("../Controllers/labReservationController");
+const {
+  getLabReservations,
+} = require("../Controllers/labReservationController");
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
@@ -86,6 +89,7 @@ router
   .post(
     authController.allowedTo("lab"),
     validator.createTestValidator,
+    setMailToBody,
     newTest.addTest
   );
 router

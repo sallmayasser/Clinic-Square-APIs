@@ -46,3 +46,4 @@ exports.setLabIdToBody = (req, res, next) => {
   if (!req.body.lab) req.body.lab = req.params.id;
   next();
 };
+
