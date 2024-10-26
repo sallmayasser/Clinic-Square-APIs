@@ -53,7 +53,7 @@ exports.getOne = (Model) =>
     const apiFeatures = new ApiFeatures(
       Model.findById(id, filter),
       req.query
-    ).populate().limitFields();
+    ).limitFields().populate();
     const { mongooseQuery } = apiFeatures;
     // 2) Execute query
     const document = await mongooseQuery;
