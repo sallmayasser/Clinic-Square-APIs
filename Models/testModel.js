@@ -6,6 +6,9 @@ const testSchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    user: {
+      type: String,
+    },
     state: {
       type: String,
       default: "pending",

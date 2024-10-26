@@ -126,7 +126,7 @@ exports.changeUserPassword = (Model) =>
     }
     res.status(200).json({ data: document });
   });
-  
+
 // @desc    Get Logged user data
 // @route   GET /api/v1/users/getMe
 // @access  Private/Protect
@@ -170,5 +170,10 @@ exports.deleteLoggedUserData = (Model) =>
 exports.verify = (req, res, next) => {
   // Nested route (Create)
   if (!req.body.state) req.body.state = "verified";
+  req.body.user = req.user.email;
+  next();
+};
+exports.setMailToBody = (req, res, next) => {
+  if (!req.body.user) req.body.user = req.user.email;
   next();
 };

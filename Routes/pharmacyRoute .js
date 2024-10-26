@@ -4,6 +4,7 @@ const {
   updateLoggedUserPassword,
   deleteLoggedUserData,
   getLoggedUserData,
+  setMailToBody,
 } = require("../Controllers/handlerFactory");
 const {
   getPharmacy,
@@ -90,6 +91,7 @@ router
   .post(
     authController.allowedTo("pharmacy"),
     validator.createMedicineValidator,
+    setMailToBody,
     newMedicine.addMedicine
   );
 // admin routes
