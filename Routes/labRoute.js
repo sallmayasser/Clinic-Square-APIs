@@ -12,13 +12,21 @@ const {
   updateLab,
   setLabToBody,
   updateLoggedLabData,
+  setLabIdToBody,
 } = require("../Controllers/labController");
 const validators = require("../utils/validators/labValidator");
-
+const validator = require("../utils/validators/testValidator");
 const { resizeImage, uploadImage } = require("../Controllers/imageController");
 const authController = require("../Controllers/authController");
 const LabModel = require("../Models/labModel");
-
+const {
+  getTest,
+  deleteTest,
+  getTests,
+  addTest,
+} = require("../Controllers/lab-testController");
+const newTest = require("../Controllers/testController");
+const { getLabReservations } = require("../Controllers/labReservationController");
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
@@ -46,6 +54,44 @@ router.patch(
   validators.updateLoggedLabValidator,
   updateLoggedLabData
 );
+router.route("/My-Reservations").get(
+  getLoggedUserData,
+  (req, res, next) => {
+    createFilterObj(req, res, next, "lab");
+  },
+  authController.allowedTo("lab"),
+  getLabReservations
+);
+
+// test Routes
+router
+  .route("/tests")
+  .get(
+    authController.allowedTo("lab"),
+    getLoggedUserData,
+    (req, res, next) => {
+      createFilterObj(req, res, next, "lab");
+    },
+    getTests
+  )
+  .post(
+    authController.allowedTo("lab"),
+    getLoggedUserData,
+    setLabIdToBody,
+    validator.createLabTestValidator,
+    addTest
+  );
+router
+  .route("/newTest")
+  .post(
+    authController.allowedTo("lab"),
+    validator.createTestValidator,
+    newTest.addTest
+  );
+router
+  .route("/tests/:id")
+  .get(authController.allowedTo("lab"), getTest)
+  .delete(authController.allowedTo("lab"), deleteTest);
 
 // admin routes
 
@@ -66,7 +112,5 @@ router
     validators.deleteLabValidator,
     deleteLab
   );
-
-module.exports = router;
 
 module.exports = router;

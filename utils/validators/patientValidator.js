@@ -53,13 +53,11 @@ exports.createPatientValidator = [
   check("passwordConfirm")
     .notEmpty()
     .withMessage("Password confirmation required"),
-   // Phone validation
-   check('phoneNumbers')
-   .isArray().withMessage('Phone numbers must be an array'),
- 
- // Validate each phone number in the array
- check('phoneNumbers.*')
-   .isMobilePhone().withMessage('Invalid phone number'),
+  // Phone validation
+  check("phoneNumbers").isArray().withMessage("Phone numbers must be an array"),
+
+  // Validate each phone number in the array
+  check("phoneNumbers.*").isMobilePhone().withMessage("Invalid phone number"),
 
   // Gender validation
   check("gender")
@@ -72,7 +70,6 @@ exports.createPatientValidator = [
       }
       return true;
     }),
-
 ];
 
 exports.updatePatientValidator = [
@@ -88,13 +85,17 @@ exports.updatePatientValidator = [
         }
       })
     ),
-   // Phone validation
-   check('phoneNumbers')
-   .isArray().withMessage('Phone numbers must be an array'),
- 
- // Validate each phone number in the array
- check('phoneNumbers.*')
-   .isMobilePhone().withMessage('Invalid phone number'),
+  // Phone validation
+  check("phoneNumbers")
+    .optional()
+    .isArray()
+    .withMessage("Phone numbers must be an array"),
+
+  // Validate each phone number in the array
+  check("phoneNumbers.*")
+    .optional()
+    .isMobilePhone()
+    .withMessage("Invalid phone number"),
   validatorMiddleware,
 ];
 
@@ -150,12 +151,16 @@ exports.updateLoggedPatientValidator = [
         }
       })
     ),
-   // Phone validation
-   check('phoneNumbers')
-   .isArray().withMessage('Phone numbers must be an array'),
- 
- // Validate each phone number in the array
- check('phoneNumbers.*')
-   .isMobilePhone().withMessage('Invalid phone number'),
+  // Phone validation
+  check("phoneNumbers")
+    .optional()
+    .isArray()
+    .withMessage("Phone numbers must be an array"),
+
+  // Validate each phone number in the array
+  check("phoneNumbers.*")
+    .optional()
+    .isMobilePhone()
+    .withMessage("Invalid phone number"),
   validatorMiddleware,
 ];

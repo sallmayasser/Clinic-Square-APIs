@@ -38,6 +38,12 @@ const doctorReservationSchema = new mongoose.Schema(
           default: null,
         },
       ],
+      results: [
+        {
+          type: String,
+          default: null,
+        },
+      ],
     },
   },
   {

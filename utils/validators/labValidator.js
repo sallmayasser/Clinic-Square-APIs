@@ -57,13 +57,11 @@ exports.createLabValidator = [
     .notEmpty()
     .withMessage("Password confirmation required"),
 
-   // Phone validation
-   check('phoneNumbers')
-   .isArray().withMessage('Phone numbers must be an array'),
- 
- // Validate each phone number in the array
- check('phoneNumbers.*')
-   .isMobilePhone().withMessage('Invalid phone number'),
+  // Phone validation
+  check("phoneNumbers").isArray().withMessage("Phone numbers must be an array"),
+
+  // Validate each phone number in the array
+  check("phoneNumbers.*").isMobilePhone().withMessage("Invalid phone number"),
 
   // License validation
   check("license")
@@ -77,7 +75,6 @@ exports.createLabValidator = [
     }),
 
   // Cost validation in schedule
-
 
   // Schedule validation
   check("schedule.days")
@@ -111,7 +108,6 @@ exports.createLabValidator = [
       return true;
     }),
   check("license").notEmpty(),
-
 ];
 
 exports.updateLabValidator = [
@@ -146,13 +142,17 @@ exports.updateLabValidator = [
         return true;
       })
     ),
-   // Phone validation
-   check('phoneNumbers')
-   .isArray().withMessage('Phone numbers must be an array'),
- 
- // Validate each phone number in the array
- check('phoneNumbers.*')
-   .isMobilePhone().withMessage('Invalid phone number'),
+  // Phone validation
+  check("phoneNumbers")
+    .optional()
+    .isArray()
+    .withMessage("Phone numbers must be an array"),
+
+  // Validate each phone number in the array
+  check("phoneNumbers.*")
+    .optional()
+    .isMobilePhone()
+    .withMessage("Invalid phone number"),
   validatorMiddleware,
 ];
 
@@ -208,13 +208,17 @@ exports.updateLoggedLabValidator = [
         }
       })
     ),
-     // Phone validation
-     check('phoneNumbers')
-     .isArray().withMessage('Phone numbers must be an array'),
-   
-   // Validate each phone number in the array
-   check('phoneNumbers.*')
-     .isMobilePhone().withMessage('Invalid phone number'),
+  // Phone validation
+  check("phoneNumbers")
+    .optional()
+    .isArray()
+    .withMessage("Phone numbers must be an array"),
+
+  // Validate each phone number in the array
+  check("phoneNumbers.*")
+    .optional()
+    .isMobilePhone()
+    .withMessage("Invalid phone number"),
 
   validatorMiddleware,
 ];

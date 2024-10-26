@@ -9,6 +9,7 @@ const {
 } = require("../Controllers/testController");
 const validator = require("../utils/validators/testValidator");
 const authController = require("../Controllers/authController");
+const { verify } = require("../Controllers/handlerFactory");
 
 const router = express.Router({ mergeParams: true });
 router.use(authController.protect);
@@ -19,6 +20,7 @@ router
   .post(
     authController.allowedTo("admin"),
     validator.createTestValidator,
+    verify,
     addTest
   );
 

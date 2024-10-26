@@ -10,19 +10,13 @@ const medicineSchema = new mongoose.Schema(
     cost: {
       type: String,
     },
-    pharmacy: [
-      {
-        pharmacyId: {
-          type: mongoose.Schema.ObjectId,
-          ref: "Pharmacy",
-        },
-        stock: {
-          type: String,
-          defualt: 0,
-        },
-      },
-    ],
+    
+    state: {
+      type: String,
+      default:"pending"
+    },
   },
+
   {
     timestamps: true,
 
