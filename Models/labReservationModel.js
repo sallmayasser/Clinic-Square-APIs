@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 // 1- Create Schema
-const doctorReservationSchema = new mongoose.Schema(
+const labReservationSchema = new mongoose.Schema(
   {
     patient: {
       type: mongoose.Schema.ObjectId,
@@ -30,9 +30,9 @@ const doctorReservationSchema = new mongoose.Schema(
 );
 
 // 2- Create model
-const DoctorReservationModel = mongoose.model(
-  "DoctorReservation",
-  doctorReservationSchema
+const LabReservationModel = mongoose.model(
+  "LabReservation",
+  labReservationSchema
 );
 
-module.exports = DoctorReservationModel;
+module.exports = LabReservationModel;

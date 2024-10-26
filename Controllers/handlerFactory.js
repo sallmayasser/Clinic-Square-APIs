@@ -167,3 +167,8 @@ exports.deleteLoggedUserData = (Model) =>
 
     res.status(204).json({ status: "Success" });
   });
+exports.verify = (req, res, next) => {
+  // Nested route (Create)
+  if (!req.body.state) req.body.state = "verified";
+  next();
+};

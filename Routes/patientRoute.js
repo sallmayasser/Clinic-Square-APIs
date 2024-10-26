@@ -21,6 +21,9 @@ const PatientModel = require("../Models/patientModel");
 const {
   getDoctorReservations,
 } = require("../Controllers/doctorReservationController");
+const {
+  getLabReservations,
+} = require("../Controllers/labReservationController");
 
 const router = express.Router({ mergeParams: true });
 
@@ -63,6 +66,16 @@ router.get(
     createFilterObj(req, res, next, "patient");
   },
   getDoctorReservations
+);
+
+router.get(
+  "/Patient-LabReservation",
+  authController.allowedTo("patient"),
+  getLoggedUserData,
+  (req, res, next) => {
+    createFilterObj(req, res, next, "patient");
+  },
+  getLabReservations
 );
 
 // admin routes
