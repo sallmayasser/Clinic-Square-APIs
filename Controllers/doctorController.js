@@ -22,14 +22,23 @@ exports.updateDoctor = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ data: document });
 });
-
 exports.updateLoggedDoctorData = asyncHandler(async (req, res, next) => {
-  // Remove password and confirmPassword from req.body if present
-
   const updateData = { ...req.body };
   delete updateData.password;
   delete updateData.confirmPassword;
   delete updateData.role;
+
+  const existingDoctor = await DoctorModel.findById(req.user._id);
+
+  if (!existingDoctor) {
+    return next(new ApiError("Doctor not found", 404));
+  }
+
+  if (updateData.license) {
+    updateData.license = [
+      ...new Set([...existingDoctor.license, ...updateData.license]),
+    ];
+  }
 
   const updatedUser = await DoctorModel.findByIdAndUpdate(
     req.user._id,
