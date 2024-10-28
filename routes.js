@@ -1,5 +1,7 @@
 const express = require("express");
+const dotenv = require("dotenv");
 
+dotenv.config({ path: "config.env" });
 // Import route files
 const doctorRoute = require("./Routes/doctorRoute");
 const questionRoute = require("./Routes/questionRoute");
