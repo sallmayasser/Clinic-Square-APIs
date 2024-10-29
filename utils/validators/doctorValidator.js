@@ -2,7 +2,7 @@ const slugify = require("slugify");
 const { check, body } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validatorMiddleware");
 const DoctorModel = require("../../Models/doctorModel");
-
+const bcrypt = require("bcryptjs");
 exports.getDoctorValidator = [
   check("id").isMongoId().withMessage("Invalid Doctor id format"),
   validatorMiddleware,
@@ -162,10 +162,14 @@ exports.changeDoctorPasswordValidator = [
     .withMessage("You must enter your current password"),
   body("passwordConfirm")
     .notEmpty()
-    .withMessage("You must enter the password confirm"),
+    .withMessage("You must enter the password confirm")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters"),
   body("newPassword")
     .notEmpty()
     .withMessage("You must enter new password")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters")
     .custom(async (val, { req }) => {
       // 1) Verify current password
       const doctor = await DoctorModel.findById(req.user._id);

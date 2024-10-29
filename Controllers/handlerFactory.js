@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const ApiFeatures = require("../utils/apiFeatures");
+const bcrypt = require("bcryptjs");
+const createToken = require("../utils/createToken");
 
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
@@ -140,11 +142,11 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
 // @access  Private/Protect
 exports.updateLoggedUserPassword = (Model) =>
   asyncHandler(async (req, res, next) => {
-    // 1) Update user password based user payload (req.user._id)
+      // 1) Update user password based user payload (req.user._id)
     const user = await Model.findByIdAndUpdate(
       req.user._id,
       {
-        password: await bcrypt.hash(req.body.password, 12),
+        password: await bcrypt.hash(req.body.newPassword, 12),
         passwordChangedAt: Date.now(),
       },
       {
@@ -154,7 +156,7 @@ exports.updateLoggedUserPassword = (Model) =>
 
     // 2) Generate token
     const token = createToken(user._id);
-
+    delete user._doc.password;
     res.status(200).json({ data: user, token });
   });
 
