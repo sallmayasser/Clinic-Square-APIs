@@ -34,13 +34,13 @@ const questionSchema = new mongoose.Schema(
   }
 );
 
-questionSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "answers.doctor",
-    select: "profilePic name email phoneNumbers specialization",
-  });
-  next();
-});
+// questionSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "answers.doctor",
+//     select: "profilePic name email phoneNumbers specialization",
+//   });
+//   next();
+// });
 
 // 2- Create model
 const QuestionModel = mongoose.model("Question", questionSchema);

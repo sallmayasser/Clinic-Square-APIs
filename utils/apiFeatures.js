@@ -98,7 +98,6 @@ class ApiFeatures {
             let [path, subfields] = field.split("=");
             subfields = subfields.replace(substringToRemove, "");
             subfields = subfields ? `${subfields} ` : "-password";
-            console.log(`${path}   -    ${subfields}`);
             return { path, select: subfields };
           }
           return { path: field, select: "-password" };
