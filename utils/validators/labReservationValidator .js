@@ -26,9 +26,9 @@ exports.createLabReservationValidator = [
 
   check("state")
     .optional()
-    .isIn(["completed", "new", "pending"])
+    .isIn(["completed", "new"])
     .withMessage(
-      "Invalid state. Must be either 'completed', 'new', or 'pending'"
+      "Invalid state. Must be either 'completed'or 'new'"
     ),
   check("requestedTests")
     .isArray({ min: 1 })
@@ -61,9 +61,9 @@ exports.updateReservationValidator = [
 
   check("state")
     .optional()
-    .isIn(["completed", "new", "pending"])
+    .isIn(["completed", "new"])
     .withMessage(
-      "Invalid state. Must be either 'completed', 'new', or 'pending'"
+      "Invalid state. Must be either 'completed' or 'new'"
     ),
   check("requestedTests")
     .optional()
