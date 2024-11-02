@@ -24,6 +24,12 @@ exports.createLabReservationValidator = [
     .isMongoId()
     .withMessage("Invalid Reservation id format"),
 
+  check("state")
+    .optional()
+    .isIn(["completed", "new"])
+    .withMessage(
+      "Invalid state. Must be either 'completed'or 'new'"
+    ),
   check("requestedTests")
     .isArray({ min: 1 })
     .withMessage("Requested tests must be an array with at least one item")
@@ -41,9 +47,11 @@ exports.createLabReservationValidator = [
       });
       return true;
     }),
+
 check("date")
     .notEmpty()
     .withMessage("you must enter lab reservation date"),
+ 
   validatorMiddleware,
 ];
 
@@ -54,6 +62,12 @@ exports.updateReservationValidator = [
     .isMongoId()
     .withMessage("Invalid Reservation id format"),
 
+  check("state")
+    .optional()
+    .isIn(["completed", "new"])
+    .withMessage(
+      "Invalid state. Must be either 'completed' or 'new'"
+    ),
   check("requestedTests")
     .optional()
     .isArray()

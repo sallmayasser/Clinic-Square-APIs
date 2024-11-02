@@ -30,6 +30,11 @@ const newTest = require("../Controllers/testController");
 const {
   getLabReservations,
 } = require("../Controllers/labReservationController");
+const {
+  updateSchedule,
+  addNewSchedule,
+  deleteSchedule,
+} = require("../Controllers/scheduleController");
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
@@ -65,7 +70,26 @@ router.route("/My-Reservations").get(
   authController.allowedTo("lab"),
   getLabReservations
 );
-
+router.put(
+  "/update-day",
+  authController.allowedTo("lab"),
+  getLoggedUserData,
+  validators.updateScheduleValidator,
+  updateSchedule(LabModel)
+);
+router.post(
+  "/add-day",
+  authController.allowedTo("lab"),
+  getLoggedUserData,
+  validators.addScheduleValidator,
+  addNewSchedule(LabModel)
+);
+router.delete(
+  "/delete-schedule-day",
+  authController.allowedTo("lab"),
+  getLoggedUserData,
+  deleteSchedule(LabModel)
+);
 // test Routes
 router
   .route("/tests")

@@ -222,3 +222,101 @@ exports.updateLoggedLabValidator = [
 
   validatorMiddleware,
 ];
+
+exports.updateScheduleValidator = [
+  check("day")
+    .notEmpty()
+    .withMessage("Day is required")
+    .isIn([
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ])
+    .withMessage("Invalid day"),
+
+  // Custom validator to check if the day already exists in the schedule
+  check("day").custom(async (value, { req }) => {
+    const labId = req.params.id;
+
+    const lab = await LabModel.findById(labId);
+    if (!lab) {
+      throw new Error("lab not found");
+    }
+
+    // Check if the day already exists in the schedule
+    const dayExists = lab.schedule.days.some((dayObj) => dayObj.day === value);
+    if (!dayExists) {
+      throw new Error("Day does not exist in the schedule");
+    }
+
+    // return true;
+  }),
+  validatorMiddleware,
+];
+
+exports.addScheduleValidator = [
+  check("day")
+    .isIn([
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ])
+    .withMessage("Please provide a valid day of the week"),
+
+  check("startTime")
+    .notEmpty()
+    .withMessage("Start time is required")
+    .isISO8601()
+    .withMessage("Start time must be a valid ISO 8601 date"),
+
+  check("endTime")
+    .notEmpty()
+    .withMessage("End time is required")
+    .isISO8601()
+    .withMessage("End time must be a valid ISO 8601 date"),
+
+  // Custom validation for time logic
+  body("startTime").custom((value, { req }) => {
+    const start = new Date(value);
+    const end = new Date(req.body.endTime);
+
+    if (start >= end) {
+      throw new Error("Start time must be before end time");
+    }
+    return true;
+  }),
+
+  // Custom validation to check that the day does not already exist
+  body("day").custom(async (value, { req }) => {
+    const lab = await LabModel.findById(req.user.id);
+
+    if (!lab) {
+      throw new Error("lab not found");
+    }
+
+    const existingDay = lab.schedule.days.find(
+      (scheduleDay) => scheduleDay.day === value.toLowerCase()
+    );
+
+    if (existingDay) {
+      throw new Error(
+        `Schedule for ${value} already exists you can update it `
+      );
+    }
+    return true;
+  }),
+
+  check("limit")
+    .isInt({ min: 1 })
+    .withMessage("Limit must be an integer greater than 0"),
+
+  validatorMiddleware,
+];

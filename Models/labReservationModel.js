@@ -11,9 +11,14 @@ const labReservationSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Lab",
     },
-    date:{
-        type: Date,
-      required: [true, "you must enter reservation date "]
+    date: {
+      type: Date,
+      required: [true, "you must enter reservation date "],
+    },
+    state: {
+      type: String,
+      enum: ["completed","new"],
+      default: "new",
     },
     requestedTests: [
       {
