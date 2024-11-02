@@ -17,7 +17,7 @@ const labReservationSchema = new mongoose.Schema(
     },
     state: {
       type: String,
-      enum: ["completed","new","pending"],
+      enum: ["completed","new"],
       default: "new",
     },
     requestedTests: [
