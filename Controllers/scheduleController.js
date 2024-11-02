@@ -1,6 +1,4 @@
 const asyncHandler = require("express-async-handler");
-const UserModel = require("../Models/UserModel");
-
 exports.updateSchedule = (Model) =>
   asyncHandler(async (req, res, next) => {
     const UserId = req.params.id;

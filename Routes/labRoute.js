@@ -30,6 +30,11 @@ const newTest = require("../Controllers/testController");
 const {
   getLabReservations,
 } = require("../Controllers/labReservationController");
+const {
+  updateSchedule,
+  addNewSchedule,
+  deleteSchedule,
+} = require("../Controllers/scheduleController");
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
