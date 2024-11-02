@@ -24,6 +24,12 @@ exports.createLabReservationValidator = [
     .isMongoId()
     .withMessage("Invalid Reservation id format"),
 
+  check("state")
+    .optional()
+    .isIn(["completed", "new", "pending"])
+    .withMessage(
+      "Invalid state. Must be either 'completed', 'new', or 'pending'"
+    ),
   check("requestedTests")
     .isArray({ min: 1 })
     .withMessage("Requested tests must be an array with at least one item")
@@ -53,6 +59,12 @@ exports.updateReservationValidator = [
     .isMongoId()
     .withMessage("Invalid Reservation id format"),
 
+  check("state")
+    .optional()
+    .isIn(["completed", "new", "pending"])
+    .withMessage(
+      "Invalid state. Must be either 'completed', 'new', or 'pending'"
+    ),
   check("requestedTests")
     .optional()
     .isArray()
