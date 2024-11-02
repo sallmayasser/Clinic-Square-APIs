@@ -43,7 +43,7 @@ exports.createLabReservationValidator = [
     }),
 check("date")
     .notEmpty()
-    .withMessage("you must enter lab reservation date")
+    .withMessage("you must enter lab reservation date"),
   validatorMiddleware,
 ];
 
