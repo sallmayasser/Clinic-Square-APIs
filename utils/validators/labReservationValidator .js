@@ -47,8 +47,11 @@ exports.createLabReservationValidator = [
       });
       return true;
     }),
-  check("date").notEmpty().withMessage("you must enter lab reservation date"),
 
+check("date")
+    .notEmpty()
+    .withMessage("you must enter lab reservation date"),
+ 
   validatorMiddleware,
 ];
 
