@@ -13,7 +13,6 @@ const labTestsSchema = new mongoose.Schema(
     },
     preparations:{
       type: [String],
-      default: "none"
     },
     cost: {
       type: String,
