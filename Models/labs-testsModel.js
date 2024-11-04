@@ -12,7 +12,7 @@ const labTestsSchema = new mongoose.Schema(
       ref: "Test",
     },
     preparations:{
-      type: String,
+      type: [String],
       default: "none"
     },
     cost: {
