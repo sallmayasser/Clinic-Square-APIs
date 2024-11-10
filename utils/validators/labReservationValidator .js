@@ -56,18 +56,17 @@ check("date")
 ];
 
 exports.updateReservationValidator = [
-  check("reservationId")
+  check("id")
     .notEmpty()
     .withMessage("Reservation ID is required")
     .isMongoId()
     .withMessage("Invalid Reservation id format"),
-
-  check("state")
-    .optional()
-    .isIn(["completed", "new"])
-    .withMessage(
-      "Invalid state. Must be either 'completed' or 'new'"
-    ),
+  
+ check('state')
+    .optional() 
+    .isIn(['completed', 'new']) 
+    .withMessage("Invalid state. Must be either 'completed' or 'new'."),
+ 
   check("requestedTests")
     .optional()
     .isArray()
