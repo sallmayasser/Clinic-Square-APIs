@@ -18,7 +18,10 @@ class ApiFeatures {
 
     // Apply filteration using [gte,gt,lte,lt]
     let queryStr = JSON.stringify(queryStringObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt|ne)\b/g, (match) => `$${match}`);
+    queryStr = queryStr.replace(
+      /\b(gte|gt|lte|lt|ne)\b/g,
+      (match) => `$${match}`
+    );
 
     this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
 
@@ -87,68 +90,48 @@ class ApiFeatures {
 
     return this;
   }
+
   populate() {
     if (this.queryString.populate) {
       const substringToRemove = "password";
-      // console.log(this.queryString.populate)
-      const fieldsToPopulate = this.queryString.populate
-        .split(",")
-        .map((field) => {
-          if (field.includes("=")) {
-            let [path, subfields] = field.split("=");
-            subfields = subfields.replace(substringToRemove, "");
-            subfields = subfields ? `${subfields} ` : "-password";
-            return { path, select: subfields };
-          }
-          return { path: field, select: "-password" };
-          
-        });
+      const fieldsToPopulate = this.queryString.populate.split(",");
 
-      fieldsToPopulate.forEach((populateOption) => {
-        this.mongooseQuery = this.mongooseQuery.populate(populateOption);
+      // Recursive function to build nested populate options
+      const buildPopulateOption = (pathParts) => {
+        if (pathParts.length === 0) return null;
+
+        const [currentPath, ...remainingPaths] = pathParts;
+        const selectFields = currentPath.includes("=")
+          ? currentPath.split("=")[1].replace(substringToRemove, "")
+          : "-password";
+
+        const path = currentPath.includes("=")
+          ? currentPath.split("=")[0]
+          : currentPath;
+
+        // Recursively build nested populate for remaining paths
+        const populateOption = {
+          path,
+          select: selectFields,
+        };
+
+        const nestedPopulate = buildPopulateOption(remainingPaths);
+        if (nestedPopulate) populateOption.populate = nestedPopulate;
+
+        return populateOption;
+      };
+
+      fieldsToPopulate.forEach((field) => {
+        const pathParts = field.split(".");
+        const populateOption = buildPopulateOption(pathParts);
+
+        if (populateOption) {
+          this.mongooseQuery = this.mongooseQuery.populate(populateOption);
+        }
       });
     }
     return this;
   }
-  // New populate method
-  // populate() {
-  //   if (this.queryString.populate) {
-  //     const fieldsToPopulate = this.queryString.populate
-  //       .split(",")
-  //       .map((field) => {
-  //         if (field.includes(".")) {
-  //           let [path, subfields] = field.split(".");
-
-  //           if (
-  //             path === "patient" ||
-  //             path === "doctor" ||
-  //             path === "lab" ||
-  //             path === "pharmacy"
-  //           ) {
-  //             const substringToRemove = "password";
-  //             subfields = subfields.replace(substringToRemove, "");
-  //             subfields = subfields ? `${subfields} ` : "-password";
-  //           }
-  //           return { path, select: subfields };
-  //         }
-
-  //         if (
-  //           field === "patient" ||
-  //           field === "doctor" ||
-  //           field === "lab" ||
-  //           field === "pharmacy"
-  //         ) {
-  //           return { path: field, select: "-password" };
-  //         }
-  //         return { path: field };
-  //       });
-
-  //     fieldsToPopulate.forEach((populateOption) => {
-  //       this.mongooseQuery = this.mongooseQuery.populate(populateOption);
-  //     });
-  //   }
-  //   return this;
-  // }
 }
 
 module.exports = ApiFeatures;
