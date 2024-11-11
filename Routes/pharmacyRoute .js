@@ -96,7 +96,7 @@ router
   );
 // admin routes
 
-router.route("/").get(authController.allowedTo("admin"), getPharmacys);
+router.route("/").get(authController.allowedTo("admin","patient"), getPharmacys);
 
 router
   .route("/:id")
