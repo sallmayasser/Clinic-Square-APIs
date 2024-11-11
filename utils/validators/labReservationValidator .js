@@ -35,9 +35,9 @@ exports.createLabReservationValidator = [
     .withMessage("Requested tests must be an array with at least one item")
     .custom((tests) => {
       tests.forEach((test) => {
-        // Check that each test has a testName and testResult is empty
-        if (!test.testName) {
-          throw new Error("Each test must have a testName");
+        // Check that each test has a testId and testResult is empty
+        if (!test.testDetails) {
+          throw new Error("Each test must have a ID");
         }
         if (test.testResult && test.testResult.length > 0) {
           throw new Error(

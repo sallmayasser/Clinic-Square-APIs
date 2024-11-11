@@ -123,8 +123,15 @@ router
 
 // admin routes
 
-router.route("/").get(authController.allowedTo("admin"), getLabs);
+router.route("/").get(authController.allowedTo("admin", "patient"), getLabs);
 
+router.route("/lab-tests/:id").get(
+  authController.allowedTo("patient"),
+  (req, res, next) => {
+    createFilterObj(req, res, next, "lab");
+  },
+  getTests
+);
 router
   .route("/:id")
   .get(validators.getLabValidator, getLab)

@@ -17,15 +17,17 @@ const labReservationSchema = new mongoose.Schema(
     },
     state: {
       type: String,
-      enum: ["completed","new"],
+      enum: ["completed", "new"],
       default: "new",
     },
     requestedTests: [
       {
-        testName: {
-          type: String,
+        testDetails: {
+          type: mongoose.Schema.ObjectId,
+          ref: "LabTests",
           default: null,
         },
+        // cost: { type: String },
         testResult: [{ type: String, default: null }],
       },
     ],
@@ -37,6 +39,17 @@ const labReservationSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// labReservationSchema.pre("find", async function () {
+//   this.populate({
+//     path: "requestedTests.testDetails",
+//     populate: {
+//       path: "test",
+//       model: "Test",
+//       select:"name"
+//     },
+//   });
+// });
 
 // 2- Create model
 const LabReservationModel = mongoose.model(
