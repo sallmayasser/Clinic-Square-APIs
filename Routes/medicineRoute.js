@@ -9,6 +9,8 @@ const {
 const validator = require("../utils/validators/medicineValidator");
 const authController = require("../Controllers/authController");
 const { verify } = require("../Controllers/handlerFactory");
+const { uploadImage, resizeImage } = require("../Controllers/imageController");
+const { setPharmacyToBody } = require("../Controllers/pharmacyController");
 
 const router = express.Router({ mergeParams: true });
 router.use(authController.protect);
@@ -18,6 +20,9 @@ router
   .get(authController.allowedTo("pharmacy", "patient", "admin"), getMedicines)
   .post(
     authController.allowedTo("admin"),
+    uploadImage,
+    setPharmacyToBody,
+    resizeImage,
     validator.createMedicineValidator,
     verify,
     addMedicine

@@ -90,6 +90,9 @@ router
   .route("/newMedicine")
   .post(
     authController.allowedTo("pharmacy"),
+    uploadImage,
+    setPharmacyToBody,
+    resizeImage,
     validator.createMedicineValidator,
     setMailToBody,
     newMedicine.addMedicine
