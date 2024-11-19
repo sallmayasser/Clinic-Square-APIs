@@ -47,18 +47,27 @@ class ApiFeatures {
     }
     return this;
   }
-
-  search(modelName) {
+  search(searchFields = [], populateFields = []) {
     if (this.queryString.keyword) {
-      let query = {};
-      if (modelName === "Lab" || modelName === "TestService") {
-        query = { name: { $regex: this.queryString.keyword, $options: "i" } };
-      } else {
-        query.$or = [
-          { firstName: { $regex: this.queryString.keyword, $options: "i" } },
-          { lastName: { $regex: this.queryString.keyword, $options: "i" } },
-        ];
+      const keywordRegex = { $regex: this.queryString.keyword, $options: "i" };
+      const query = {};
+
+      // Add search criteria for main fields
+      if (searchFields.length > 0) {
+        query.$or = searchFields.map((field) => ({ [field]: keywordRegex }));
       }
+
+      // Add search criteria for populated fields
+      if (populateFields.length > 0) {
+        populateFields.forEach((populateField) => {
+          query[`${populateField}.name`] = keywordRegex;
+          this.mongooseQuery = this.mongooseQuery.populate({
+            path: populateField,
+            match: { name: keywordRegex },
+          });
+        });
+      }
+
       this.mongooseQuery = this.mongooseQuery.find(query);
     }
     return this;

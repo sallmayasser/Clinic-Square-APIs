@@ -96,8 +96,15 @@ router
   );
 // admin routes
 
-router.route("/").get(authController.allowedTo("admin","patient"), getPharmacys);
+router.route("/").get(authController.allowedTo("admin", "patient"), getPharmacys);
 
+router.route("/pharmacy-medicine/:id").get(
+  authController.allowedTo("patient"),
+  (req, res, next) => {
+    createFilterObj(req, res, next, "pharmacy");
+  },
+  getMedicines
+);
 router
   .route("/:id")
   .get(validators.getPharmacyValidator, getPharmacy)
