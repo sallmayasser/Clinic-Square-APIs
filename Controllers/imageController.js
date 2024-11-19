@@ -37,6 +37,10 @@ exports.uploadImage = uploadMixOfImages([
     name: "testResult",
     maxCount: 10,
   },
+  {
+    name: "photo", // medicine photo 
+    maxCount: 1,
+  },
 ]);
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   const { role } = req.body;
@@ -167,6 +171,27 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
       })
     );
   }
+  // handle medicine image 
+ if (req.files.photo) {
+   const photo = req.files.photo[0];
+
+   // Validate profile picture type
+   if (!photo.mimetype.startsWith("image/")) {
+     return next(new ApiError("Medicine image must be an image", 400));
+   }
+
+   const filename = `${role}-${uuidv4()}-${Date.now()}.jpeg`;
+   const storageRef = ref(storage, `uploads/medicines/${filename}`);
+   const metadata = { contentType: photo.mimetype };
+
+   // Upload the profile picture
+   const snapshot = await uploadBytesResumable(
+     storageRef,
+     photo.buffer,
+     metadata
+   );
+   req.body.photo = await getDownloadURL(snapshot.ref);
+ }
 
   // Proceed to the next middleware
   next();
