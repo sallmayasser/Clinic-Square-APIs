@@ -15,19 +15,16 @@ class ApiFeatures {
       "populate",
     ];
     excludesFields.forEach((field) => delete queryStringObj[field]);
-
-    // Apply filteration using [gte,gt,lte,lt]
+  
     let queryStr = JSON.stringify(queryStringObj);
-    queryStr = queryStr.replace(
-      /\b(gte|gt|lte|lt|ne)\b/g,
-      (match) => `$${match}`
-    );
-
+  
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt|ne|or|and)\b/g, (match) => `$${match}`);
+  
+  
     this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
-
+  
     return this;
   }
-
   sort() {
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort.split(",").join(" ");
