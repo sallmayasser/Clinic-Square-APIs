@@ -55,7 +55,10 @@ exports.getOne = (Model) =>
     const apiFeatures = new ApiFeatures(
       Model.findById(id, filter),
       req.query
-    ).limitFields().populate();
+    );
+    
+    await apiFeatures.limitFields()
+    await apiFeatures.populate();
     const { mongooseQuery } = apiFeatures;
     // 2) Execute query
     const document = await mongooseQuery;
@@ -73,14 +76,13 @@ exports.getAll = (Model, modelName = "") =>
       filter = req.filterObj;
     }
     // Build query
-    const documentsCounts = await Model.countDocuments();
-    const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
-      .filter()
-      .paginate(documentsCounts)
-      .search(modelName)
-      .limitFields()
-      .sort()
-      .populate();
+    const apiFeatures = new ApiFeatures(Model.find(filter), req.query);
+    await apiFeatures.filter();
+     await apiFeatures.paginate();
+     await apiFeatures.search(modelName);
+     await apiFeatures.limitFields();
+     await apiFeatures.sort();
+     await apiFeatures.populate();
 
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;
