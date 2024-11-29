@@ -30,24 +30,7 @@ exports.createLabReservationValidator = [
     .withMessage(
       "Invalid state. Must be either 'completed'or 'new'"
     ),
-  check("requestedTests")
-    .isArray({ min: 1 })
-    .withMessage("Requested tests must be an array with at least one item")
-    .custom((tests) => {
-      tests.forEach((test) => {
-        // Check that each test has a testId and testResult is empty
-        if (!test.testDetails) {
-          throw new Error("Each test must have a ID");
-        }
-        if (test.testResult && test.testResult.length > 0) {
-          throw new Error(
-            "testResult must be empty for each requested test during creation"
-          );
-        }
-      });
-      return true;
-    }),
-
+ 
 check("date")
     .notEmpty()
     .withMessage("you must enter lab reservation date"),

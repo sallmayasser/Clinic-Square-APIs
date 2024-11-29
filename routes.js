@@ -16,6 +16,7 @@ const testRoute = require("./Routes/testRoute");
 const medicineRoute = require("./Routes/medicineRoute");
 const reviewRoute = require("./Routes/reviewRoute");
 const cartRoute = require("./Routes/cartRoute");
+const orderRoute = require("./Routes/orderRoute");
 
 const mountRoutes = (app) => {
   app.use("/api/v1/doctor", doctorRoute);
@@ -31,6 +32,7 @@ const mountRoutes = (app) => {
   app.use("/api/v1/medicines", medicineRoute);
   app.use("/api/v1/reviews", reviewRoute);
   app.use("/api/v1/carts", cartRoute);
+  app.use("/api/v1/orders", orderRoute);
 };
 
 module.exports = mountRoutes;

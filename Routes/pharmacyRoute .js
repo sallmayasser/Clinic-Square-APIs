@@ -29,6 +29,7 @@ const validator = require("../utils/validators/medicineValidator");
 const { resizeImage, uploadImage } = require("../Controllers/imageController");
 const authController = require("../Controllers/authController");
 const PharmacyModel = require("../Models/pharmacyModel");
+const { getOrders } = require("../Controllers/orderController");
 
 const router = express.Router({ mergeParams: true });
 
@@ -97,9 +98,20 @@ router
     setMailToBody,
     newMedicine.addMedicine
   );
+// Order route
+router.route("/my-orders").get(
+  getLoggedUserData,
+  (req, res, next) => {
+    createFilterObj(req, res, next, "pharmacy");
+  },
+  getOrders
+);
+
 // admin routes
 
-router.route("/").get(authController.allowedTo("admin", "patient"), getPharmacys);
+router
+  .route("/")
+  .get(authController.allowedTo("admin", "patient"), getPharmacys);
 
 router.route("/pharmacy-medicine/:id").get(
   authController.allowedTo("patient"),

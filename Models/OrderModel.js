@@ -11,16 +11,38 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Pharmacy",
     },
-    medicine: {
-      type: [String],
-    },
+    medicine: [
+      {
+        medicineId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Medicine",
+          required: [true, "Medicine ID is required"],
+        },
+        // name: {
+        //   type: String,
+        // },
+        price: {
+          type: Number,
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+          min: [1, "Quantity must be at least 1"],
+        },
+      },
+    ],
     totalCost: {
       type: String,
     },
     state: {
       type: String,
-      enum: ["delivered", "shipping", "pending"],
+      enum: ["delivered", "pending"],
       default: "pending",
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "visa"],
+      default: "cash",
     },
   },
   {
