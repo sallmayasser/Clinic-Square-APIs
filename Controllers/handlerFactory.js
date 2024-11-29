@@ -58,9 +58,9 @@ exports.getOne = (Model, populateOpt) =>
       query = query.populate(populateOpt);
     }
 
-    const apiFeatures = new ApiFeatures(query, req.query)
-      .limitFields()
-      .populate(); // This keeps the existing population logic intact
+    const apiFeatures = new ApiFeatures(query, req.query);
+    await apiFeatures.limitFields();
+    await apiFeatures.populate(); // This keeps the existing population logic intact
     const { mongooseQuery } = apiFeatures;
 
     // Execute query
@@ -80,19 +80,18 @@ exports.getAll = (Model, populateOpt, modelName = "") =>
     }
 
     // Build query
-    const documentsCounts = await Model.countDocuments();
     let query = Model.find(filter);
     if (populateOpt) {
       query = query.populate(populateOpt);
     }
 
-    const apiFeatures = new ApiFeatures(query, req.query)
-      .filter()
-      .paginate(documentsCounts)
-      .search(modelName)
-      .limitFields()
-      .sort()
-      .populate(); // Retain existing population behavior
+    const apiFeatures = new ApiFeatures(query, req.query);
+    await apiFeatures.filter();
+    await apiFeatures.paginate();
+    await apiFeatures.search(modelName);
+    await apiFeatures.limitFields();
+    await apiFeatures.sort();
+    await apiFeatures.populate();
 
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;
@@ -154,7 +153,7 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
 // @access  Private/Protect
 exports.updateLoggedUserPassword = (Model) =>
   asyncHandler(async (req, res, next) => {
-      // 1) Update user password based user payload (req.user._id)
+    // 1) Update user password based user payload (req.user._id)
     const user = await Model.findByIdAndUpdate(
       req.user._id,
       {
