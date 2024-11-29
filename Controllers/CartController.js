@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
+const ApiFeatures = require("../utils/apiFeatures");
 const CartModel = require("../Models/cartModel");
 const LabTestsModel = require("../Models/labs-testsModel");
 const PharmacyMedicineModel = require("../Models/pharmacies-medicinesModel");
@@ -52,7 +53,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 
     findAndUpdateItem(
       cart.medicines,
-      { medicineId, name:Medicine.name,quantity, price: Medicine.cost },
+      { medicineId, quantity, price: Medicine.cost },
       "medicineId"
     );
   }
@@ -75,7 +76,19 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 });
 
 exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
-  const cart = await CartModel.findOne({ user: req.user._id });
+  const filter = { user: req.user._id }; // Filter for logged-in user's cart
+  let query = CartModel.findOne(filter);
+
+  const apiFeatures = new ApiFeatures(query, req.query);
+  await apiFeatures.filter(); // Apply filtering
+  await apiFeatures.paginate(); // Apply pagination
+  await apiFeatures.limitFields(); // Limit fields
+  await apiFeatures.sort(); // Apply sorting
+  await apiFeatures.populate(); // Apply populate (if needed)
+
+  // Execute the query
+  const { mongooseQuery, paginationResult } = apiFeatures;
+  const cart = await mongooseQuery;
 
   if (!cart) {
     return res.status(404).json({
@@ -83,8 +96,12 @@ exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
     });
   }
 
-  res.status(200).json({ data: cart });
+  res.status(200).json({
+    paginationResult,
+    data: cart,
+  });
 });
+
 exports.removeItemFromCart = asyncHandler(async (req, res, next) => {
   const { itemId } = req.params; // item ID from route params
   const { type } = req.query; // type ('medicine' or 'test') from query params
