@@ -52,7 +52,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 
     findAndUpdateItem(
       cart.medicines,
-      { medicineId, quantity, price: Medicine.cost },
+      { medicineId, name:Medicine.name,quantity, price: Medicine.cost },
       "medicineId"
     );
   }

@@ -14,6 +14,9 @@ const cartSchema = new mongoose.Schema(
           ref: "Medicine",
           required: [true, "Medicine ID is required"],
         },
+        name: {
+          type: String,
+        },
         price: {
           type: Number,
         },
