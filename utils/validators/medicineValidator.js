@@ -25,11 +25,6 @@ exports.createMedicineValidator = [
     .withMessage("Cost is required")
     .isNumeric()
     .withMessage("Cost must be a numeric value"),
-  check("user")
-    .notEmpty()
-    .withMessage("User is required")
-    .isString()
-    .withMessage("User must be a string"),
   check("category")
     .notEmpty()
     .withMessage("Category is required")

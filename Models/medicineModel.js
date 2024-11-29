@@ -12,7 +12,7 @@ const medicineSchema = new mongoose.Schema(
       require: true,
     },
     cost: {
-      type: String,
+      type: Number,
       require: true,
     },
     user: {
