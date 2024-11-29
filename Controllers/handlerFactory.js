@@ -42,22 +42,27 @@ exports.createOne = (Model) =>
     const newDoc = await Model.create(req.body);
     res.status(201).json({ data: newDoc });
   });
-
-exports.getOne = (Model) =>
+exports.getOne = (Model, populateOpt) =>
   asyncHandler(async (req, res, next) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
+
     const { id } = req.params;
-    // 1) Build query
-    // let query = Model.findById(id);
-    const apiFeatures = new ApiFeatures(
-      Model.findById(id, filter),
-      req.query
-    ).limitFields().populate();
+
+    // Build query
+    let query = Model.findById(id, filter);
+    if (populateOpt) {
+      query = query.populate(populateOpt);
+    }
+
+    const apiFeatures = new ApiFeatures(query, req.query)
+      .limitFields()
+      .populate(); // This keeps the existing population logic intact
     const { mongooseQuery } = apiFeatures;
-    // 2) Execute query
+
+    // Execute query
     const document = await mongooseQuery;
 
     if (!document) {
@@ -65,22 +70,27 @@ exports.getOne = (Model) =>
     }
     res.status(200).json({ data: document });
   });
-
-exports.getAll = (Model, modelName = "") =>
+exports.getAll = (Model, populateOpt, modelName = "") =>
   asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
+
     // Build query
     const documentsCounts = await Model.countDocuments();
-    const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
+    let query = Model.find(filter);
+    if (populateOpt) {
+      query = query.populate(populateOpt);
+    }
+
+    const apiFeatures = new ApiFeatures(query, req.query)
       .filter()
       .paginate(documentsCounts)
       .search(modelName)
       .limitFields()
       .sort()
-      .populate();
+      .populate(); // Retain existing population behavior
 
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;

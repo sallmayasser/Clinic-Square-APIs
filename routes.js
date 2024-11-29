@@ -14,6 +14,7 @@ const labReservationRoute = require("./Routes/labReservationRoute");
 const authRoute = require("./Routes/authRoute");
 const testRoute = require("./Routes/testRoute");
 const medicineRoute = require("./Routes/medicineRoute");
+const reviewRoute = require("./Routes/reviewRoute");
 
 const mountRoutes = (app) => {
   app.use("/api/v1/doctor", doctorRoute);
@@ -27,6 +28,7 @@ const mountRoutes = (app) => {
   app.use("/api/v1/auth", authRoute);
   app.use("/api/v1/tests", testRoute);
   app.use("/api/v1/medicines", medicineRoute);
+    app.use("/api/v1/reviews", reviewRoute);
 };
 
 module.exports = mountRoutes;
