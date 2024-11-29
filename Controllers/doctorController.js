@@ -2,8 +2,8 @@ const asyncHandler = require("express-async-handler");
 const DoctorModel = require("../Models/doctorModel");
 const factory = require("../Controllers/handlerFactory");
 
-exports.getDoctor = factory.getOne(DoctorModel);
-exports.getDoctors = factory.getAll(DoctorModel);
+exports.getDoctor = factory.getOne(DoctorModel, "reviews");
+exports.getDoctors = factory.getAll(DoctorModel, "reviews");
 exports.deleteDoctor = factory.deleteOne(DoctorModel);
 
 exports.updateDoctor = asyncHandler(async (req, res, next) => {

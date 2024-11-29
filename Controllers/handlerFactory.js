@@ -43,24 +43,27 @@ exports.createOne = (Model) =>
     res.status(201).json({ data: newDoc });
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, populateOpt) =>
   asyncHandler(async (req, res, next) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
+
     const { id } = req.params;
-    // 1) Build query
-    // let query = Model.findById(id);
-    const apiFeatures = new ApiFeatures(
-      Model.findById(id, filter),
-      req.query
-    );
-    
-    await apiFeatures.limitFields()
-    await apiFeatures.populate();
+
+    // Build query
+    let query = Model.findById(id, filter);
+    if (populateOpt) {
+      query = query.populate(populateOpt);
+    }
+
+    const apiFeatures = new ApiFeatures(query, req.query)
+      .limitFields()
+      .populate(); // This keeps the existing population logic intact
     const { mongooseQuery } = apiFeatures;
-    // 2) Execute query
+
+    // Execute query
     const document = await mongooseQuery;
 
     if (!document) {
@@ -69,20 +72,27 @@ exports.getOne = (Model) =>
     res.status(200).json({ data: document });
   });
 
-exports.getAll = (Model, modelName = "") =>
+exports.getAll = (Model, populateOpt, modelName = "") =>
   asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
+
     // Build query
-    const apiFeatures = new ApiFeatures(Model.find(filter), req.query);
-    await apiFeatures.filter();
-     await apiFeatures.paginate();
-     await apiFeatures.search(modelName);
-     await apiFeatures.limitFields();
-     await apiFeatures.sort();
-     await apiFeatures.populate();
+    const documentsCounts = await Model.countDocuments();
+    let query = Model.find(filter);
+    if (populateOpt) {
+      query = query.populate(populateOpt);
+    }
+
+    const apiFeatures = new ApiFeatures(query, req.query)
+      .filter()
+      .paginate(documentsCounts)
+      .search(modelName)
+      .limitFields()
+      .sort()
+      .populate(); // Retain existing population behavior
 
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;

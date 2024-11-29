@@ -12,7 +12,7 @@ const pharmacySchema = new mongoose.Schema(
     email: String,
     phoneNumbers: [
       {
-        required:[true,"Phone Number is Required"],
+        required: [true, "Phone Number is Required"],
         type: String,
         min: [11, "incorrect mobile number"],
         max: [11, "incorrect mobile number "],
@@ -31,6 +31,16 @@ const pharmacySchema = new mongoose.Schema(
     state: {
       type: Boolean,
       default: false,
+    },
+    ratingsAverage: {
+      type: Number,
+      min: [1, "Rating must be above or equal 1.0"],
+      max: [5, "Rating must be below or equal 5.0"],
+      // set: (val) => Math.round(val * 10) / 10, // 3.3333 * 10 => 33.333 => 33 => 3.3
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
     },
     password: {
       type: String,
@@ -63,7 +73,11 @@ pharmacySchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
-
+pharmacySchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "pharmacy",
+});
 // 2- Create model
 const PharmacyModel = mongoose.model("Pharmacy", pharmacySchema);
 

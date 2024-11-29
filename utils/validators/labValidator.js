@@ -2,6 +2,7 @@ const slugify = require("slugify");
 const { check, body } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validatorMiddleware");
 const LabModel = require("../../Models/labModel");
+const bcrypt = require("bcryptjs");
 
 exports.getLabValidator = [
   check("id").isMongoId().withMessage("Invalid Lab id format"),

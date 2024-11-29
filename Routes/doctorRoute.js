@@ -39,7 +39,7 @@ router.get(
   getLoggedUserData,
   getDoctor
 );
-router.put(
+router.patch(
   "/changeMyPassword",
   authController.allowedTo("doctor"),
   validators.changeDoctorPasswordValidator,
