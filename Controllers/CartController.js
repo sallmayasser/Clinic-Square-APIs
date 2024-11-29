@@ -59,7 +59,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
   }
 
   if (testId) {
-    const test = await LabTestsModel.findOne({ test: testId });
+    const test = await LabTestsModel.findById(testId);
 
     if (!test) {
       return res.status(404).json({
@@ -80,11 +80,11 @@ exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
   let query = CartModel.findOne(filter);
 
   const apiFeatures = new ApiFeatures(query, req.query);
-  await apiFeatures.filter(); // Apply filtering
-  await apiFeatures.paginate(); // Apply pagination
-  await apiFeatures.limitFields(); // Limit fields
-  await apiFeatures.sort(); // Apply sorting
-  await apiFeatures.populate(); // Apply populate (if needed)
+  await apiFeatures.filter();
+  await apiFeatures.paginate();
+  await apiFeatures.limitFields();
+  await apiFeatures.sort();
+  await apiFeatures.populate();
 
   // Execute the query
   const { mongooseQuery, paginationResult } = apiFeatures;

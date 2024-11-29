@@ -31,6 +31,11 @@ const labReservationSchema = new mongoose.Schema(
         testResult: [{ type: String, default: null }],
       },
     ],
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "visa"],
+      default: "cash",
+    },
   },
   {
     timestamps: true,

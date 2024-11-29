@@ -10,7 +10,7 @@ exports.updateLabReservation = factory.updateOne(LabReservationModel);
 
 exports.createLabReservation = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
-  const { date, lab } = req.body;
+  const { date, lab, paymentMethod } = req.body;
   // Step 1: Get the user's cart
   const cart = await cartModel.findOne({ user: userId });
 
@@ -49,6 +49,7 @@ exports.createLabReservation = asyncHandler(async (req, res, next) => {
     date: date,
     lab: lab,
     requestedTests,
+    paymentMethod,
   });
 
   // Step 5: Clear tests from the cart
