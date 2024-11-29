@@ -2,9 +2,10 @@ class ApiFeatures {
   constructor(mongooseQuery, queryString) {
     this.mongooseQuery = mongooseQuery;
     this.queryString = queryString;
+    this.countDocuments=0;
   }
 
-  filter() {
+  async filter() {
     const queryStringObj = { ...this.queryString };
     const excludesFields = [
       "page",
@@ -22,10 +23,10 @@ class ApiFeatures {
   
   
     this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
-  
-    return this;
+    this.countDocuments = await this.mongooseQuery.clone().countDocuments();
+    return  this;
   }
-  sort() {
+  async sort() {
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.sort(sortBy);
@@ -35,7 +36,7 @@ class ApiFeatures {
     return this;
   }
 
-  limitFields() {
+  async limitFields() {
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.select(fields);
@@ -44,7 +45,7 @@ class ApiFeatures {
     }
     return this;
   }
-  search(searchFields = [], populateFields = []) {
+  async search(searchFields = [], populateFields = []) {
     if (this.queryString.keyword) {
       const keywordRegex = { $regex: this.queryString.keyword, $options: "i" };
       const query = {};
@@ -70,7 +71,7 @@ class ApiFeatures {
     return this;
   }
 
-  paginate(countDocuments) {
+  async paginate() {
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 50;
     const skip = (page - 1) * limit;
@@ -80,10 +81,10 @@ class ApiFeatures {
     const pagination = {};
     pagination.currentPage = page;
     pagination.limit = limit;
-    pagination.numberOfPages = Math.ceil(countDocuments / limit);
+    pagination.numberOfPages = Math.ceil(this.countDocuments / limit);
 
     // Next page
-    if (endIndex < countDocuments) {
+    if (endIndex < this.countDocuments) {
       pagination.next = page + 1;
     }
 
@@ -97,7 +98,7 @@ class ApiFeatures {
     return this;
   }
 
-  populate() {
+  async populate() {
     if (this.queryString.populate) {
       const substringToRemove = "password";
       const fieldsToPopulate = this.queryString.populate.split(",");

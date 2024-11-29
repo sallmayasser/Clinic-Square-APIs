@@ -42,6 +42,7 @@ exports.createOne = (Model) =>
     const newDoc = await Model.create(req.body);
     res.status(201).json({ data: newDoc });
   });
+
 exports.getOne = (Model, populateOpt) =>
   asyncHandler(async (req, res, next) => {
     let filter = {};
@@ -70,6 +71,7 @@ exports.getOne = (Model, populateOpt) =>
     }
     res.status(200).json({ data: document });
   });
+
 exports.getAll = (Model, populateOpt, modelName = "") =>
   asyncHandler(async (req, res) => {
     let filter = {};
