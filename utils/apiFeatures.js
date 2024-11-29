@@ -2,23 +2,31 @@ class ApiFeatures {
   constructor(mongooseQuery, queryString) {
     this.mongooseQuery = mongooseQuery;
     this.queryString = queryString;
+    this.countDocuments=0;
   }
 
-  filter() {
+  async filter() {
     const queryStringObj = { ...this.queryString };
-    const excludesFields = ["page", "sort", "limit", "fields", "keyword", "populate"];
+    const excludesFields = [
+      "page",
+      "sort",
+      "limit",
+      "fields",
+      "keyword",
+      "populate",
+    ];
     excludesFields.forEach((field) => delete queryStringObj[field]);
-
-    // Apply filteration using [gte,gt,lte,lt]
+  
     let queryStr = JSON.stringify(queryStringObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt|ne)\b/g, (match) => `$${match}`);
-
+  
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt|ne|or|and)\b/g, (match) => `$${match}`);
+  
+  
     this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
-
-    return this;
+    this.countDocuments = await this.mongooseQuery.clone().countDocuments();
+    return  this;
   }
-
-  sort() {
+  async sort() {
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.sort(sortBy);
@@ -28,7 +36,7 @@ class ApiFeatures {
     return this;
   }
 
-  limitFields() {
+  async limitFields() {
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.select(fields);
@@ -37,24 +45,33 @@ class ApiFeatures {
     }
     return this;
   }
-
-  search(modelName) {
+  async search(searchFields = [], populateFields = []) {
     if (this.queryString.keyword) {
-      let query = {};
-      if (modelName === "Lab" || modelName === "TestService") {
-        query = { name: { $regex: this.queryString.keyword, $options: "i" } };
-      } else {
-        query.$or = [
-          { firstName: { $regex: this.queryString.keyword, $options: "i" } },
-          { lastName: { $regex: this.queryString.keyword, $options: "i" } },
-        ];
+      const keywordRegex = { $regex: this.queryString.keyword, $options: "i" };
+      const query = {};
+
+      // Add search criteria for main fields
+      if (searchFields.length > 0) {
+        query.$or = searchFields.map((field) => ({ [field]: keywordRegex }));
       }
+
+      // Add search criteria for populated fields
+      if (populateFields.length > 0) {
+        populateFields.forEach((populateField) => {
+          query[`${populateField}.name`] = keywordRegex;
+          this.mongooseQuery = this.mongooseQuery.populate({
+            path: populateField,
+            match: { name: keywordRegex },
+          });
+        });
+      }
+
       this.mongooseQuery = this.mongooseQuery.find(query);
     }
     return this;
   }
 
-  paginate(countDocuments) {
+  async paginate() {
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 50;
     const skip = (page - 1) * limit;
@@ -64,10 +81,10 @@ class ApiFeatures {
     const pagination = {};
     pagination.currentPage = page;
     pagination.limit = limit;
-    pagination.numberOfPages = Math.ceil(countDocuments / limit);
+    pagination.numberOfPages = Math.ceil(this.countDocuments / limit);
 
     // Next page
-    if (endIndex < countDocuments) {
+    if (endIndex < this.countDocuments) {
       pagination.next = page + 1;
     }
 
@@ -81,32 +98,47 @@ class ApiFeatures {
     return this;
   }
 
-  // New populate method
-populate() {
+  async populate() {
     if (this.queryString.populate) {
-        const fieldsToPopulate = this.queryString.populate.split(",").map((field) => {
-            if (field.includes(".")) {
-                const [path, subfields] = field.split(".");
-         
-                if (path === 'patient' || path === 'doctor' || path === 'lab' ||path === 'pharmacy') { 
-                    subfields = subfields ? `${subfields} -password` : '-password';
-                }
-                return { path, select: subfields };
-            }
-          
-            if (field === 'patient' || field === 'doctor' || field === 'lab' ||field === 'pharmacy') {
-                return { path: field, select: '-password' };
-            }
-            return { path: field };
-        });
+      const substringToRemove = "password";
+      const fieldsToPopulate = this.queryString.populate.split(",");
 
-        fieldsToPopulate.forEach((populateOption) => {
-            this.mongooseQuery = this.mongooseQuery.populate(populateOption);
-        });
+      // Recursive function to build nested populate options
+      const buildPopulateOption = (pathParts) => {
+        if (pathParts.length === 0) return null;
+
+        const [currentPath, ...remainingPaths] = pathParts;
+        const selectFields = currentPath.includes("=")
+          ? currentPath.split("=")[1].replace(substringToRemove, "")
+          : "-password";
+
+        const path = currentPath.includes("=")
+          ? currentPath.split("=")[0]
+          : currentPath;
+
+        // Recursively build nested populate for remaining paths
+        const populateOption = {
+          path,
+          select: selectFields,
+        };
+
+        const nestedPopulate = buildPopulateOption(remainingPaths);
+        if (nestedPopulate) populateOption.populate = nestedPopulate;
+
+        return populateOption;
+      };
+
+      fieldsToPopulate.forEach((field) => {
+        const pathParts = field.split(".");
+        const populateOption = buildPopulateOption(pathParts);
+
+        if (populateOption) {
+          this.mongooseQuery = this.mongooseQuery.populate(populateOption);
+        }
+      });
     }
     return this;
-}
-
+  }
 }
 
 module.exports = ApiFeatures;

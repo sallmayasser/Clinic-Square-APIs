@@ -1,5 +1,5 @@
 const slugify = require("slugify");
-const { check, body } = require("express-validator");
+const { check,body } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validatorMiddleware");
 const PharmacyMedicineModel = require("../../Models/pharmacies-medicinesModel");
 const ApiError = require("../apiError");
@@ -10,22 +10,42 @@ exports.getMedicineValidator = [
 ];
 
 exports.createMedicineValidator = [
-  // Name validation
   check("name")
     .notEmpty()
-    .withMessage("Medicine name is required")
-    .isLength({ min: 3 })
-    .withMessage("Medicine name is too short")
-    .isLength({ max: 32 })
-    .withMessage("Medicine name is too long")
-    .custom((val, { req }) => {
-      req.body.slug = slugify(val);
-      return true;
-    }),
-
-  // Cost validation
-  check("cost").notEmpty().withMessage("The medicine cost must be assigned"),
-
+    .withMessage("Name is required")
+    .isString()
+    .withMessage("Name must be a string"),
+  check("photo")
+    .notEmpty()
+    .withMessage("Photo is required")
+    .isString()
+    .withMessage("Photo must be a string"),
+  check("cost")
+    .notEmpty()
+    .withMessage("Cost is required")
+    .isNumeric()
+    .withMessage("Cost must be a numeric value"),
+  check("user")
+    .notEmpty()
+    .withMessage("User is required")
+    .isString()
+    .withMessage("User must be a string"),
+  check("category")
+    .notEmpty()
+    .withMessage("Category is required")
+    .isString()
+    .withMessage("Category must be a string")
+    .isIn([
+      "Cosmetics",
+      "Hair Care",
+      "Every Day Essentials",
+      "Medical Equipment & Supplies",
+      "Mom & Baby",
+      "Sexual Health",
+      "Medicine",
+      "Skin Care",
+    ])
+    .withMessage("Invalid category. Please select a valid category."),
   validatorMiddleware,
 ];
 
@@ -43,7 +63,7 @@ exports.updateMedicineValidator = [
     .isLength({ max: 32 })
     .withMessage("Medicine name is too long")
     .custom((val, { req }) => {
-      req.body.slug = slugify(val);
+      req.check.slug = slugify(val);
       return true;
     }),
 

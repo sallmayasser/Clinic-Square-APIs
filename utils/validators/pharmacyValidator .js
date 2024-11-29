@@ -2,6 +2,7 @@ const slugify = require("slugify");
 const { check, body } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validatorMiddleware");
 const PharmacyModel = require("../../Models/pharmacyModel");
+const bcrypt = require("bcryptjs");
 
 exports.getPharmacyValidator = [
   check("id").isMongoId().withMessage("Invalid Pharmacy id format"),

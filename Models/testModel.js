@@ -6,6 +6,9 @@ const testSchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    user: {
+      type: String,
+    },
     state: {
       type: String,
       default: "pending",
@@ -18,6 +21,7 @@ const testSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
 
 // 2- Create model
 const TestModel = mongoose.model("Test", testSchema);

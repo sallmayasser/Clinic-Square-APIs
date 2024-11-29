@@ -4,6 +4,7 @@ const {
   updateLoggedUserPassword,
   deleteLoggedUserData,
   getLoggedUserData,
+  setMailToBody,
 } = require("../Controllers/handlerFactory");
 const {
   getLab,
@@ -26,7 +27,14 @@ const {
   addTest,
 } = require("../Controllers/lab-testController");
 const newTest = require("../Controllers/testController");
-const { getLabReservations } = require("../Controllers/labReservationController");
+const {
+  getLabReservations,
+} = require("../Controllers/labReservationController");
+const {
+  updateSchedule,
+  addNewSchedule,
+  deleteSchedule,
+} = require("../Controllers/scheduleController");
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
@@ -62,7 +70,26 @@ router.route("/My-Reservations").get(
   authController.allowedTo("lab"),
   getLabReservations
 );
-
+router.put(
+  "/update-day",
+  authController.allowedTo("lab"),
+  getLoggedUserData,
+  validators.updateScheduleValidator,
+  updateSchedule(LabModel)
+);
+router.post(
+  "/add-day",
+  authController.allowedTo("lab"),
+  getLoggedUserData,
+  validators.addScheduleValidator,
+  addNewSchedule(LabModel)
+);
+router.delete(
+  "/delete-schedule-day",
+  authController.allowedTo("lab"),
+  getLoggedUserData,
+  deleteSchedule(LabModel)
+);
 // test Routes
 router
   .route("/tests")
@@ -86,6 +113,7 @@ router
   .post(
     authController.allowedTo("lab"),
     validator.createTestValidator,
+    setMailToBody,
     newTest.addTest
   );
 router
@@ -95,8 +123,15 @@ router
 
 // admin routes
 
-router.route("/").get(authController.allowedTo("admin"), getLabs);
+router.route("/").get(authController.allowedTo("admin", "patient"), getLabs);
 
+router.route("/lab-tests/:id").get(
+  authController.allowedTo("patient"),
+  (req, res, next) => {
+    createFilterObj(req, res, next, "lab");
+  },
+  getTests
+);
 router
   .route("/:id")
   .get(validators.getLabValidator, getLab)

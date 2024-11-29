@@ -12,10 +12,8 @@ const {
   updateDoctor,
   setDoctorToBody,
   updateLoggedDoctorData,
-  updateSchedule,
-  addNewSchedule,
-  deleteSchedule,
 } = require("../Controllers/doctorController");
+
 const validators = require("../utils/validators/doctorValidator");
 
 const { resizeImage, uploadImage } = require("../Controllers/imageController");
@@ -24,6 +22,11 @@ const DoctorModel = require("../Models/doctorModel");
 const {
   getDoctorReservations,
 } = require("../Controllers/doctorReservationController");
+const {
+  updateSchedule,
+  addNewSchedule,
+  deleteSchedule,
+} = require("../Controllers/scheduleController");
 
 const router = express.Router({ mergeParams: true });
 
@@ -36,7 +39,7 @@ router.get(
   getLoggedUserData,
   getDoctor
 );
-router.put(
+router.patch(
   "/changeMyPassword",
   authController.allowedTo("doctor"),
   validators.changeDoctorPasswordValidator,
@@ -58,20 +61,20 @@ router.put(
   authController.allowedTo("doctor"),
   getLoggedUserData,
   validators.updateScheduleValidator,
-  updateSchedule
+  updateSchedule(DoctorModel)
 );
 router.post(
   "/add-day",
   authController.allowedTo("doctor"),
   getLoggedUserData,
   validators.addScheduleValidator,
-  addNewSchedule
+  addNewSchedule(DoctorModel)
 );
 router.delete(
   "/delete-schedule-day",
   authController.allowedTo("doctor"),
   getLoggedUserData,
-  deleteSchedule
+  deleteSchedule(DoctorModel)
 );
 // nested Route
 router.route("/My-Reservations").get(

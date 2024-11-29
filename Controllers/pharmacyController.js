@@ -3,8 +3,8 @@ const MedicineModel = require("../Models/medicineModel");
 const factory = require("./handlerFactory");
 const PharmacyModel = require("../Models/pharmacyModel");
 
-exports.getPharmacy = factory.getOne(PharmacyModel);
-exports.getPharmacys = factory.getAll(PharmacyModel);
+exports.getPharmacy = factory.getOne(PharmacyModel, "reviews");
+exports.getPharmacys = factory.getAll(PharmacyModel, "reviews");
 exports.deletePharmacy = factory.deleteOne(PharmacyModel);
 
 exports.updatePharmacy = asyncHandler(async (req, res, next) => {

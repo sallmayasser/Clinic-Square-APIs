@@ -4,6 +4,7 @@ const {
   updateLoggedUserPassword,
   deleteLoggedUserData,
   getLoggedUserData,
+  setMailToBody,
 } = require("../Controllers/handlerFactory");
 const {
   getPharmacy,
@@ -89,13 +90,24 @@ router
   .route("/newMedicine")
   .post(
     authController.allowedTo("pharmacy"),
+    uploadImage,
+    setPharmacyToBody,
+    resizeImage,
     validator.createMedicineValidator,
+    setMailToBody,
     newMedicine.addMedicine
   );
 // admin routes
 
-router.route("/").get(authController.allowedTo("admin"), getPharmacys);
+router.route("/").get(authController.allowedTo("admin", "patient"), getPharmacys);
 
+router.route("/pharmacy-medicine/:id").get(
+  authController.allowedTo("patient"),
+  (req, res, next) => {
+    createFilterObj(req, res, next, "pharmacy");
+  },
+  getMedicines
+);
 router
   .route("/:id")
   .get(validators.getPharmacyValidator, getPharmacy)

@@ -24,14 +24,20 @@ exports.createLabReservationValidator = [
     .isMongoId()
     .withMessage("Invalid Reservation id format"),
 
+  check("state")
+    .optional()
+    .isIn(["completed", "new"])
+    .withMessage(
+      "Invalid state. Must be either 'completed'or 'new'"
+    ),
   check("requestedTests")
     .isArray({ min: 1 })
     .withMessage("Requested tests must be an array with at least one item")
     .custom((tests) => {
       tests.forEach((test) => {
-        // Check that each test has a testName and testResult is empty
-        if (!test.testName) {
-          throw new Error("Each test must have a testName");
+        // Check that each test has a testId and testResult is empty
+        if (!test.testDetails) {
+          throw new Error("Each test must have a ID");
         }
         if (test.testResult && test.testResult.length > 0) {
           throw new Error(
@@ -42,16 +48,25 @@ exports.createLabReservationValidator = [
       return true;
     }),
 
+check("date")
+    .notEmpty()
+    .withMessage("you must enter lab reservation date"),
+ 
   validatorMiddleware,
 ];
 
 exports.updateReservationValidator = [
-  check("reservationId")
+  check("id")
     .notEmpty()
     .withMessage("Reservation ID is required")
     .isMongoId()
     .withMessage("Invalid Reservation id format"),
-
+  
+ check('state')
+    .optional() 
+    .isIn(['completed', 'new']) 
+    .withMessage("Invalid state. Must be either 'completed' or 'new'."),
+ 
   check("requestedTests")
     .optional()
     .isArray()

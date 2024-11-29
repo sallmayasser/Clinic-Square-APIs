@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const ApiFeatures = require("../utils/apiFeatures");
+const bcrypt = require("bcryptjs");
+const createToken = require("../utils/createToken");
 
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
@@ -41,21 +43,27 @@ exports.createOne = (Model) =>
     res.status(201).json({ data: newDoc });
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, populateOpt) =>
   asyncHandler(async (req, res, next) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
+
     const { id } = req.params;
-    // 1) Build query
-    // let query = Model.findById(id);
-    const apiFeatures = new ApiFeatures(
-      Model.findById(id, filter),
-      req.query
-    ).limitFields().populate();
+
+    // Build query
+    let query = Model.findById(id, filter);
+    if (populateOpt) {
+      query = query.populate(populateOpt);
+    }
+
+    const apiFeatures = new ApiFeatures(query, req.query)
+      .limitFields()
+      .populate(); // This keeps the existing population logic intact
     const { mongooseQuery } = apiFeatures;
-    // 2) Execute query
+
+    // Execute query
     const document = await mongooseQuery;
 
     if (!document) {
@@ -64,21 +72,27 @@ exports.getOne = (Model) =>
     res.status(200).json({ data: document });
   });
 
-exports.getAll = (Model, modelName = "") =>
+exports.getAll = (Model, populateOpt, modelName = "") =>
   asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
+
     // Build query
     const documentsCounts = await Model.countDocuments();
-    const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
+    let query = Model.find(filter);
+    if (populateOpt) {
+      query = query.populate(populateOpt);
+    }
+
+    const apiFeatures = new ApiFeatures(query, req.query)
       .filter()
       .paginate(documentsCounts)
       .search(modelName)
       .limitFields()
       .sort()
-      .populate();
+      .populate(); // Retain existing population behavior
 
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;
@@ -126,7 +140,7 @@ exports.changeUserPassword = (Model) =>
     }
     res.status(200).json({ data: document });
   });
-  
+
 // @desc    Get Logged user data
 // @route   GET /api/v1/users/getMe
 // @access  Private/Protect
@@ -140,11 +154,11 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
 // @access  Private/Protect
 exports.updateLoggedUserPassword = (Model) =>
   asyncHandler(async (req, res, next) => {
-    // 1) Update user password based user payload (req.user._id)
+      // 1) Update user password based user payload (req.user._id)
     const user = await Model.findByIdAndUpdate(
       req.user._id,
       {
-        password: await bcrypt.hash(req.body.password, 12),
+        password: await bcrypt.hash(req.body.newPassword, 12),
         passwordChangedAt: Date.now(),
       },
       {
@@ -154,7 +168,7 @@ exports.updateLoggedUserPassword = (Model) =>
 
     // 2) Generate token
     const token = createToken(user._id);
-
+    delete user._doc.password;
     res.status(200).json({ data: user, token });
   });
 
@@ -170,5 +184,10 @@ exports.deleteLoggedUserData = (Model) =>
 exports.verify = (req, res, next) => {
   // Nested route (Create)
   if (!req.body.state) req.body.state = "verified";
+  req.body.user = req.user.email;
+  next();
+};
+exports.setMailToBody = (req, res, next) => {
+  if (!req.body.user) req.body.user = req.user.email;
   next();
 };

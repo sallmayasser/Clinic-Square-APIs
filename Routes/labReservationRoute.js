@@ -53,9 +53,6 @@ router
   )
   .patch(
     authController.allowedTo("lab", "patient"),
-    uploadImage,
-    setPatientToBody,
-    resizeImage,
     validator.updateReservationValidator,
     updateLabReservation
   )

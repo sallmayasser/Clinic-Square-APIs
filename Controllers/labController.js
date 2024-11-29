@@ -2,8 +2,8 @@ const LabModel = require("../Models/labModel");
 const factory = require("./handlerFactory");
 const asyncHandler = require("express-async-handler");
 
-exports.getLab = factory.getOne(LabModel);
-exports.getLabs = factory.getAll(LabModel);
+exports.getLab = factory.getOne(LabModel, "reviews");
+exports.getLabs = factory.getAll(LabModel, "reviews");
 exports.deleteLab = factory.deleteOne(LabModel);
 
 exports.setLabToBody = (req, res, next) => {
@@ -46,3 +46,4 @@ exports.setLabIdToBody = (req, res, next) => {
   if (!req.body.lab) req.body.lab = req.params.id;
   next();
 };
+
