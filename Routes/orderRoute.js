@@ -18,6 +18,7 @@ router
   .route("/")
   .post(authController.allowedTo("patient"), createOrder)
   .get(
+    authController.allowedTo("patient"),
     getLoggedUserData,
     (req, res, next) => {
       createFilterObj(req, res, next, "patient");

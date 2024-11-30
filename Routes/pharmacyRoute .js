@@ -100,6 +100,7 @@ router
   );
 // Order route
 router.route("/my-orders").get(
+  authController.allowedTo("pharmacy"),
   getLoggedUserData,
   (req, res, next) => {
     createFilterObj(req, res, next, "pharmacy");
