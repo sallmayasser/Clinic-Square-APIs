@@ -25,6 +25,7 @@ const {
   deleteTest,
   getTests,
   addTest,
+  updateTest,
 } = require("../Controllers/lab-testController");
 const newTest = require("../Controllers/testController");
 const {
@@ -108,6 +109,7 @@ router
     validator.createLabTestValidator,
     addTest
   );
+
 router
   .route("/newTest")
   .post(
@@ -119,7 +121,13 @@ router
 router
   .route("/tests/:id")
   .get(authController.allowedTo("lab"), getTest)
-  .delete(authController.allowedTo("lab"), deleteTest);
+  .delete(authController.allowedTo("lab"), deleteTest)
+  .patch(
+    authController.allowedTo("lab"),
+    // getLoggedUserData,
+     validator.updateTestValidator,
+    updateTest
+  );
 
 // admin routes
 
