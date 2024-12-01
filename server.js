@@ -3,11 +3,13 @@ const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const cors = require("cors");
+const compression = require("compression");
 
 const ApiError = require("./utils/apiError");
 const globalError = require("./Middlewares/errorMiddleware");
 const dbConnection = require("./configs/Database");
 const mountRoutes = require("./routes"); // Import the route mounting function
+const { webhookCheckout } = require("./Controllers/onlinePaymentController");
 
 // Load environment variables
 dotenv.config({ path: "config.env" });
@@ -20,6 +22,13 @@ const app = express();
 
 // Middleware
 app.use(cors());
+app.use(compression());
+//checkout webhook
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  webhookCheckout,
+);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "uploads")));
 

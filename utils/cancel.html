@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Incomplete</title>
+    
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+    body {
+      background: #dcf0fa;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+      max-width: 380px;
+      margin: 50px auto;
+      overflow: hidden;
+      padding: 0 10px; /* Added padding for better spacing */
+      box-sizing: border-box; /* Ensure padding is included in width */
+    }
+    .paper-container {
+      position: relative;
+      overflow: hidden;
+      height: 15cm; /* Changed to auto for responsiveness */
+    }
+
+    .paper {
+      background: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      height: 447px; /* Changed to auto for responsiveness */
+      position: absolute;
+      z-index: 2;
+      left: 0; /* Added for better alignment */
+      right: 0; /* Added for better alignment */
+      margin: 0 auto; /* Center align horizontally */
+      padding: 24px; /* Added for better spacing */
+      box-sizing: border-box; /* Ensure padding is included in width */
+    }
+
+    .main-contents {
+      margin-top: 1cm;
+      text-align: center; /* Center align contents */
+    }
+
+    .cancel-title {
+      font-size: 22px;
+      color: #cd3025;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .cancel-description {
+      font-size: 15px;
+      line-height: 21px;
+      color: #0c0b0b;
+      margin-bottom: 24px;
+    }
+
+    .order-details {
+      color: #333;
+      font-weight: bold;
+    }
+
+    .complement {
+      font-size: 18px;
+      color: #cd3025;
+    }
+  </style>
+
+  <body>
+    <div class="container">
+      <div class="paper-container">
+        <div class="paper">
+          <div class="main-contents">
+            <div class="cancel-icon">
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/dermabyte-gp-2024.appspot.com/o/icons%2F%E2%80%94Pngtree%E2%80%94payment%20failure%20flat%20icon_3700197.png?alt=media&token=f6be1480-823a-49e3-a950-a019467feeac"
+                alt="Payment cancel Icon"
+                style="width: 200px; height: 200px; border-radius: 50%"
+              />
+            </div>
+            <div class="cancel-title">Payment Incomplete</div>
+            <div class="cancel-description">
+              The payment process was not completed . Please try again later.
+            </div>
+            <div class="order-details">
+              <div class="complement">Thank You!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

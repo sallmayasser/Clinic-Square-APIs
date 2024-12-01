@@ -91,7 +91,7 @@ const addMedicineToCart = async (cart, medicineId, quantity) => {
 };
 
 //  Add or update a test in the cart
-const addTestToCart = async (cart,testId) => {
+const addTestToCart = async (cart, testId) => {
   const labTest = await LabTestsModel.findById(testId).populate("lab");
   if (!labTest) {
     throw new ApiError("Test not found", 404);
@@ -273,7 +273,7 @@ exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
       message: `No cart found for user ${req.user._id}`,
     });
   }
-
+  console.log(req.user);
   res.status(200).json({
     paginationResult,
     data: cart,

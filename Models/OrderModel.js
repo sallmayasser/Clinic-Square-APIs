@@ -41,6 +41,11 @@ const orderSchema = new mongoose.Schema(
       enum: ["cash", "visa"],
       default: "cash",
     },
+    shippingAddress: {
+      type: String,
+    },
+    isPaid: { type: Boolean, default: false },
+    paidAt: { type: Date, default: null },
   },
   {
     timestamps: true,

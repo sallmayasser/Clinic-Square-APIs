@@ -15,6 +15,7 @@ exports.updateOrder = factory.updateOne(OrderModel);
 exports.createOrder = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
   const { paymentMethod } = req.body;
+  const shippingAddres = req.user.address[0];
 
   // Step 1: Get the user's cart
   const cart = await CartModel.findOne({ user: userId });
@@ -27,11 +28,12 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
 
   // Step 2: Group medicines by pharmacy
   const pharmacyGroups = await groupMedicinesByPharmacy(cart.medicines);
-  console.log("here");
+
   // Step 3: Create orders for each pharmacy
   const orders = await createOrdersForPharmacies(
     pharmacyGroups,
     userId,
+    shippingAddres,
     paymentMethod
   );
 
@@ -93,6 +95,7 @@ const groupMedicinesByPharmacy = async (medicines) => {
 const createOrdersForPharmacies = async (
   pharmacyGroups,
   userId,
+  shippingAddres,
   paymentMethod
 ) => {
   const orders = [];
@@ -108,8 +111,9 @@ const createOrdersForPharmacies = async (
       patient: userId,
       pharmacy: pharmacyId,
       paymentMethod,
-      medicines, // Use 'medicines' instead of 'medicine'
+      medicines, 
       totalCost,
+      shippingAddres,
     });
 
     orders.push(newOrder);
