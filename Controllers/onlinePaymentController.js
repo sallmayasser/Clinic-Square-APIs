@@ -77,8 +77,9 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   }
   if (event.type === "checkout.session.completed") {
     //  Create order
+    console.log("complete");
     createCardOrder(event.data.object);
-  }
+  } else console.log("failed");
 
   res.status(200).json({ received: true });
 });
@@ -93,7 +94,7 @@ const createCardOrder = async (session) => {
   if (!cart || cart.medicines.length === 0) {
     throw new ApiError(`No medicines found in the cart with ID ${cartId}`, 400);
   }
-
+  console.log("after step 1");
   // Step 2: Fetch the user using their email
   const user = await PatientModel.findOne({ email: session.customer_email });
   if (!user) {
@@ -102,10 +103,10 @@ const createCardOrder = async (session) => {
       404
     );
   }
-
+  console.log("after step 2");
   // Step 3: Group medicines by pharmacy
   const pharmacyGroups = await groupMedicinesByPharmacy(cart.medicines);
-
+  console.log("after step 3");
   // Step 4: Create orders for each pharmacy
   const orders = await createOrdersForPharmacies({
     pharmacyGroups,
@@ -115,11 +116,9 @@ const createCardOrder = async (session) => {
     isPaid: true,
     paidAt: Date.now(),
   });
-
+ console.log("after step 4");
   // Step 5: Clear the cart after creating orders
   await clearCart(cart);
 
-  res.status(201).json({
-    message: "Orders created successfully",
-  });
+  return orders;
 };

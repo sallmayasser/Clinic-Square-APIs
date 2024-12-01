@@ -273,7 +273,6 @@ exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
       message: `No cart found for user ${req.user._id}`,
     });
   }
-  console.log(req.user);
   res.status(200).json({
     paginationResult,
     data: cart,
