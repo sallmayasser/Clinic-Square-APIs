@@ -9,34 +9,48 @@ const cartSchema = new mongoose.Schema(
     },
     medicines: [
       {
-        medicineId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Medicine",
-          required: [true, "Medicine ID is required"],
-        },
-        // name: {
-        //   type: String,
-        // },
-        price: {
-          type: Number,
-        },
-        quantity: {
-          type: Number,
-          default: 1,
-          min: [1, "Quantity must be at least 1"],
-        },
+        pharmacyId: { type: mongoose.Schema.Types.ObjectId, ref: "Pharmacy" },
+        purchasedMedicines: [
+          {
+            medicineId: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "Medicine",
+              required: [true, "Medicine ID is required"],
+            },
+            price: {
+              type: Number,
+            },
+            quantity: {
+              type: Number,
+              default: 1,
+              min: [1, "Quantity must be at least 1"],
+            },
+          },
+        ],
       },
     ],
+
     tests: [
       {
-        testId: {
+        labId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "LabTests",
-          required: [true, "Test ID is required"],
+          ref: "Lab",
         },
-        price: {
-          type: Number,
-        },
+        purchasedTests: [
+          {
+            testId: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "LabTests",
+              required: [true, "Test ID is required"],
+            },
+            date: {
+              type: Date,
+            }, 
+            price: {
+              type: Number,
+            },
+          },
+        ],
       },
     ],
     totalMedicinePrice: {

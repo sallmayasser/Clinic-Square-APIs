@@ -125,7 +125,7 @@ router
   .patch(
     authController.allowedTo("lab"),
     // getLoggedUserData,
-     validator.updateTestValidator,
+    validator.updateTestValidator,
     updateTest
   );
 

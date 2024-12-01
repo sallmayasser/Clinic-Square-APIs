@@ -3,6 +3,7 @@ const CartModel = require("../Models/cartModel");
 const OrderModel = require("../Models/OrderModel");
 const asyncHandler = require("express-async-handler");
 const PharmacyMedicineModel = require("../Models/pharmacies-medicinesModel");
+const ApiError = require("../utils/apiError");
 
 exports.getOrders = factory.getAll(OrderModel);
 exports.getOrder = factory.getOne(OrderModel);
@@ -11,14 +12,12 @@ exports.updateOrder = factory.updateOne(OrderModel);
 // @desc    Create an order from the user's cart medicines
 // @route   POST /api/v1/orders
 // @access  Private/User
-
 exports.createOrder = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
-  const { pharmacy, paymentMethod, medicines: orderedMedicines } = req.body;
+  const { paymentMethod } = req.body;
 
   // Step 1: Get the user's cart
   const cart = await CartModel.findOne({ user: userId });
-
   if (!cart || cart.medicines.length === 0) {
     return res.status(400).json({
       message:
@@ -26,63 +25,111 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Step 2: Check medicine availability and prepare order items
-  const medicines = [];
-  let totalCost = 0;
-  for (let item of cart.medicines) {
-    const pharmacyMedicine = await PharmacyMedicineModel.findOne({
-      pharmacy: pharmacy,
-      medicine: item.medicineId,
-    });
+  // Step 2: Group medicines by pharmacy
+  const pharmacyGroups = await groupMedicinesByPharmacy(cart.medicines);
+  console.log("here");
+  // Step 3: Create orders for each pharmacy
+  const orders = await createOrdersForPharmacies(
+    pharmacyGroups,
+    userId,
+    paymentMethod
+  );
 
-    if (!pharmacyMedicine || pharmacyMedicine.stock < item.quantity) {
-      return res.status(400).json({
-        message: `Not enough stock for ${item.name}. Only ${pharmacyMedicine.stock} available.`,
+  // Step 4: Clear the cart after creating orders
+  await clearCart(cart);
+
+  // Step 5: Respond with the created orders
+  res.status(201).json({
+    message: "Orders created successfully",
+    orders,
+  });
+});
+
+// Helper function to group medicines by pharmacy
+const groupMedicinesByPharmacy = async (medicines) => {
+  const pharmacyGroups = {};
+
+  // Loop through each item in the medicines array
+  for (const item of medicines) {
+    // Loop through each medicine in the purchasedMedicines array
+    for (const purchasedMedicine of item.purchasedMedicines) {
+      const pharmacyMedicine = await PharmacyMedicineModel.findOne({
+        pharmacy: item.pharmacyId,
+        medicine: purchasedMedicine.medicineId,
+      });
+
+      // Check if the pharmacy medicine exists and has enough stock
+      if (
+        !pharmacyMedicine ||
+        pharmacyMedicine.stock < purchasedMedicine.quantity
+      ) {
+        throw new ApiError(
+          `Not enough stock for medicine ID ${purchasedMedicine.medicineId}. Only ${pharmacyMedicine.stock} available.`,
+          400
+        );
+      }
+
+      // Deduct stock from the pharmacy
+      pharmacyMedicine.stock -= purchasedMedicine.quantity;
+      await pharmacyMedicine.save();
+
+      // Group medicines by pharmacyId
+      if (!pharmacyGroups[item.pharmacyId]) {
+        pharmacyGroups[item.pharmacyId] = [];
+      }
+
+      pharmacyGroups[item.pharmacyId].push({
+        medicineId: purchasedMedicine.medicineId,
+        price: purchasedMedicine.price,
+        quantity: purchasedMedicine.quantity,
       });
     }
-
-    // Deduct the stock for the medicine
-    pharmacyMedicine.stock -= item.quantity;
-    await pharmacyMedicine.save();
-
-    // Add to medicines array
-    medicines.push({
-      medicineId: item.medicineId,
-      name: item.name,
-      quantity: item.quantity,
-      price: item.price,
-    });
-
-    totalCost += item.price * item.quantity;
   }
 
-  // Step 3: Create the order
-  const newOrder = await OrderModel.create({
-    patient: userId, // Assuming "patient" represents the user in the Order schema
-    pharmacy,
-    paymentMethod,
-    medicine: medicines,
-    totalCost,
-  });
+  return pharmacyGroups;
+};
 
-  // Step 4: Clear medicines from the cart
+// Helper function to create orders for each pharmacy
+const createOrdersForPharmacies = async (
+  pharmacyGroups,
+  userId,
+  paymentMethod
+) => {
+  const orders = [];
+
+  for (const pharmacyId in pharmacyGroups) {
+    const medicines = pharmacyGroups[pharmacyId];
+    const totalCost = medicines.reduce(
+      (acc, medicine) => acc + medicine.price * medicine.quantity,
+      0
+    );
+
+    const newOrder = await OrderModel.create({
+      patient: userId,
+      pharmacy: pharmacyId,
+      paymentMethod,
+      medicines, // Use 'medicines' instead of 'medicine'
+      totalCost,
+    });
+
+    orders.push(newOrder);
+  }
+
+  return orders;
+};
+
+// Helper function to clear the cart after order creation
+const clearCart = async (cart) => {
   cart.medicines = [];
   cart.totalMedicinePrice = 0;
-  cart.totalPrice = cart.totalTestPrice; // Update cart total price to include only tests
+  cart.totalPrice = cart.totalTestPrice;
 
-  // Step 5: Check if cart is empty and delete it if necessary
   if (cart.medicines.length === 0 && cart.tests.length === 0) {
     await CartModel.findByIdAndDelete(cart._id);
   } else {
     await cart.save();
   }
-
-  // Step 6: Respond with the order details
-  res.status(201).json({
-    message: "Order created successfully",
-    order: newOrder,
-  });
-});
+};
 
 exports.deleteOrder = asyncHandler(async (req, res, next) => {
   const { id } = req.params;

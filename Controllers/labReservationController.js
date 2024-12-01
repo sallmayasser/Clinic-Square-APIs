@@ -2,15 +2,16 @@ const asyncHandler = require("express-async-handler");
 const factory = require("./handlerFactory");
 const cartModel = require("../Models/cartModel");
 const LabReservationModel = require("../Models/labReservationModel");
+const ApiError = require("../utils/apiError");
 
 exports.getLabReservation = factory.getOne(LabReservationModel);
 exports.getLabReservations = factory.getAll(LabReservationModel);
 exports.deleteLabReservation = factory.deleteOne(LabReservationModel);
 exports.updateLabReservation = factory.updateOne(LabReservationModel);
-
 exports.createLabReservation = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
-  const { date, lab, paymentMethod } = req.body;
+  const { paymentMethod } = req.body;
+
   // Step 1: Get the user's cart
   const cart = await cartModel.findOne({ user: userId });
 
@@ -20,50 +21,86 @@ exports.createLabReservation = asyncHandler(async (req, res, next) => {
         "No tests found in your cart. Please add tests before creating a reservation.",
     });
   }
-  // Step 2: Extract tests from the cart
 
-  const requestedTests = cart.tests.map((test) => ({
-    testDetails: test.testId,
-    testResult: [],
-  }));
+  // Step 2: Group tests by labId for separate reservations
+  const groupedTests = groupTestsByLabId(cart.tests);
 
-  // Step 3: Check for duplicate reservations
+  // Step 3: Create reservations for each lab group
+  await createLabReservations(userId, groupedTests, paymentMethod);
 
-  for (const test of requestedTests) {
-    const duplicateReservation = await LabReservationModel.findOne({
-      patient: userId,
-      "requestedTests.testDetails": test.testDetails,
-      date: req.body.date,
-    });
+  // Step 4: Clear cart and update totals
+  await updateCartAfterReservation(cart);
 
-    if (duplicateReservation) {
-      return res.status(400).json({
-        message: `You have already reserved test with ID ${test.testDetails} on the selected date.`,
-      });
-    }
-  }
-
-  // Step 4: Create the reservation
-  const newReservation = await LabReservationModel.create({
-    patient: userId,
-    date: date,
-    lab: lab,
-    requestedTests,
-    paymentMethod,
+  // Step 5: Respond with success message
+  res.status(201).json({
+    message: "Lab reservation(s) created successfully.",
   });
+});
 
-  // Step 5: Clear tests from the cart
+// Helper function to group tests by labId
+const groupTestsByLabId = (tests) => {
+  return tests.reduce((acc, test) => {
+    // Iterate over each lab
+    test.purchasedTests.forEach((purchasedTest) => {
+      // If labId doesn't exist in accumulator, create an array for it
+      if (!acc[test.labId]) {
+        acc[test.labId] = [];
+      }
+
+      // Add the test details (from purchasedTests) into the accumulator for that labId
+      acc[test.labId].push({
+        testDetails: purchasedTest.testId,
+        testResult: [],
+        date: purchasedTest.date,
+        price: purchasedTest.price,
+      });
+    });
+    return acc;
+  }, {});
+};
+
+// Helper function to create reservations for each lab
+const createLabReservations = async (userId, groupedTests, paymentMethod) => {
+  for (const labId in groupedTests) {
+    const requestedTests = groupedTests[labId];
+
+    // Step 3a: Check for duplicate reservations for all tests
+    for (const test of requestedTests) {
+      const duplicateReservation = await LabReservationModel.findOne({
+        patient: userId,
+        lab: labId,
+        "requestedTests.testDetails": test.testDetails,
+        date: test.date, // Check if any test already reserved on this date
+      });
+
+      if (duplicateReservation) {
+        throw new ApiError(
+          `You have already reserved the test with ID ${test.testDetails} at this lab on ${test.date}.`,
+          400
+        );
+      }
+    }
+
+    // Step 3b: Create the reservation for the lab
+    await LabReservationModel.create({
+      patient: userId,
+      lab: labId,
+      date: requestedTests[0].date, // Use any test's date (all tests in the same lab have same date)
+      requestedTests,
+      paymentMethod,
+    });
+  }
+};
+
+// Helper function to clear the cart and update totals
+const updateCartAfterReservation = async (cart) => {
   cart.tests = [];
   cart.totalTestPrice = 0;
-  cart.totalPrice = cart.totalMedicinePrice; // Update cart total price to include only medicines
+  cart.totalPrice = cart.totalMedicinePrice; // Keep medicines price in the total
+
   if (cart.medicines.length === 0 && cart.tests.length === 0) {
-    await cartModel.findByIdAndDelete(cart._id); // Delete cart if both arrays are empty
+    await cartModel.findByIdAndDelete(cart._id); // Delete cart if empty
   } else {
     await cart.save();
   }
-
-  // Step 6: Respond with the reservation details
-  res.status(201).json({
-    reservation: newReservation,
-  });
-});
+};

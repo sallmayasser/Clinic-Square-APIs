@@ -11,16 +11,13 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Pharmacy",
     },
-    medicine: [
+    medicines: [
       {
         medicineId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Medicine",
           required: [true, "Medicine ID is required"],
         },
-        // name: {
-        //   type: String,
-        // },
         price: {
           type: Number,
         },
