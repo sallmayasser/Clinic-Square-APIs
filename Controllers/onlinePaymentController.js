@@ -2,7 +2,11 @@ const cartModel = require("../Models/cartModel");
 const asyncHandler = require("express-async-handler");
 const PatientModel = require("../Models/patientModel");
 const ApiError = require("../utils/apiError");
-const { groupMedicinesByPharmacy, clearCart } = require("./orderController");
+const {
+  groupMedicinesByPharmacy,
+  clearCart,
+  createOrdersForPharmacies,
+} = require("./orderController");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
