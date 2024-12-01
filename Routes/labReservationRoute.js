@@ -29,7 +29,7 @@ router
     authController.allowedTo("patient"),
     getLoggedUserData,
     setPatientIdToBody,
-    validator.createLabReservationValidator,
+   // validator.createLabReservationValidator,
     createLabReservation
   );
 router.route("/upload/:id").patch(
