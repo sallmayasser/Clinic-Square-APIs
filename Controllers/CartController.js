@@ -40,14 +40,14 @@ const findOrCreateCart = async (userId) => {
 // Add or update a medicine in the cart
 const addMedicineToCart = async (cart, medicineId, quantity) => {
   const pharmacyMedicine = await PharmacyMedicineModel.findOne({
-    medicine: medicineId,
+    _id: medicineId,
   }).populate("pharmacy");
 
   if (!pharmacyMedicine) {
     throw new ApiError("Medicine not found", 404);
   }
 
-  const medicine = await MedicineModel.findById(medicineId);
+  const medicine = await MedicineModel.findById(pharmacyMedicine.medicine);
   if (!medicine) {
     throw new ApiError("Medicine not found", 404);
   }
@@ -91,7 +91,7 @@ const addMedicineToCart = async (cart, medicineId, quantity) => {
 };
 
 //  Add or update a test in the cart
-const addTestToCart = async (cart, date,testId) => {
+const addTestToCart = async (cart,testId) => {
   const labTest = await LabTestsModel.findById(testId).populate("lab");
   if (!labTest) {
     throw new ApiError("Test not found", 404);
@@ -115,7 +115,6 @@ const addTestToCart = async (cart, date,testId) => {
     // Add the new test to the existing lab entry
     labEntry.purchasedTests.push({
       testId,
-      date,
       price: labTest.cost,
     });
   } else {
@@ -125,7 +124,6 @@ const addTestToCart = async (cart, date,testId) => {
       purchasedTests: [
         {
           testId,
-          date,
           price: labTest.cost,
         },
       ],
@@ -134,7 +132,7 @@ const addTestToCart = async (cart, date,testId) => {
 };
 
 exports.addToCart = asyncHandler(async (req, res, next) => {
-  const { medicineId, testId, date, quantity = 1 } = req.body;
+  const { medicineId, testId, quantity = 1 } = req.body;
 
   const cart = await findOrCreateCart(req.user._id);
 
@@ -144,7 +142,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     }
 
     if (testId) {
-      await addTestToCart(cart, date, testId);
+      await addTestToCart(cart, testId);
     }
 
     calculateCartTotals(cart);

@@ -14,7 +14,7 @@ const cartSchema = new mongoose.Schema(
           {
             medicineId: {
               type: mongoose.Schema.Types.ObjectId,
-              ref: "Medicine",
+              ref: "PharmacyMedicine",
               required: [true, "Medicine ID is required"],
             },
             price: {
@@ -43,9 +43,9 @@ const cartSchema = new mongoose.Schema(
               ref: "LabTests",
               required: [true, "Test ID is required"],
             },
-            date: {
-              type: Date,
-            }, 
+            // date: {
+            //   type: Date,
+            // },
             price: {
               type: Number,
             },
