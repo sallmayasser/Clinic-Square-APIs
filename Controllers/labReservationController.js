@@ -8,9 +8,10 @@ exports.getLabReservation = factory.getOne(LabReservationModel);
 exports.getLabReservations = factory.getAll(LabReservationModel);
 exports.deleteLabReservation = factory.deleteOne(LabReservationModel);
 exports.updateLabReservation = factory.updateOne(LabReservationModel);
+
 exports.createLabReservation = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
-  const { paymentMethod } = req.body;
+  const { paymentMethod, date } = req.body; // Take the date from request body
 
   // Step 1: Get the user's cart
   const cart = await cartModel.findOne({ user: userId });
@@ -23,10 +24,10 @@ exports.createLabReservation = asyncHandler(async (req, res, next) => {
   }
 
   // Step 2: Group tests by labId for separate reservations
-  const groupedTests = groupTestsByLabId(cart.tests);
+  const groupedTests = groupTestsByLabId(cart.tests, date); // Pass date here
 
   // Step 3: Create reservations for each lab group
-  await createLabReservations(userId, groupedTests, paymentMethod);
+  await createLabReservations(userId, groupedTests, paymentMethod, date); // Pass date here
 
   // Step 4: Clear cart and update totals
   await updateCartAfterReservation(cart);
@@ -38,7 +39,7 @@ exports.createLabReservation = asyncHandler(async (req, res, next) => {
 });
 
 // Helper function to group tests by labId
-const groupTestsByLabId = (tests) => {
+const groupTestsByLabId = (tests, date) => {
   return tests.reduce((acc, test) => {
     // Iterate over each lab
     test.purchasedTests.forEach((purchasedTest) => {
@@ -51,7 +52,7 @@ const groupTestsByLabId = (tests) => {
       acc[test.labId].push({
         testDetails: purchasedTest.testId,
         testResult: [],
-        date: purchasedTest.date,
+        date, // Use the date from the request body
         price: purchasedTest.price,
       });
     });
@@ -60,7 +61,12 @@ const groupTestsByLabId = (tests) => {
 };
 
 // Helper function to create reservations for each lab
-const createLabReservations = async (userId, groupedTests, paymentMethod) => {
+const createLabReservations = async (
+  userId,
+  groupedTests,
+  paymentMethod,
+  date
+) => {
   for (const labId in groupedTests) {
     const requestedTests = groupedTests[labId];
 
@@ -70,12 +76,12 @@ const createLabReservations = async (userId, groupedTests, paymentMethod) => {
         patient: userId,
         lab: labId,
         "requestedTests.testDetails": test.testDetails,
-        date: test.date, // Check if any test already reserved on this date
+        date: date, // Check if any test already reserved on this date
       });
 
       if (duplicateReservation) {
         throw new ApiError(
-          `You have already reserved the test with ID ${test.testDetails} at this lab on ${test.date}.`,
+          `You have already reserved the test with ID ${test.testDetails} at this lab on ${date}.`,
           400
         );
       }
@@ -85,7 +91,7 @@ const createLabReservations = async (userId, groupedTests, paymentMethod) => {
     await LabReservationModel.create({
       patient: userId,
       lab: labId,
-      date: requestedTests[0].date, // Use any test's date (all tests in the same lab have same date)
+      date: date, // Use the date from the request body
       requestedTests,
       paymentMethod,
     });
