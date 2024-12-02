@@ -148,7 +148,11 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     calculateCartTotals(cart);
     await cart.save();
 
-    res.status(200).json({ data: cart });
+    const apiFeatures = new ApiFeatures(cart, req.query);
+    await apiFeatures.populate();
+    const { mongooseQuery } = apiFeatures;
+    const documents = await mongooseQuery;
+    res.status(200).json({ data: documents });
   } catch (error) {
     next(error);
   }
@@ -202,8 +206,11 @@ exports.removeItemFromCart = asyncHandler(async (req, res, next) => {
   // Recalculate totals
   calculateCartTotals(cart);
   await cart.save();
-
-  res.status(200).json({ message: "Item removed successfully", data: cart });
+  const apiFeatures = new ApiFeatures(cart, req.query);
+  await apiFeatures.populate();
+  const { mongooseQuery } = apiFeatures;
+  const documents = await mongooseQuery;
+  res.status(200).json({ message: "Item removed successfully", data: documents });
 });
 
 exports.clearCart = asyncHandler(async (req, res, next) => {
@@ -252,10 +259,13 @@ exports.updateItemQuantity = asyncHandler(async (req, res, next) => {
 
   // Save the updated cart
   await cart.save();
-
+  const apiFeatures = new ApiFeatures(cart, req.query);
+  await apiFeatures.populate();
+  const { mongooseQuery } = apiFeatures;
+  const documents = await mongooseQuery;
   return res.status(200).json({
     message: "Item quantity updated successfully",
-    data: cart,
+    data: documents,
   });
 });
 
