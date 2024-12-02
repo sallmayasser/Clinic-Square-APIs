@@ -196,9 +196,9 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
         price_data: {
           currency: "egp",
           product_data: {
-            name: "Home service", // Add shipping as a line item
+            name: "Home Visit", // Add shipping as a line item
             images: [
-              "https://firebasestorage.googleapis.com/v0/b/clinic-square.appspot.com/o/uploads%2Fdownload.png?alt=media&token=7c49907c-780d-4788-8111-f4ca30488139",
+              "https://firebasestorage.googleapis.com/v0/b/clinic-square.appspot.com/o/uploads%2FhomeVisit.jpg?alt=media&token=007f509e-cdde-4447-8996-e1e0a307bfb1",
             ],
           },
           unit_amount: shippingPrice * 100, // Convert to cents
