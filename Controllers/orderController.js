@@ -15,6 +15,7 @@ exports.updateOrder = factory.updateOne(OrderModel);
 exports.createOrder = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
   const { paymentMethod } = req.body;
+  const shippingAddress = req.user.address[0];
 
   // Step 1: Get the user's cart
   const cart = await CartModel.findOne({ user: userId });
@@ -26,17 +27,18 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
   }
 
   // Step 2: Group medicines by pharmacy
-  const pharmacyGroups = await groupMedicinesByPharmacy(cart.medicines);
-  console.log("here");
+  const pharmacyGroups = await this.groupMedicinesByPharmacy(cart.medicines);
+
   // Step 3: Create orders for each pharmacy
-  const orders = await createOrdersForPharmacies(
+  const orders = await this.createOrdersForPharmacies({
     pharmacyGroups,
     userId,
-    paymentMethod
-  );
+    shippingAddress,
+    paymentMethod,
+  });
 
   // Step 4: Clear the cart after creating orders
-  await clearCart(cart);
+  await this.clearCart(cart);
 
   // Step 5: Respond with the created orders
   res.status(201).json({
@@ -46,7 +48,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
 });
 
 // Helper function to group medicines by pharmacy
-const groupMedicinesByPharmacy = async (medicines) => {
+exports.groupMedicinesByPharmacy = async (medicines) => {
   const pharmacyGroups = {};
 
   // Loop through each item in the medicines array
@@ -55,9 +57,8 @@ const groupMedicinesByPharmacy = async (medicines) => {
     for (const purchasedMedicine of item.purchasedMedicines) {
       const pharmacyMedicine = await PharmacyMedicineModel.findOne({
         pharmacy: item.pharmacyId,
-        medicine: purchasedMedicine.medicineId,
+        _id: purchasedMedicine.medicineId,
       });
-
       // Check if the pharmacy medicine exists and has enough stock
       if (
         !pharmacyMedicine ||
@@ -89,12 +90,15 @@ const groupMedicinesByPharmacy = async (medicines) => {
   return pharmacyGroups;
 };
 
-// Helper function to create orders for each pharmacy
-const createOrdersForPharmacies = async (
+//  function to create orders for each pharmacy
+exports.createOrdersForPharmacies = async ({
   pharmacyGroups,
   userId,
-  paymentMethod
-) => {
+  shippingAddress,
+  paymentMethod,
+  isPaid = false,
+  paidAt = null,
+}) => {
   const orders = [];
 
   for (const pharmacyId in pharmacyGroups) {
@@ -108,8 +112,11 @@ const createOrdersForPharmacies = async (
       patient: userId,
       pharmacy: pharmacyId,
       paymentMethod,
-      medicines, // Use 'medicines' instead of 'medicine'
+      medicines,
       totalCost,
+      shippingAddress,
+      isPaid,
+      paidAt,
     });
 
     orders.push(newOrder);
@@ -119,7 +126,7 @@ const createOrdersForPharmacies = async (
 };
 
 // Helper function to clear the cart after order creation
-const clearCart = async (cart) => {
+exports.clearCart = async (cart) => {
   cart.medicines = [];
   cart.totalMedicinePrice = 0;
   cart.totalPrice = cart.totalTestPrice;
