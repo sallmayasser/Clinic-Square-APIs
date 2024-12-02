@@ -132,7 +132,8 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0; // Add any applicable tax here
   const shippingPrice = 50; // Flat shipping price
-  const { date } = req.body;
+  const  date  = req.query.reservationDate;
+
   const type = "test";
   // 1) Get cart depend on cartId
   const cart = await cartModel.findById(req.params.cartId);
