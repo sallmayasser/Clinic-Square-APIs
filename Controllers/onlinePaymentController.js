@@ -23,51 +23,6 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET);
 // @route   GET /api/v1/orders/checkout-session/medicine/:cartId
 // @access  Protected/User
 
-// exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
-//   // app settings
-//   const taxPrice = 0;
-//   const shippingPrice = 50;
-//   const shippingAddress = JSON.stringify(req.user.address[0]);
-
-//   // 1) Get cart depend on cartId
-//   const cart = await cartModel.findById(req.params.cartId);
-//   if (!cart) {
-//     return next(
-//       new ApiError(`There is no such cart with id ${req.params.cartId}`, 404)
-//     );
-//   }
-
-//   // 2) Get order price depend on cart price
-//   const cartMedicinePrice = cart.totalMedicinePrice;
-
-//   const totalOrderPrice = cartMedicinePrice + taxPrice + shippingPrice;
-
-//   // 3) Create stripe checkout session
-//   const session = await stripe.checkout.sessions.create({
-//     line_items: [
-//       {
-//         price_data: {
-//           currency: "egp",
-//           product_data: {
-//             name: req.user.name,
-//           },
-//           unit_amount: totalOrderPrice * 100,
-//         },
-//         quantity: 1,
-//       },
-//     ],
-//     mode: "payment",
-//     success_url: `${req.protocol}://${req.get("host")}/patient/order`,
-//     cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
-//     customer_email: req.user.email,
-//     client_reference_id: req.params.cartId,
-//     metadata: { shippingAddress },
-//   });
-
-//   // 4) send session to response
-//   res.status(200).json({ status: "success", session });
-// });
-
 exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0; // Add any applicable tax here
@@ -173,52 +128,6 @@ exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
 // @desc    Get checkout session from stripe and send it as response
 // @route   GET /api/v1/orders/checkout-session/tests/:cartId
 // @access  Protected/User
-
-// exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
-//   // app settings
-//   const taxPrice = 0;
-//   const shippingPrice = 0;
-//   const { date } = req.body;
-//   const type = "test";
-
-//   // 1) Get cart depend on cartId
-//   const cart = await cartModel.findById(req.params.cartId);
-//   if (!cart) {
-//     return next(
-//       new ApiError(`There is no such cart with id ${req.params.cartId}`, 404)
-//     );
-//   }
-
-//   // 2) Get order price depend on cart price
-//   const cartTestPrice = cart.totalTestPrice;
-
-//   const totalOrderPrice = cartTestPrice + taxPrice + shippingPrice;
-
-//   // 3) Create stripe checkout session
-//   const session = await stripe.checkout.sessions.create({
-//     line_items: [
-//       {
-//         price_data: {
-//           currency: "egp",
-//           product_data: {
-//             name: req.user.name,
-//           },
-//           unit_amount: totalOrderPrice * 100,
-//         },
-//         quantity: 1,
-//       },
-//     ],
-//     mode: "payment",
-//     success_url: `${req.protocol}://${req.get("host")}/patient/order`,
-//     cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
-//     customer_email: req.user.email,
-//     client_reference_id: req.params.cartId,
-//     metadata: { date, type },
-//   });
-
-//   // 4) send session to response
-//   res.status(200).json({ status: "success", session });
-// });
 exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0; // Add any applicable tax here
