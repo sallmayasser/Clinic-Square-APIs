@@ -21,11 +21,29 @@ exports.deleteOne = (Model) =>
     });
   });
 
-exports.updateOne = (Model) =>
+exports.updateOne = (Model, populateOpt) =>
   asyncHandler(async (req, res, next) => {
-    const document = await Model.findByIdAndUpdate(req.params.id, req.body, {
+    const { id } = req.params;
+    let document = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
+    let filter = {};
+    if (req.filterObj) {
+      filter = req.filterObj;
+    }
+    // Build query
+    let query = Model.findById(id, filter);
+    if (populateOpt) {
+      query = query.populate(populateOpt);
+    }
+
+    const apiFeatures = new ApiFeatures(query, req.query);
+    await apiFeatures.limitFields();
+    await apiFeatures.populate(); // This keeps the existing population logic intact
+    const { mongooseQuery } = apiFeatures;
+
+    // Execute query
+    document = await mongooseQuery;
 
     if (!document) {
       return next(
