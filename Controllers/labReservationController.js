@@ -12,7 +12,7 @@ exports.updateLabReservation = factory.updateOne(LabReservationModel);
 exports.createLabReservation = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
   const { date } = req.body; // Take the date from request body
-
+  const paymentMethod = "cash";
   // Step 1: Get the user's cart
   const cart = await cartModel.findOne({ user: userId });
 
@@ -24,10 +24,10 @@ exports.createLabReservation = asyncHandler(async (req, res, next) => {
   }
 
   // Step 2: Group tests by labId for separate reservations
-  const groupedTests = groupTestsByLabId(cart.tests, date); // Pass date here
+  const groupedTests = this.groupTestsByLabId(cart.tests, date); // Pass date here
 
   // Step 3: Create reservations for each lab group
-  await createLabReservations({
+  await this.createLabReservations({
     groupedTests,
     userId,
     date,
@@ -37,7 +37,7 @@ exports.createLabReservation = asyncHandler(async (req, res, next) => {
   }); // Pass date here
 
   // Step 4: Clear cart and update totals
-  await updateCartAfterReservation(cart);
+  await this.updateCartAfterReservation(cart);
 
   // Step 5: Respond with success message
   res.status(201).json({
