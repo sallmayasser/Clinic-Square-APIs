@@ -41,7 +41,7 @@ const findOrCreateCart = async (userId) => {
 const addMedicineToCart = async (cart, medicineId, quantity) => {
   const pharmacyMedicine = await PharmacyMedicineModel.findOne({
     _id: medicineId,
-  })
+  });
 
   if (!pharmacyMedicine) {
     throw new ApiError("Medicine not found", 404);
@@ -213,7 +213,6 @@ exports.clearCart = asyncHandler(async (req, res, next) => {
     message: "Cart cleared successfully",
   });
 });
-
 exports.updateItemQuantity = asyncHandler(async (req, res, next) => {
   const { itemId } = req.params;
   const { quantity, type } = req.body;
@@ -223,31 +222,38 @@ exports.updateItemQuantity = asyncHandler(async (req, res, next) => {
     return next(new ApiError(`No cart found for user ${req.user._id}`, 404));
 
   if (type === "medicine") {
-    const item = cart.medicines.find((item) => item._id.toString() === itemId);
-    if (!item) {
+    // Loop through medicines and check if the itemId exists in purchasedMedicines
+    const pharmacy = cart.medicines.find((pharmacy) => {
+      return pharmacy.purchasedMedicines.some(
+        (item) => item.medicineId._id.toString() === itemId // Make sure you access medicineId correctly
+      );
+    });
+
+    if (!pharmacy) {
       return res.status(404).json({
-        message: `No cart found for user ${req.user._id}`,
+        message: `No medicine found with id ${itemId} for user ${req.user._id}`,
       });
     }
-    item.quantity = quantity;
-  }
-  // else if (type === "test") {
-  //     const item = cart.tests.find((item) => item._id.toString() === itemId);
-  //     if (!item) {
-  //       return res.status(404).json({
-  //         message: `No Item found for user ${req.user._id}`,
-  //       });
-  //     }
-  //   }
-  else {
+
+    // Find the specific medicine inside purchasedMedicines and update its quantity
+    const medicine = pharmacy.purchasedMedicines.find(
+      (item) => item.medicineId._id.toString() === itemId
+    );
+
+    if (medicine) {
+      medicine.quantity = quantity; // Update the quantity of the medicine
+    }
+  } else {
     return next(new ApiError(`Invalid type specified`, 400));
   }
 
+  // Recalculate totals after updating the quantity
   calculateCartTotals(cart);
+
+  // Save the updated cart
   await cart.save();
 
-  res.status(200).json({
-    status: "success",
+  return res.status(200).json({
     message: "Item quantity updated successfully",
     data: cart,
   });
