@@ -41,7 +41,7 @@ const findOrCreateCart = async (userId) => {
 const addMedicineToCart = async (cart, medicineId, quantity) => {
   const pharmacyMedicine = await PharmacyMedicineModel.findOne({
     _id: medicineId,
-  }).populate("pharmacy");
+  })
 
   if (!pharmacyMedicine) {
     throw new ApiError("Medicine not found", 404);
