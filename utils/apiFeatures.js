@@ -102,7 +102,7 @@ class ApiFeatures {
     if (this.queryString.populate) {
       const substringToRemove = "password";
       const fieldsToPopulate = this.queryString.populate.split(",");
-
+      console.log(fieldsToPopulate)
       // Recursive function to build nested populate options
       const buildPopulateOption = (pathParts) => {
         if (pathParts.length === 0) return null;

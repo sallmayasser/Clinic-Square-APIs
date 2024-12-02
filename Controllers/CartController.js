@@ -147,8 +147,10 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 
     calculateCartTotals(cart);
     await cart.save();
+    const filter = { user: req.user._id }; // Filter for logged-in user's cart
+    let query = CartModel.findOne(filter);
+    const apiFeatures = new ApiFeatures(query, req.query);
 
-    const apiFeatures = new ApiFeatures(cart, req.query);
     await apiFeatures.populate();
     const { mongooseQuery } = apiFeatures;
     const documents = await mongooseQuery;
@@ -206,7 +208,10 @@ exports.removeItemFromCart = asyncHandler(async (req, res, next) => {
   // Recalculate totals
   calculateCartTotals(cart);
   await cart.save();
-  const apiFeatures = new ApiFeatures(cart, req.query);
+  const filter = { user: req.user._id }; // Filter for logged-in user's cart
+  let query = CartModel.findOne(filter);
+  const apiFeatures = new ApiFeatures(query, req.query);
+
   await apiFeatures.populate();
   const { mongooseQuery } = apiFeatures;
   const documents = await mongooseQuery;
@@ -259,10 +264,17 @@ exports.updateItemQuantity = asyncHandler(async (req, res, next) => {
 
   // Save the updated cart
   await cart.save();
-  const apiFeatures = new ApiFeatures(cart, req.query);
+  
+
+  const filter = { user: req.user._id }; // Filter for logged-in user's cart
+  let query = CartModel.findOne(filter);
+  const apiFeatures = new ApiFeatures(query, req.query);
+
   await apiFeatures.populate();
   const { mongooseQuery } = apiFeatures;
   const documents = await mongooseQuery;
+
+
   return res.status(200).json({
     message: "Item quantity updated successfully",
     data: documents,
