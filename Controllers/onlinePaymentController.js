@@ -387,6 +387,7 @@ const createCardDoctorReservation = async (session, req) => {
   const reservationDate = session.metadata.date;
   req.body.doctor = doctorId;
   req.body.date = reservationDate;
+  req.body.patient = req.user._id
 
   await DoctorReservationModel.create(req.body);
   console.log("hereee");

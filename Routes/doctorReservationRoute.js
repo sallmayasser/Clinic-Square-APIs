@@ -30,6 +30,9 @@ router
     getLoggedUserData,
     setPatientIdToBody,
     validator.createDoctorReservationValidator,
+    (req, res) => {
+      console.log(req.body);
+    },
     createDoctorReservation
   );
 
