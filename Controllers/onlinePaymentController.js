@@ -271,7 +271,7 @@ exports.checkoutSessionDoctor = asyncHandler(async (req, res, next) => {
     client_reference_id: doctor,
     metadata: { date, type },
   });
-
+  
   // 4) send session to response
   res.status(200).json({ status: "success", session });
 });
@@ -347,7 +347,6 @@ const createCardOrder = async (session) => {
 const createCardReservation = async (session) => {
   const cartId = session.client_reference_id;
   const date = session.metadata.date;
-  const totalCost = session.metadata.totalOrderPrice;
   // Step 1: Fetch the cart using cartId
   const cart = await cartModel.findById(cartId);
 
@@ -373,7 +372,6 @@ const createCardReservation = async (session) => {
     groupedTests,
     userId: user._id,
     date,
-    totalCost,
     paymentMethod: "visa",
     isPaid: true,
     paidAt: Date.now(),
@@ -386,11 +384,16 @@ const createCardReservation = async (session) => {
 const createCardDoctorReservation = async (session, req) => {
   const doctorId = session.client_reference_id;
   const reservationDate = session.metadata.date;
+
+  // Ensure req.body is a proper object
+  if (Buffer.isBuffer(req.body)) {
+    req.body = JSON.parse(req.body.toString()); // Parse buffer to JSON
+  }
+
   req.body.doctor = doctorId;
   req.body.date = reservationDate;
-  req.body.patient = req.params.id;
+  // req.body.patient = session.metadata.patientId; // Use metadata from Stripe session
 
   await DoctorReservationModel.create(req.body);
-  console.log("hereee");
-  console.log(req.body);
+  console.log("Reservation Created:", req.body);
 };
