@@ -269,7 +269,7 @@ exports.checkoutSessionDoctor = asyncHandler(async (req, res, next) => {
     cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
     customer_email: req.user.email,
     client_reference_id: doctor,
-    metadata: { date },
+    metadata: { date ,type },
   });
 
   // 4) send session to response
