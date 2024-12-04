@@ -123,11 +123,11 @@ exports.createOnlineDoctorReservationValidator = [
   check("reservationDate")
     .notEmpty()
     .withMessage("Reservation date is required")
-    .custom(async (date, { req }) => {
+    .custom(async (reservationDate, { req }) => {
       const existingReservation = await ReservationModel.findOne({
         patient: req.body.patient,
         doctor: req.body.doctor,
-        date: date,
+        date: new Date(reservationDate),
       });
 
       if (existingReservation) {
