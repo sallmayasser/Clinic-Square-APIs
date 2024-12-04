@@ -269,7 +269,7 @@ exports.checkoutSessionDoctor = asyncHandler(async (req, res, next) => {
     cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
     customer_email: req.user.email,
     client_reference_id: doctor,
-    metadata: { date ,type },
+    metadata: { date, type },
   });
 
   // 4) send session to response
@@ -389,4 +389,6 @@ const createCardDoctorReservation = async (session, req) => {
   req.body.date = reservationDate;
 
   await DoctorReservationModel.create(req.body);
+  console.log("hereee");
+  console.log(req.body);
 };
