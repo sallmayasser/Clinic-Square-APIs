@@ -16,6 +16,9 @@ const PharmacyMedicineModel = require("../Models/pharmacies-medicinesModel");
 const MedicineModel = require("../Models/medicineModel");
 const LabTestsModel = require("../Models/labs-testsModel");
 const testModel = require("../Models/testModel");
+const DoctorModel = require("../Models/doctorModel");
+const { createDoctorReservation } = require("./doctorReservationController");
+const DoctorReservationModel = require("../Models/doctorReservationModel");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
@@ -132,7 +135,7 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0; // Add any applicable tax here
   const shippingPrice = 50; // Flat shipping price
-  const  date  = req.query.reservationDate;
+  const date = req.query.reservationDate;
 
   const type = "test";
   // 1) Get cart depend on cartId
@@ -228,6 +231,51 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get checkout session from stripe and send it as response
+// @route   GET /api/v1/orders/checkout-session/D-reservation
+// @access  Protected/User
+exports.checkoutSessionDoctor = asyncHandler(async (req, res, next) => {
+  // app settings
+  const taxPrice = 0;
+  const shippingPrice = 0;
+  const { doctor } = req.query;
+  const date = req.query.reservationDate;
+  const type = "D-reservation";
+  // 1) Get doctor data depend on Doctor id
+  const doctorDate = await DoctorModel.findById(doctor);
+  if (!doctorDate) {
+    return next(new ApiError(`There is no Doctor with id ${doctor}`, 404));
+  }
+  const reservationPrice = doctorDate.schedule.cost;
+  const totalOrderPrice = reservationPrice + taxPrice + shippingPrice;
+
+  // 3) Create stripe checkout session
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: "egp",
+          product_data: {
+            name: doctorDate.name,
+          },
+          unit_amount: totalOrderPrice * 100, // Stripe uses cents
+        },
+
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: `${req.protocol}://${req.get("host")}/patient/order`,
+    cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
+    customer_email: req.user.email,
+    client_reference_id: doctor,
+    metadata: { date },
+  });
+
+  // 4) send session to response
+  res.status(200).json({ status: "success", session });
+});
+
 // @desc    This webhook will run when stripe payment success paid
 // @route   POST /webhook-checkout
 // @access  Protected/User
@@ -249,6 +297,9 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
     if (event.data.object.metadata.type === "test") {
       // create reservation
       createCardReservation(event.data.object);
+    } else if (event.data.object.metadata.type === "D-reservation") {
+      // create reservation
+      createCardDoctorReservation(event.data.object, req);
     } else {
       //  Create order
       createCardOrder(event.data.object);
@@ -329,4 +380,13 @@ const createCardReservation = async (session) => {
 
   // Step 5: Clear cart and update totals
   await updateCartAfterReservation(cart);
+};
+
+const createCardDoctorReservation = async (session, req) => {
+  const doctorId = session.client_reference_id;
+  const reservationDate = session.metadata.date;
+  req.body.doctor = doctorId;
+  req.body.date = reservationDate;
+
+  await DoctorReservationModel.create(req.body);
 };
