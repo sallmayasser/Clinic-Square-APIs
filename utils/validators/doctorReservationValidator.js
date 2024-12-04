@@ -94,18 +94,18 @@ exports.createDoctorReservationValidator = [
   validatorMiddleware,
 ];
 exports.createOnlineDoctorReservationValidator = [
-  check("patient")
-    .notEmpty()
-    .withMessage("Patient ID is required")
-    .isMongoId()
-    .withMessage("Invalid Patient ID")
-    .custom(async (val) => {
-      const patientExists = await PatientModel.findById(val);
-      if (!patientExists) {
-        throw new Error("Patient not found");
-      }
-      return true;
-    }),
+  // check("patient")
+  //   .notEmpty()
+  //   .withMessage("Patient ID is required")
+  //   .isMongoId()
+  //   .withMessage("Invalid Patient ID")
+  //   .custom(async (val) => {
+  //     const patientExists = await PatientModel.findById(val);
+  //     if (!patientExists) {
+  //       throw new Error("Patient not found");
+  //     }
+  //     return true;
+  //   }),
 
   check("doctor")
     .notEmpty()
