@@ -44,6 +44,11 @@ const doctorReservationSchema = new mongoose.Schema(
           default: null,
         },
       ],
+      paymentMethod: {
+        type: String,
+        enum: ["cash", "visa"],
+        default: "cash",
+      },
     },
   },
   {

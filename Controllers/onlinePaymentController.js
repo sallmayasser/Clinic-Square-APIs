@@ -389,7 +389,8 @@ const createCardDoctorReservation = async (session, req) => {
   req.body.doctor = doctorId;
   req.body.date = reservationDate;
   req.body.patient = JSON.parse(session.metadata.patientId);
+  req.body.paymentMethod = "visa"
 
   await DoctorReservationModel.create(req.body);
-  console.log("Reservation Created:", req.body);
+
 };
