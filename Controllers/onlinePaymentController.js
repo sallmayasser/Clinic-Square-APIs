@@ -347,7 +347,7 @@ const createCardOrder = async (session) => {
 const createCardReservation = async (session) => {
   const cartId = session.client_reference_id;
   const date = session.metadata.date;
-
+  const totalCost = session.metadata.totalOrderPrice;
   // Step 1: Fetch the cart using cartId
   const cart = await cartModel.findById(cartId);
 
@@ -375,6 +375,7 @@ const createCardReservation = async (session) => {
     date,
     paymentMethod: "visa",
     isPaid: true,
+    totalCost,
     paidAt: Date.now(),
   });
 
@@ -387,7 +388,7 @@ const createCardDoctorReservation = async (session, req) => {
   const reservationDate = session.metadata.date;
   req.body.doctor = doctorId;
   req.body.date = reservationDate;
-  req.body.patient = req.user._id
+  // req.body.patient = req.user._id;
 
   await DoctorReservationModel.create(req.body);
   console.log("hereee");

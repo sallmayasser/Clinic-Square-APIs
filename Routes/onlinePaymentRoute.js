@@ -23,6 +23,7 @@ router
   .route("/D-reservation")
   .get(
     getLoggedUserData,
+    setPatientIdToBody,
     createOnlineDoctorReservationValidator,
     checkoutSessionDoctor
   );
