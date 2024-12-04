@@ -373,9 +373,9 @@ const createCardReservation = async (session) => {
     groupedTests,
     userId: user._id,
     date,
+    totalCost,
     paymentMethod: "visa",
     isPaid: true,
-    totalCost,
     paidAt: Date.now(),
   });
 
@@ -388,7 +388,7 @@ const createCardDoctorReservation = async (session, req) => {
   const reservationDate = session.metadata.date;
   req.body.doctor = doctorId;
   req.body.date = reservationDate;
-  // req.body.patient = req.user._id;
+  req.body.patient = req.params.id;
 
   await DoctorReservationModel.create(req.body);
   console.log("hereee");

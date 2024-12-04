@@ -15,7 +15,7 @@ const orderSchema = new mongoose.Schema(
       {
         medicineId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Medicine",
+          ref: "PharmacyMedicine",
           required: [true, "Medicine ID is required"],
         },
         price: {

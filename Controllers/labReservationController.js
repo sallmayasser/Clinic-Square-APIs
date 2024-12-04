@@ -72,6 +72,7 @@ exports.createLabReservations = async ({
   groupedTests,
   userId,
   date,
+  totalCost,
   paymentMethod,
   isPaid,
   paidAt,
@@ -103,6 +104,7 @@ exports.createLabReservations = async ({
       date: date, // Use the date from the request body
       requestedTests,
       paymentMethod,
+      totalCost,
       isPaid,
       paidAt,
     });
