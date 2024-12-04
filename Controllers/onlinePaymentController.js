@@ -19,6 +19,7 @@ const testModel = require("../Models/testModel");
 const DoctorModel = require("../Models/doctorModel");
 const { createDoctorReservation } = require("./doctorReservationController");
 const DoctorReservationModel = require("../Models/doctorReservationModel");
+const { default: mongoose } = require("mongoose");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
@@ -242,12 +243,39 @@ exports.checkoutSessionDoctor = asyncHandler(async (req, res, next) => {
   const date = req.query.reservationDate;
   const type = "D-reservation";
   const patientId = JSON.stringify(req.user._id);
-  // 1) Get doctor data depend on Doctor id
-  const doctorDate = await DoctorModel.findById(doctor);
-  if (!doctorDate) {
-    return next(new ApiError(`There is no Doctor with id ${doctor}`, 404));
+  // 1) Validate Doctor ID
+  if (!doctor || !mongoose.Types.ObjectId.isValid(doctor)) {
+    return next(new ApiError("Invalid Doctor ID provided", 400));
   }
-  const reservationPrice = doctorDate.schedule.cost;
+
+  // Check if doctor exists
+  const doctorData = await DoctorModel.findById(doctor);
+  if (!doctorData) {
+    return next(new ApiError(`Doctor with ID ${doctor} not found`, 404));
+  }
+
+  // 2) Validate Reservation Date
+  if (!date) {
+    return next(new ApiError("Reservation date is required", 400));
+  }
+
+  // Check for existing reservations
+  const existingReservation = await DoctorReservationModel.findOne({
+    patient: req.user._id,
+    doctor,
+    date,
+  });
+  if (existingReservation) {
+    return next(
+      new ApiError(
+        "This patient has already reserved with the same doctor on this date",
+        400
+      )
+    );
+  }
+
+  // 3) Calculate Total Price
+  const reservationPrice = doctorData.schedule.cost;
   const totalOrderPrice = reservationPrice + taxPrice + shippingPrice;
 
   // 3) Create stripe checkout session
@@ -257,7 +285,7 @@ exports.checkoutSessionDoctor = asyncHandler(async (req, res, next) => {
         price_data: {
           currency: "egp",
           product_data: {
-            name: doctorDate.name,
+            name: doctorData.name,
           },
           unit_amount: totalOrderPrice * 100, // Stripe uses cents
         },
@@ -389,8 +417,7 @@ const createCardDoctorReservation = async (session, req) => {
   req.body.doctor = doctorId;
   req.body.date = reservationDate;
   req.body.patient = JSON.parse(session.metadata.patientId);
-  req.body.paymentMethod = "visa"
+  req.body.paymentMethod = "visa";
 
   await DoctorReservationModel.create(req.body);
-
 };
