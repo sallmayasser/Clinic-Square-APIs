@@ -10,6 +10,7 @@ const { getLoggedUserData } = require("../Controllers/handlerFactory");
 const { setPatientIdToBody } = require("../Controllers/PatientController");
 const {
   createDoctorReservationValidator,
+  createOnlineDoctorReservationValidator,
 } = require("../utils/validators/doctorReservationValidator");
 
 const router = express.Router({ mergeParams: true });
@@ -23,7 +24,7 @@ router
   .get(
     getLoggedUserData,
     setPatientIdToBody,
-    createDoctorReservationValidator,
+    createOnlineDoctorReservationValidator,
     checkoutSessionDoctor
   );
 module.exports = router;
