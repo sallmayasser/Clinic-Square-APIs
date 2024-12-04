@@ -16,6 +16,10 @@ const PharmacyMedicineModel = require("../Models/pharmacies-medicinesModel");
 const MedicineModel = require("../Models/medicineModel");
 const LabTestsModel = require("../Models/labs-testsModel");
 const testModel = require("../Models/testModel");
+const DoctorModel = require("../Models/doctorModel");
+const { createDoctorReservation } = require("./doctorReservationController");
+const DoctorReservationModel = require("../Models/doctorReservationModel");
+const { default: mongoose } = require("mongoose");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
@@ -132,7 +136,7 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0; // Add any applicable tax here
   const shippingPrice = 50; // Flat shipping price
-  const  date  = req.query.reservationDate;
+  const date = req.query.reservationDate;
 
   const type = "test";
   // 1) Get cart depend on cartId
@@ -228,6 +232,79 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get checkout session from stripe and send it as response
+// @route   GET /api/v1/orders/checkout-session/D-reservation
+// @access  Protected/User
+exports.checkoutSessionDoctor = asyncHandler(async (req, res, next) => {
+  // app settings
+  const taxPrice = 0;
+  const shippingPrice = 0;
+  const { doctor } = req.query;
+  const date = req.query.reservationDate;
+  const type = "D-reservation";
+  const patientId = JSON.stringify(req.user._id);
+  // 1) Validate Doctor ID
+  if (!doctor || !mongoose.Types.ObjectId.isValid(doctor)) {
+    return next(new ApiError("Invalid Doctor ID provided", 400));
+  }
+
+  // Check if doctor exists
+  const doctorData = await DoctorModel.findById(doctor);
+  if (!doctorData) {
+    return next(new ApiError(`Doctor with ID ${doctor} not found`, 404));
+  }
+
+  // 2) Validate Reservation Date
+  if (!date) {
+    return next(new ApiError("Reservation date is required", 400));
+  }
+
+  // Check for existing reservations
+  const existingReservation = await DoctorReservationModel.findOne({
+    patient: req.user._id,
+    doctor,
+    date,
+  });
+  if (existingReservation) {
+    return next(
+      new ApiError(
+        "This patient has already reserved with the same doctor on this date",
+        400
+      )
+    );
+  }
+
+  // 3) Calculate Total Price
+  const reservationPrice = doctorData.schedule.cost;
+  const totalOrderPrice = reservationPrice + taxPrice + shippingPrice;
+
+  // 3) Create stripe checkout session
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: "egp",
+          product_data: {
+            name: doctorData.name,
+          },
+          unit_amount: totalOrderPrice * 100, // Stripe uses cents
+        },
+
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: `${req.protocol}://${req.get("host")}/patient/order`,
+    cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
+    customer_email: req.user.email,
+    client_reference_id: doctor,
+    metadata: { date, type, patientId },
+  });
+
+  // 4) send session to response
+  res.status(200).json({ status: "success", session });
+});
+
 // @desc    This webhook will run when stripe payment success paid
 // @route   POST /webhook-checkout
 // @access  Protected/User
@@ -249,6 +326,9 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
     if (event.data.object.metadata.type === "test") {
       // create reservation
       createCardReservation(event.data.object);
+    } else if (event.data.object.metadata.type === "D-reservation") {
+      // create reservation
+      createCardDoctorReservation(event.data.object, req);
     } else {
       //  Create order
       createCardOrder(event.data.object);
@@ -296,7 +376,6 @@ const createCardOrder = async (session) => {
 const createCardReservation = async (session) => {
   const cartId = session.client_reference_id;
   const date = session.metadata.date;
-
   // Step 1: Fetch the cart using cartId
   const cart = await cartModel.findById(cartId);
 
@@ -329,4 +408,16 @@ const createCardReservation = async (session) => {
 
   // Step 5: Clear cart and update totals
   await updateCartAfterReservation(cart);
+};
+
+const createCardDoctorReservation = async (session, req) => {
+  const doctorId = session.client_reference_id;
+  const reservationDate = session.metadata.date;
+
+  req.body.doctor = doctorId;
+  req.body.date = reservationDate;
+  req.body.patient = JSON.parse(session.metadata.patientId);
+  req.body.paymentMethod = "visa";
+
+  await DoctorReservationModel.create(req.body);
 };

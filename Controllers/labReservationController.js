@@ -79,6 +79,9 @@ exports.createLabReservations = async ({
   for (const labId in groupedTests) {
     const requestedTests = groupedTests[labId];
 
+    // Calculate total cost for the lab
+    const totalCost = requestedTests.reduce((acc, test) => acc + test.price, 0);
+
     // Step 3a: Check for duplicate reservations for all tests
     for (const test of requestedTests) {
       const duplicateReservation = await LabReservationModel.findOne({
@@ -103,6 +106,7 @@ exports.createLabReservations = async ({
       date: date, // Use the date from the request body
       requestedTests,
       paymentMethod,
+      totalCost, // Use the calculated total cost for this lab's tests
       isPaid,
       paidAt,
     });
