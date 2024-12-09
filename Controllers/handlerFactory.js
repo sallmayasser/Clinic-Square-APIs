@@ -200,7 +200,7 @@ exports.deleteLoggedUserData = (Model) =>
   });
 exports.verify = (req, res, next) => {
   // Nested route (Create)
-  if (!req.body.state) req.body.state = "verified";
+  if (!req.body.state) req.body.state = true;
   req.body.user = req.user.email;
   next();
 };

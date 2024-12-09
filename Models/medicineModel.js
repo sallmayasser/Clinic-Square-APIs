@@ -34,8 +34,8 @@ const medicineSchema = new mongoose.Schema(
       require: true,
     },
     state: {
-      type: String,
-      default: "pending",
+      type: Boolean,
+      default: false,
     },
   },
 
