@@ -10,8 +10,8 @@ const testSchema = new mongoose.Schema(
       type: String,
     },
     state: {
-      type: String,
-      default: "pending",
+      type: Boolean,
+      default: false,
     },
   },
   {
