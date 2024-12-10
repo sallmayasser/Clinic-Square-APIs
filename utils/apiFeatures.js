@@ -141,46 +141,84 @@
       }
       return this;
     }
-
     async groupBy() {
-      if(this.queryString.groupBy){
-        const isDateField = this.queryString.groupBy === "date" | "createdAt" | "updateAt" ; // Optional flag to indicate date grouping
-
-        const pipeline = isDateField
-          ? [
-              {
-                $group: {
-                  _id: {
-                    year: { $year: { $toDate: `$${this.queryString.groupBy}` } },
-                    month: { $month: { $toDate: `$${this.queryString.groupBy}` } },
-                  },
-                  count: { $sum: 1 },
-                },
-              },
-              {
-                $sort: { "_id.year": 1, "_id.month": 1 },
-              },
-            ]
-          : [
-              {
-                $group: {
-                  _id: `$${this.queryString.groupBy}`,
-                  count: { $sum: 1 },
-                },
-              },
-              {
-                $sort: { count: -1 },
-              },
-            ];
-      
-        // Use the Mongoose model directly for aggregation
+      if (this.queryString.groupBy) {
+        const groupByFields = Object.entries(this.queryString.groupBy)[0]; // Get the first key-value pair
+        const [granularityOrField, fields] = groupByFields;
+    
+        // Ensure `fields` is an array (split it if it's a string)
+        const fieldsArray = typeof fields === 'string' ? fields.split(',') : fields;
+    
+        if (!fieldsArray || fieldsArray.length === 0) {
+          throw new Error("At least one field is required for grouping.");
+        }
+    
+        // Validate input
+        const validDateGranularities = ["year", "month", "day"];
+        const validFields = ["date", "createdAt", "updatedAt"];
+    
+        // Check if it's date-based grouping
+        const isDateGrouping = validDateGranularities.includes(granularityOrField) && fieldsArray.some(field => validFields.includes(field));
+    
+        // Construct the groupId dynamically
+        const groupId = {};
+        const sort = {};
+    
+        // Handle Date-Based Grouping (for fields like 'date', 'createdAt')
+        if (isDateGrouping) {
+          const dateFields = fieldsArray.filter(field => validFields.includes(field));
+    
+          // Only perform $toDate once per field
+          dateFields.forEach(dateField => {
+            const formattedDateField = `$${dateField}`;
+    
+            // Group by the desired granularity (year, month, day)
+            if (granularityOrField === "year" || granularityOrField === "month" || granularityOrField === "day") {
+              groupId.year = { $dateToString: { format: "%Y", date: { $toDate: formattedDateField } } };
+            }
+            if (granularityOrField === "month" || granularityOrField === "day") {
+              groupId.month = { $dateToString: { format: "%m", date: { $toDate: formattedDateField } } };
+            }
+            if (granularityOrField === "day") {
+              groupId.day = { $dateToString: { format: "%d", date: { $toDate: formattedDateField } } };
+            }
+          });
+    
+          // Sorting by grouped date fields
+          sort["_id.year"] = 1;
+          if (granularityOrField !== "year") sort["_id.month"] = 1;
+          if (granularityOrField === "day") sort["_id.day"] = 1;
+        }
+    
+        // Handle Non-Date Fields (e.g., 'doctor', 'patient')
+        const nonDateFields = fieldsArray.filter(field => !validFields.includes(field));
+        nonDateFields.forEach(field => {
+          groupId[field] = `$${field}`;
+          sort[`_id.${field}`] = 1;
+        });
+    
+        // Build the aggregation pipeline
+        const pipeline = [
+          {
+            $group: {
+              _id: groupId,
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $sort: sort,
+          },
+        ];
+    
+        // Execute the aggregation
         const aggregatedData = await this.mongooseQuery.model.aggregate(pipeline);
-      
-        // Store the aggregation result
+    
+        // Store the result
         this.mongooseQuery = aggregatedData;
         return this;
       }
-      }
+    }
+    
     
 
 
