@@ -109,8 +109,8 @@ exports.getAll = (Model, populateOpt, modelName = "") =>
     await apiFeatures.search(modelName);
     await apiFeatures.limitFields();
     await apiFeatures.sort();
-    await apiFeatures.groupBy();
     await apiFeatures.populate();
+    await apiFeatures.groupBy();
 
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;
