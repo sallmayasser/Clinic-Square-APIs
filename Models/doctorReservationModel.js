@@ -17,10 +17,14 @@ const doctorReservationSchema = new mongoose.Schema(
     },
     state: {
       type: String,
-      enum: ["completed", "consultaion", "pending"],
+      enum: ["completed", "consultation", "pending"],
       default: "pending",
     },
-
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "visa"],
+      default: "cash",
+    },
     report: {
       diagnose: { type: String, default: null },
       medicine: [
@@ -44,11 +48,6 @@ const doctorReservationSchema = new mongoose.Schema(
           default: null,
         },
       ],
-      paymentMethod: {
-        type: String,
-        enum: ["cash", "visa"],
-        default: "cash",
-      },
     },
   },
   {

@@ -14,6 +14,11 @@ const {
 const router = express.Router({ mergeParams: true });
 router.use(authController.protect);
 
+//Admin Route
+
+router.route("/All-orders").get(authController.allowedTo("admin"), getOrders);
+
+// patient Route
 router
   .route("/")
   .post(authController.allowedTo("patient"), createOrder)

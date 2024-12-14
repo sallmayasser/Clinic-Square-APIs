@@ -20,6 +20,26 @@ exports.deleteOne = (Model) =>
       data: null,
     });
   });
+exports.AppendOne = (Model) =>
+  asyncHandler(async (req, res, next) => {
+    const document = await Model.findByIdAndUpdate(
+      req.params.id,
+      { $push: req.body },
+      {
+        new: false,
+        returnOriginal: true,
+      }
+    );
+
+    if (!document) {
+      return next(
+        new ApiError(`No document for this id ${req.params.id}`, 404)
+      );
+    }
+    // Trigger "save" event when update document
+    document.save();
+    res.status(200).json({ message: "Data Appended Successfully." });
+  });
 
 exports.updateOne = (Model, populateOpt) =>
   asyncHandler(async (req, res, next) => {
