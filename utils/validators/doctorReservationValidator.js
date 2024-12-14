@@ -59,9 +59,9 @@ exports.createDoctorReservationValidator = [
 
   check("state")
     .optional()
-    .isIn(["completed", "consultaion", "pending"])
+    .isIn(["completed", "consultation", "pending"])
     .withMessage(
-      "Invalid state. Must be either 'completed', 'consultaion', or 'pending'"
+      "Invalid state. Must be either 'completed', 'consultation', or 'pending'"
     ),
 
   check("report.diagnose")
@@ -141,9 +141,9 @@ exports.createOnlineDoctorReservationValidator = [
 
   check("state")
     .optional()
-    .isIn(["completed", "consultaion", "pending"])
+    .isIn(["completed", "consultation", "pending"])
     .withMessage(
-      "Invalid state. Must be either 'completed', 'consultaion', or 'pending'"
+      "Invalid state. Must be either 'completed', 'consultation', or 'pending'"
     ),
 
   check("report.diagnose")
@@ -181,9 +181,9 @@ exports.updateReservationValidator = [
 
   check("state")
     .optional()
-    .isIn(["completed", "consultaion", "pending"])
+    .isIn(["completed", "consultation", "pending"])
     .withMessage(
-      "Invalid state. Must be either 'completed', 'consultaion', or 'pending'"
+      "Invalid state. Must be either 'completed', 'consultation', or 'pending'"
     ),
 
   check("report.diagnose")

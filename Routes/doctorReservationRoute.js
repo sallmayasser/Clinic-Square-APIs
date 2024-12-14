@@ -9,6 +9,8 @@ const {
   createDoctorReservation,
   deleteDoctorReservation,
   updateDoctorReservation,
+  AppendRequestedTest,
+  ClearData,
 } = require("../Controllers/doctorReservationController");
 const validator = require("../utils/validators/doctorReservationValidator");
 const authController = require("../Controllers/authController");
@@ -32,7 +34,20 @@ router
     validator.createDoctorReservationValidator,
     createDoctorReservation
   );
-
+router
+  .route("/Append-test/:id")
+  .patch(
+    authController.allowedTo("doctor"),
+    validator.updateReservationValidator,
+    AppendRequestedTest
+  );
+router
+  .route("/clear/:ReservationId")
+  .delete(
+    authController.protect,
+    authController.allowedTo("doctor"),
+    ClearData
+  );
 router
   .route("/:id")
   .get(
