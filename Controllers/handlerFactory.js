@@ -178,7 +178,6 @@ exports.createFilterObj = (req, res, next, filterType) => {
     filterObject = { pharmacy: req.params.id };
   }
   req.filterObj = filterObject;
-  console.log(filterObject);
   next();
 };
 
