@@ -47,29 +47,54 @@
       return this;
     }
 
-    async search(searchFields = [], populateFields = []) {
+    async search() {
       if (this.queryString.keyword) {
-        const keywordRegex = { $regex: this.queryString.keyword, $options: "i" };
-        const query = {};
-
-        // Add search criteria for main fields
-        if (searchFields.length > 0) {
-          query.$or = searchFields.map((field) => ({ [field]: keywordRegex }));
+        if(Object.entries(this.queryString.keyword)[0][0]==='0'){
+          const query = { name: { $regex: this.queryString.keyword, $options: 'i' }}
+          this.mongooseQuery = this.mongooseQuery.find(query);    
         }
+        else{
 
-        // Add search criteria for populated fields
-        if (populateFields.length > 0) {
-          populateFields.forEach((populateField) => {
-            query[`${populateField}.name`] = keywordRegex;
-            this.mongooseQuery = this.mongooseQuery.populate({
-              path: populateField,
-              match: { name: keywordRegex },
-            });
-          });
+        const serachFidelds = Object.entries(this.queryString.keyword)[0]; // Get the first key-value pair
+
+        const [path, name] = serachFidelds;
+        const buildPopulateOption = (pathParts) => {
+          if (pathParts.length === 0) return null;
+          
+          const [currentPath, ...remainingPaths] = pathParts;
+       
+          let populateOption;
+          remainingPaths.length===0?
+           populateOption = {
+            path:currentPath,
+            select: "-password",
+          match: { name : {$regex: name, $options: "i" } },
+
+          }:populateOption = {
+              path:currentPath,
+              select: "-password",
+
+            }
+          
+            
+          const nestedPopulate = buildPopulateOption(remainingPaths);
+          if (nestedPopulate) populateOption.populate = nestedPopulate;
+
+          return populateOption;
+        };
+
+     
+        const pathParts = path.split(".");
+        const populateOption = buildPopulateOption(pathParts);
+
+        if (populateOption) {
+          this.mongooseQuery = this.mongooseQuery.populate(populateOption);
         }
-
-        this.mongooseQuery = this.mongooseQuery.find(query);
+        // this.mongooseQuery=this.mongooseQuery.find()
       }
+    }
+    this.countDocuments = await this.mongooseQuery.clone().countDocuments();
+    
       return this;
     }
 
