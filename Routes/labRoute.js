@@ -93,6 +93,10 @@ router.delete(
 );
 // test Routes
 router
+  .route("/All-Labs-tests")
+  .get(authController.allowedTo("patient","admin"), getTests);
+
+router
   .route("/tests")
   .get(
     authController.allowedTo("lab"),

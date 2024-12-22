@@ -115,7 +115,7 @@ router
   .get(authController.allowedTo("admin", "patient"), getPharmacys);
 
 router
-  .route("/pharmacy-medicine")
+  .route("/All-pharmacies-medicines")
   .get(authController.allowedTo("patient", "admin"), getMedicines);
 
 router.route("/pharmacy-medicine/:id").get(
