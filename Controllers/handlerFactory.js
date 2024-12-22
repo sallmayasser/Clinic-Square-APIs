@@ -90,6 +90,7 @@ exports.getOne = (Model, populateOpt) =>
     res.status(200).json({ data: document });
   });
 
+
 exports.getAll = (Model, populateOpt, modelName = "") =>
   asyncHandler(async (req, res) => {
     let filter = {};
@@ -105,8 +106,8 @@ exports.getAll = (Model, populateOpt, modelName = "") =>
 
     const apiFeatures = new ApiFeatures(query, req.query);
     await apiFeatures.filter();
+    await apiFeatures.search();
     await apiFeatures.paginate();
-    await apiFeatures.search(modelName);
     await apiFeatures.limitFields();
     await apiFeatures.sort();
     await apiFeatures.populate();
@@ -115,11 +116,34 @@ exports.getAll = (Model, populateOpt, modelName = "") =>
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;
     const documents = await mongooseQuery;
-
-    res
+    let filteredResult=[];
+    if(req.query.keyword){
+      const keywordActor=Object.entries(req.query.keyword)[0][0]
+      if (keywordActor!=='0')
+      {
+        if( keywordActor.includes(".")){
+          filteredResult=documents
+        }
+        else{
+          filteredResult = documents.filter(doc => doc[`${keywordActor}`]!== null);
+    
+        }
+      }
+      else {
+        filteredResult=documents
+      }
+     
+      res
+      .status(200)
+      .json({ results: documents.length, paginationResult, data: filteredResult });
+    }
+   
+    else{
+      res
       .status(200)
       .json({ results: documents.length, paginationResult, data: documents });
-  });
+    }
+    });
 
 exports.createFilterObj = (req, res, next, filterType) => {
   let filterObject = {};
