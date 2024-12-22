@@ -52,7 +52,6 @@ exports.checkRole = (req, res, next) => {
         break;
       case "doctor":
         this.signup(Doctors, req, res, next);
-        console.log("hereee");
         break;
       case "lab":
         this.signup(Labs, req, res, next);

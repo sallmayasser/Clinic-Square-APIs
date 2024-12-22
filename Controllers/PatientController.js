@@ -46,6 +46,5 @@ exports.setPatientToBody = (req, res, next) => {
 exports.setPatientIdToBody = (req, res, next) => {
   // Nested route (Create)
   if (!req.body.patient) req.body.patient = req.params.id;
-  console.log(req.body)
   next();
 };

@@ -114,6 +114,10 @@ router
   .route("/")
   .get(authController.allowedTo("admin", "patient"), getPharmacys);
 
+router
+  .route("/pharmacy-medicine")
+  .get(authController.allowedTo("patient", "admin"), getMedicines);
+
 router.route("/pharmacy-medicine/:id").get(
   authController.allowedTo("patient"),
   (req, res, next) => {
@@ -123,7 +127,11 @@ router.route("/pharmacy-medicine/:id").get(
 );
 router
   .route("/:id")
-  .get(validators.getPharmacyValidator, getPharmacy)
+  .get(
+    authController.allowedTo("admin", "patient"),
+    validators.getPharmacyValidator,
+    getPharmacy
+  )
   .patch(
     authController.allowedTo("admin"),
     uploadImage,
