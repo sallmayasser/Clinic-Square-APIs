@@ -50,9 +50,16 @@
     async search() {
       if (this.queryString.keyword) {
         if(Object.entries(this.queryString.keyword)[0][0]==='0'){
-        const query = {$or:[{ name: { $regex: this.queryString.keyword, $options: 'i' } },
+          let query={};
+          if(this.queryString.keyword.includes(",")){
+            query = {$and:[{ name: { $regex: this.queryString.keyword.split(",")[0], $options: 'i' } },
+              { specialization: { $regex: this.queryString.keyword.split(",")[1], $options: 'i' } }]}
+          }
+          else {
+
+             query = {$or:[{ name: { $regex: this.queryString.keyword, $options: 'i' } },
             { specialization: { $regex: this.queryString.keyword, $options: 'i' } }]}
-          
+          }
           this.mongooseQuery = this.mongooseQuery.find(query); 
         }
         else{
