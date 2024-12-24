@@ -50,8 +50,10 @@
     async search() {
       if (this.queryString.keyword) {
         if(Object.entries(this.queryString.keyword)[0][0]==='0'){
-          const query = { name: { $regex: this.queryString.keyword, $options: 'i' }}
-          this.mongooseQuery = this.mongooseQuery.find(query);    
+        const query = {$or:[{ name: { $regex: this.queryString.keyword, $options: 'i' } },
+            { specialization: { $regex: this.queryString.keyword, $options: 'i' } }]}
+          
+          this.mongooseQuery = this.mongooseQuery.find(query); 
         }
         else{
 
