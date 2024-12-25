@@ -58,7 +58,9 @@
           else {
 
              query = {$or:[{ name: { $regex: this.queryString.keyword, $options: 'i' } },
-            { specialization: { $regex: this.queryString.keyword, $options: 'i' } }]}
+            { specialization: { $regex: this.queryString.keyword, $options: 'i' } },
+            { question: { $regex: this.queryString.keyword, $options: 'i' } },
+          ]}
           }
           this.mongooseQuery = this.mongooseQuery.find(query); 
         }
