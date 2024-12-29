@@ -219,7 +219,7 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
     metadata: {
       date,
       type,
-      items: JSON.stringify(cart.tests),
+      // items: JSON.stringify(cart.tests),
       shippingPrice,
       totalOrderPrice, // Include total order price in metadata
     },
@@ -378,7 +378,7 @@ const createCardReservation = async (session) => {
   const date = session.metadata.date;
   // Step 1: Fetch the cart using cartId
   const cart = await cartModel.findById(cartId);
-
+  console.log("heree 1");
   if (!cart || cart.tests.length === 0) {
     return res.status(400).json({
       message:
@@ -395,7 +395,7 @@ const createCardReservation = async (session) => {
   }
   // Step 3: Group tests by labId for separate reservations
   const groupedTests = groupTestsByLabId(cart.tests, date); // Pass date here
-
+console.log("heree 2");
   // Step 4: Create reservations for each lab group
   await createLabReservations({
     groupedTests,
@@ -405,9 +405,10 @@ const createCardReservation = async (session) => {
     isPaid: true,
     paidAt: Date.now(),
   });
-
+console.log("heree 3");
   // Step 5: Clear cart and update totals
   await updateCartAfterReservation(cart);
+  console.log("heree 4");
 };
 
 const createCardDoctorReservation = async (session, req) => {
