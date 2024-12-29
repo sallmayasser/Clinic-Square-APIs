@@ -39,18 +39,19 @@ exports.createLabTestValidator = [
   check("test")
     .notEmpty()
     .withMessage("test ID is required")
-    .custom(async (testId) => {
-      const testExists = await LabTestsModel.findOne({
+    .custom(async (testId, { req }) => {
+      return LabTestsModel.findOne({
         test: testId,
+        lab: req.user._id,
+      }).then((existingTest) => {
+        if (existingTest) {
+          throw new ApiError("This test already exists in the Lab", 400);
+        }
       });
-      if (testExists) {
-        throw new ApiError("This test already exists in the Lab", 400);
-      }
-      return true;
     }),
 
   // Validate Lab
-  check("Lab").notEmpty().withMessage("Lab ID is required"),
+  // check("Lab").notEmpty().withMessage("Lab ID is required"),
 
   // Validate cost
   check("cost")

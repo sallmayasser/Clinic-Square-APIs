@@ -50,8 +50,19 @@
     async search() {
       if (this.queryString.keyword) {
         if(Object.entries(this.queryString.keyword)[0][0]==='0'){
-          const query = { name: { $regex: this.queryString.keyword, $options: 'i' }}
-          this.mongooseQuery = this.mongooseQuery.find(query);    
+          let query={};
+          if(this.queryString.keyword.includes(",")){
+            query = {$and:[{ name: { $regex: this.queryString.keyword.split(",")[0], $options: 'i' } },
+              { specialization: { $regex: this.queryString.keyword.split(",")[1], $options: 'i' } }]}
+          }
+          else {
+
+             query = {$or:[{ name: { $regex: this.queryString.keyword, $options: 'i' } },
+            { specialization: { $regex: this.queryString.keyword, $options: 'i' } },
+            { question: { $regex: this.queryString.keyword, $options: 'i' } },
+          ]}
+          }
+          this.mongooseQuery = this.mongooseQuery.find(query); 
         }
         else{
 
@@ -129,7 +140,6 @@
       if (this.queryString.populate) {
         const substringToRemove = "password";
         const fieldsToPopulate = this.queryString.populate.split(",");
-        console.log(fieldsToPopulate)
         // Recursive function to build nested populate options
         const buildPopulateOption = (pathParts) => {
           if (pathParts.length === 0) return null;

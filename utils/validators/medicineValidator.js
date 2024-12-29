@@ -1,5 +1,5 @@
 const slugify = require("slugify");
-const { check,body } = require("express-validator");
+const { check, body } = require("express-validator");
 const validatorMiddleware = require("../../Middlewares/validatorMiddleware");
 const PharmacyMedicineModel = require("../../Models/pharmacies-medicinesModel");
 const ApiError = require("../apiError");
@@ -75,18 +75,19 @@ exports.createPharmacyMedicineValidator = [
   check("medicine")
     .notEmpty()
     .withMessage("Medicine ID is required")
-    .custom(async (medicineId) => {
-      const medicineExists = await PharmacyMedicineModel.findOne({
+    .custom(async (medicineId, { req }) => {
+      return PharmacyMedicineModel.findOne({
         medicine: medicineId,
+        pharmacy: req.user._id,
+      }).then((medicineExists) => {
+        if (medicineExists) {
+          throw new ApiError("This test already exists in the Lab", 400);
+        }
       });
-      if (medicineExists) {
-        throw new ApiError("This medicine already exists in the pharmacy", 400);
-      }
-      return true;
     }),
 
   // Validate pharmacy
-  check("pharmacy").notEmpty().withMessage("Pharmacy ID is required"),
+  // check("pharmacy").notEmpty().withMessage("Pharmacy ID is required"),
 
   // Validate stock
   check("stock")

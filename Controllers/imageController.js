@@ -44,7 +44,7 @@ exports.uploadImage = uploadMixOfImages([
 ]);
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   const { role } = req.body;
-  // console.log(req.files);
+
 
   // Validate the role
   if (!["patient", "doctor", "lab", "pharmacy"].includes(role)) {
