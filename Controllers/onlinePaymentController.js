@@ -119,7 +119,7 @@ exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
     client_reference_id: req.params.cartId,
     metadata: {
       shippingAddress,
-      items: JSON.stringify(cart.medicines),
+      //items: JSON.stringify(cart.medicines),
       shippingPrice,
       totalOrderPrice, // Include total order price in metadata
     },
@@ -414,7 +414,9 @@ const createCardReservation = async (session) => {
         throw new ApiError(`No date provided for lab ${labId}`, 400);
       }
       return {
-        groupedTests: { [labId]: tests },
+        groupedTests: {
+          [labId]: groupedTests[labId],
+        },
         userId: user._id,
         date: labDatesMap[labId],
         paymentMethod: "visa",
