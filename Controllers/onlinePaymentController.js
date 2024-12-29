@@ -384,9 +384,9 @@ const createCardReservation = async (session) => {
 
     // Step 1: Fetch the cart using cartId
     const cart = await cartModel.findById(cartId);
-    if (!cart || cart.medicines.length === 0) {
+    if (!cart || cart.tests.length === 0) {
       throw new ApiError(
-        `No medicines found in the cart with ID ${cartId}`,
+        `No tests found in the cart with ID ${cartId}`,
         400
       );
     }
