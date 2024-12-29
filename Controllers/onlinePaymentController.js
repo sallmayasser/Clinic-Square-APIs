@@ -119,7 +119,7 @@ exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
     client_reference_id: req.params.cartId,
     metadata: {
       shippingAddress,
-      items: JSON.stringify(cart.medicines),
+      // items: JSON.stringify(cart.medicines),
       shippingPrice,
       totalOrderPrice, // Include total order price in metadata
     },
@@ -219,7 +219,7 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
     metadata: {
       date,
       type,
-      items: JSON.stringify(cart.tests),
+      //items: JSON.stringify(cart.tests),
       shippingPrice,
       totalOrderPrice, // Include total order price in metadata
     },
