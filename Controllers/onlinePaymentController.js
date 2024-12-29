@@ -138,7 +138,7 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   const taxPrice = 0; // Add any applicable tax here
   const shippingPrice = 50; // Flat shipping price
   //const date = req.query.reservationDate;
-  const {date} = req.body;
+  const { date } = req.body;
 
   const type = "test";
   // 1) Get cart depend on cartId
@@ -327,7 +327,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     if (event.data.object.metadata.type === "test") {
       // create reservation
-      createCardReservation(event.data.object,req,res);
+      createCardReservation(event.data.object, req, res);
     } else if (event.data.object.metadata.type === "D-reservation") {
       // create reservation
       createCardDoctorReservation(event.data.object, req);
@@ -375,20 +375,19 @@ const createCardOrder = async (session) => {
   await clearCart(cart);
 };
 
-const createCardReservation = async (session,req, res) => {
+const createCardReservation = async (session, req, res) => {
   try {
     const cartId = session.client_reference_id;
     const requestData = req.body.data; // Array of labId and date pairs
 
     // Step 1: Fetch the cart using cartId
     const cart = await cartModel.findById(cartId);
-    if (!cart || cart.tests.length === 0) {
-      return res.status(400).json({
-        message:
-          "No tests found in your cart. Please add tests before creating a reservation.",
-      });
+    if (!cart || cart.medicines.length === 0) {
+      throw new ApiError(
+        `No medicines found in the cart with ID ${cartId}`,
+        400
+      );
     }
-
     // Step 2: Fetch the user using their email
     const user = await PatientModel.findOne({ email: session.customer_email });
     if (!user) {
@@ -425,19 +424,15 @@ const createCardReservation = async (session,req, res) => {
     // Step 5: Create reservations for each lab group
     await Promise.all(
       reservationsData.map(async (reservation) => {
-        await createLabReservations(reservation); // A function to handle saving reservations
+        await createLabReservations(reservation); 
       })
     );
 
     // Step 6: Clear cart and update totals
     await updateCartAfterReservation(cart);
-
-    res.status(200).json({
-      message: "Reservations created successfully",
-    });
   } catch (error) {
     console.error("Error creating reservations:", error);
-    res.status(500).json({ message: "Internal server error", error });
+    throw new ApiError("Internal server error", 500);
   }
 };
 
