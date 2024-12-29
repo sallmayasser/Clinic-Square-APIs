@@ -327,7 +327,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     if (event.data.object.metadata.type === "test") {
       // create reservation
-      createCardReservation(event.data.object);
+      createCardReservation(event.data.object,req,res);
     } else if (event.data.object.metadata.type === "D-reservation") {
       // create reservation
       createCardDoctorReservation(event.data.object, req);
@@ -375,7 +375,7 @@ const createCardOrder = async (session) => {
   await clearCart(cart);
 };
 
-const createCardReservation = async (req, res) => {
+const createCardReservation = async (session,req, res) => {
   try {
     const cartId = session.client_reference_id;
     const requestData = req.body.data; // Array of labId and date pairs
@@ -425,7 +425,7 @@ const createCardReservation = async (req, res) => {
     // Step 5: Create reservations for each lab group
     await Promise.all(
       reservationsData.map(async (reservation) => {
-        await createLabReservation(reservation); // A function to handle saving reservations
+        await createLabReservations(reservation); // A function to handle saving reservations
       })
     );
 
