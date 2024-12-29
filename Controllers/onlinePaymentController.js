@@ -374,41 +374,56 @@ const createCardOrder = async (session) => {
 };
 
 const createCardReservation = async (session) => {
-  const cartId = session.client_reference_id;
-  const date = session.metadata.date;
-  // Step 1: Fetch the cart using cartId
-  const cart = await cartModel.findById(cartId);
-  console.log("heree 1");
-  if (!cart || cart.tests.length === 0) {
-    return res.status(400).json({
-      message:
-        "No tests found in your cart. Please add tests before creating a reservation.",
+  try {
+    const cartId = session.client_reference_id;
+    const date = session.metadata.date;
+
+    // Step 1: Fetch the cart using cartId
+    const cart = await cartModel.findById(cartId);
+    console.log("Cart fetched:", cart);
+    if (!cart || cart.tests.length === 0) {
+      console.error("Cart is empty or has no tests.");
+      return res.status(400).json({
+        message:
+          "No tests found in your cart. Please add tests before creating a reservation.",
+      });
+    }
+
+    // Step 2: Fetch the user using their email
+    const user = await PatientModel.findOne({ email: session.customer_email });
+    console.log("User fetched:", user);
+    if (!user) {
+      throw new ApiError(
+        `No user found with email ${session.customer_email}`,
+        404
+      );
+    }
+
+    // Step 3: Group tests by labId for separate reservations
+    console.log("Grouping tests...");
+    const groupedTests = groupTestsByLabId(cart.tests, date); // Pass date here
+    console.log("Grouped Tests:", groupedTests);
+
+    // Step 4: Create reservations for each lab group
+    console.log("Creating lab reservations...");
+    await createLabReservations({
+      groupedTests,
+      userId: user._id,
+      date,
+      paymentMethod: "visa",
+      isPaid: true,
+      paidAt: Date.now(),
     });
+    console.log("Lab reservations created.");
+
+    // Step 5: Clear cart and update totals
+    console.log("Updating cart after reservation...");
+    await updateCartAfterReservation(cart);
+    console.log("Cart updated successfully.");
+  } catch (error) {
+    console.error("Error in createCardReservation:", error.message);
+    throw error; // Ensure the caller handles this error
   }
-  // Step 2: Fetch the user using their email
-  const user = await PatientModel.findOne({ email: session.customer_email });
-  if (!user) {
-    throw new ApiError(
-      `No user found with email ${session.customer_email}`,
-      404
-    );
-  }
-  // Step 3: Group tests by labId for separate reservations
-  const groupedTests = groupTestsByLabId(cart.tests, date); // Pass date here
-console.log("heree 2");
-  // Step 4: Create reservations for each lab group
-  await createLabReservations({
-    groupedTests,
-    userId: user._id,
-    date,
-    paymentMethod: "visa",
-    isPaid: true,
-    paidAt: Date.now(),
-  });
-console.log("heree 3");
-  // Step 5: Clear cart and update totals
-  await updateCartAfterReservation(cart);
-  console.log("heree 4");
 };
 
 const createCardDoctorReservation = async (session, req) => {
