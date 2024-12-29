@@ -381,7 +381,7 @@ const createCardReservation = async (session) => {
   try {
     const cartId = session.client_reference_id;
     const requestData = JSON.parse(session.metadata.requestDataArray); // Array of labId and date pairs
-  
+
     // Step 1: Fetch the cart using cartId
     const cart = await cartModel.findById(cartId);
     if (!cart || cart.medicines.length === 0) {
@@ -390,7 +390,7 @@ const createCardReservation = async (session) => {
         400
       );
     }
-    
+
     // Step 2: Fetch the user using their email
     const user = await PatientModel.findOne({ email: session.customer_email });
     if (!user) {
@@ -399,7 +399,7 @@ const createCardReservation = async (session) => {
         404
       );
     }
-    
+
     // Step 3: Group tests by labId
     const groupedTests = groupTestsByLabId(cart.tests);
 
@@ -414,7 +414,7 @@ const createCardReservation = async (session) => {
         throw new ApiError(`No date provided for lab ${labId}`, 400);
       }
       return {
-        groupedTests,
+        groupedTests: { [labId]: tests },
         userId: user._id,
         date: labDatesMap[labId],
         paymentMethod: "visa",
@@ -430,7 +430,7 @@ const createCardReservation = async (session) => {
         await createLabReservations(reservation);
       })
     );
-    console.log("here 5");
+
     // Step 6: Clear cart and update totals
     await updateCartAfterReservation(cart);
   } catch (error) {
