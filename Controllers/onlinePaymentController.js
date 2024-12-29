@@ -381,7 +381,7 @@ const createCardReservation = async (session) => {
   try {
     const cartId = session.client_reference_id;
     const requestData = JSON.parse(session.metadata.requestDataArray); // Array of labId and date pairs
-    console.log("requestData :", requestData);
+  
     // Step 1: Fetch the cart using cartId
     const cart = await cartModel.findById(cartId);
     if (!cart || cart.medicines.length === 0) {
@@ -390,7 +390,7 @@ const createCardReservation = async (session) => {
         400
       );
     }
-    console.log("here 1");
+    
     // Step 2: Fetch the user using their email
     const user = await PatientModel.findOne({ email: session.customer_email });
     if (!user) {
@@ -399,10 +399,10 @@ const createCardReservation = async (session) => {
         404
       );
     }
-    console.log("here 2");
+    
     // Step 3: Group tests by labId
     const groupedTests = groupTestsByLabId(cart.tests);
-    console.log("here 3");
+
     // Step 4: Validate requestData and match dates to lab groups
     const labDatesMap = {};
     requestData.forEach((item) => {
@@ -414,16 +414,16 @@ const createCardReservation = async (session) => {
         throw new ApiError(`No date provided for lab ${labId}`, 400);
       }
       return {
-        labId,
-        tests: groupedTests[labId],
-        date: labDatesMap[labId],
+        groupedTests,
         userId: user._id,
+        date: labDatesMap[labId],
         paymentMethod: "visa",
         isPaid: true,
         paidAt: Date.now(),
       };
     });
-    console.log("here 4");
+    console.log("reservationsData", reservationsData);
+
     // Step 5: Create reservations for each lab group
     await Promise.all(
       reservationsData.map(async (reservation) => {
@@ -433,7 +433,6 @@ const createCardReservation = async (session) => {
     console.log("here 5");
     // Step 6: Clear cart and update totals
     await updateCartAfterReservation(cart);
-    console.log("here 6");
   } catch (error) {
     console.error("Error creating reservations:", error);
     throw new ApiError("Internal server error", 500);
