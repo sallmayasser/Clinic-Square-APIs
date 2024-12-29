@@ -132,11 +132,13 @@ exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
 // @desc    Get checkout session from stripe and send it as response
 // @route   GET /api/v1/orders/checkout-session/tests/:cartId
 // @access  Protected/User
+
 exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0; // Add any applicable tax here
   const shippingPrice = 50; // Flat shipping price
-  const date = req.query.reservationDate;
+  //const date = req.query.reservationDate;
+  const {date} = req.body;
 
   const type = "test";
   // 1) Get cart depend on cartId
@@ -373,16 +375,14 @@ const createCardOrder = async (session) => {
   await clearCart(cart);
 };
 
-const createCardReservation = async (session) => {
+const createCardReservation = async (req, res) => {
   try {
     const cartId = session.client_reference_id;
-    const date = session.metadata.date;
+    const requestData = req.body.data; // Array of labId and date pairs
 
     // Step 1: Fetch the cart using cartId
     const cart = await cartModel.findById(cartId);
-    console.log("Cart fetched:", cart);
     if (!cart || cart.tests.length === 0) {
-      console.error("Cart is empty or has no tests.");
       return res.status(400).json({
         message:
           "No tests found in your cart. Please add tests before creating a reservation.",
@@ -391,7 +391,6 @@ const createCardReservation = async (session) => {
 
     // Step 2: Fetch the user using their email
     const user = await PatientModel.findOne({ email: session.customer_email });
-    console.log("User fetched:", user);
     if (!user) {
       throw new ApiError(
         `No user found with email ${session.customer_email}`,
@@ -399,30 +398,46 @@ const createCardReservation = async (session) => {
       );
     }
 
-    // Step 3: Group tests by labId for separate reservations
-    console.log("Grouping tests...");
-    const groupedTests = groupTestsByLabId(cart.tests, date); // Pass date here
-    console.log("Grouped Tests:", groupedTests);
+    // Step 3: Group tests by labId
+    const groupedTests = groupTestsByLabId(cart.tests);
 
-    // Step 4: Create reservations for each lab group
-    console.log("Creating lab reservations...");
-    await createLabReservations({
-      groupedTests,
-      userId: user._id,
-      date,
-      paymentMethod: "visa",
-      isPaid: true,
-      paidAt: Date.now(),
+    // Step 4: Validate requestData and match dates to lab groups
+    const labDatesMap = {};
+    requestData.forEach((item) => {
+      labDatesMap[item.labId] = item.date;
     });
-    console.log("Lab reservations created.");
 
-    // Step 5: Clear cart and update totals
-    console.log("Updating cart after reservation...");
+    const reservationsData = Object.keys(groupedTests).map((labId) => {
+      if (!labDatesMap[labId]) {
+        throw new ApiError(`No date provided for lab ${labId}`, 400);
+      }
+      return {
+        labId,
+        tests: groupedTests[labId],
+        date: labDatesMap[labId],
+        userId: user._id,
+        paymentMethod: "visa",
+        isPaid: true,
+        paidAt: Date.now(),
+      };
+    });
+
+    // Step 5: Create reservations for each lab group
+    await Promise.all(
+      reservationsData.map(async (reservation) => {
+        await createLabReservation(reservation); // A function to handle saving reservations
+      })
+    );
+
+    // Step 6: Clear cart and update totals
     await updateCartAfterReservation(cart);
-    console.log("Cart updated successfully.");
+
+    res.status(200).json({
+      message: "Reservations created successfully",
+    });
   } catch (error) {
-    console.error("Error in createCardReservation:", error.message);
-    throw error; // Ensure the caller handles this error
+    console.error("Error creating reservations:", error);
+    res.status(500).json({ message: "Internal server error", error });
   }
 };
 
