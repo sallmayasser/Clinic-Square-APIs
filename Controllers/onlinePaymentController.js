@@ -380,7 +380,7 @@ const createCardOrder = async (session) => {
 const createCardReservation = async (session) => {
   try {
     const cartId = session.client_reference_id;
-    const requestData = JSON.parse(session.metadata.requestData); // Array of labId and date pairs
+    const requestData = JSON.parse(session.metadata.requestDataArray); // Array of labId and date pairs
     console.log("requestData :", requestData);
     // Step 1: Fetch the cart using cartId
     const cart = await cartModel.findById(cartId);
