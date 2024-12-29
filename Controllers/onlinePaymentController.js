@@ -138,8 +138,10 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   const taxPrice = 0; // Add any applicable tax here
   const shippingPrice = 50; // Flat shipping price
   //const date = req.query.reservationDate;
-  const { date } = req.body;
 
+  //const { date } = req.body;
+
+  const requestData = req.body.data; // Array of labId and date pairs
   const type = "test";
   // 1) Get cart depend on cartId
   const cart = await cartModel.findById(req.params.cartId);
@@ -219,9 +221,9 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
     customer_email: req.user.email,
     client_reference_id: req.params.cartId,
     metadata: {
-      date,
+      //date,
       type,
-      // items: JSON.stringify(cart.tests),
+      requestDataArray: JSON.stringify(requestData),
       shippingPrice,
       totalOrderPrice, // Include total order price in metadata
     },
@@ -375,10 +377,10 @@ const createCardOrder = async (session) => {
   await clearCart(cart);
 };
 
-const createCardReservation = async (session, req, res) => {
+const createCardReservation = async (session) => {
   try {
     const cartId = session.client_reference_id;
-    const requestData = req.body.data; // Array of labId and date pairs
+    const requestData = JSON.parse(session.metadata.requestData); // Array of labId and date pairs
     console.log("requestData :", requestData);
     // Step 1: Fetch the cart using cartId
     const cart = await cartModel.findById(cartId);
