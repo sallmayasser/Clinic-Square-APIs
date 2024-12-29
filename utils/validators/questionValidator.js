@@ -47,7 +47,6 @@ exports.createAnswerValidator = [
       if (!questionExists) {
         throw new Error("Question not found");
       }
-      console.log(questionExists);
       return true;
     }),
 

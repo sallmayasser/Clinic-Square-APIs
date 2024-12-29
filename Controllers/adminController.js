@@ -155,7 +155,7 @@ exports.verifingObject = asyncHandler(async (req, res, next) => {
     // Update the medicine to verified
     const medicine = await MedicineModel.findByIdAndUpdate(
       id,
-      { $set: { state: "verified" } }, // Assuming you have a 'state' field in the Medicine schema
+      { $set: { state: true } }, // Assuming you have a 'state' field in the Medicine schema
       { new: true } // Return the updated document
     );
 
@@ -173,7 +173,7 @@ exports.verifingObject = asyncHandler(async (req, res, next) => {
     // Update the test to verified
     const test = await TestModel.findByIdAndUpdate(
       id,
-      { $set: { state: "verified" } }, // Assuming you have a 'state' field in the Test schema
+      { $set: { state: true } }, // Assuming you have a 'state' field in the Test schema
       { new: true } // Return the updated document
     );
 
