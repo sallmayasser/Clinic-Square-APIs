@@ -119,7 +119,7 @@ exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
     client_reference_id: req.params.cartId,
     metadata: {
       shippingAddress,
-      // items: JSON.stringify(cart.medicines),
+      //items: JSON.stringify(cart.medicines),
       shippingPrice,
       totalOrderPrice, // Include total order price in metadata
     },
@@ -132,12 +132,12 @@ exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
 // @desc    Get checkout session from stripe and send it as response
 // @route   GET /api/v1/orders/checkout-session/tests/:cartId
 // @access  Protected/User
+
 exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0; // Add any applicable tax here
   const shippingPrice = 50; // Flat shipping price
-  const date = req.query.reservationDate;
-
+  const requestData = req.body.data; // Array of labId and date pairs
   const type = "test";
   // 1) Get cart depend on cartId
   const cart = await cartModel.findById(req.params.cartId);
@@ -217,11 +217,10 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
     customer_email: req.user.email,
     client_reference_id: req.params.cartId,
     metadata: {
-      date,
       type,
-      //items: JSON.stringify(cart.tests),
-      shippingPrice,
-      totalOrderPrice, // Include total order price in metadata
+      requestDataArray: JSON.stringify(requestData),
+      //shippingPrice,
+     // totalOrderPrice, // Include total order price in metadata
     },
   });
 
@@ -325,7 +324,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     if (event.data.object.metadata.type === "test") {
       // create reservation
-      createCardReservation(event.data.object);
+      createCardReservation(event.data.object, req, res);
     } else if (event.data.object.metadata.type === "D-reservation") {
       // create reservation
       createCardDoctorReservation(event.data.object, req);
@@ -374,40 +373,63 @@ const createCardOrder = async (session) => {
 };
 
 const createCardReservation = async (session) => {
-  const cartId = session.client_reference_id;
-  const date = session.metadata.date;
-  // Step 1: Fetch the cart using cartId
-  const cart = await cartModel.findById(cartId);
+  try {
+    const cartId = session.client_reference_id;
+    const requestData = JSON.parse(session.metadata.requestDataArray); // Array of labId and date pairs
 
-  if (!cart || cart.tests.length === 0) {
-    return res.status(400).json({
-      message:
-        "No tests found in your cart. Please add tests before creating a reservation.",
+    // Step 1: Fetch the cart using cartId
+    const cart = await cartModel.findById(cartId);
+    if (!cart || cart.tests.length === 0) {
+      throw new ApiError(`No tests found in the cart with ID ${cartId}`, 400);
+    }
+
+    // Step 2: Fetch the user using their email
+    const user = await PatientModel.findOne({ email: session.customer_email });
+    if (!user) {
+      throw new ApiError(
+        `No user found with email ${session.customer_email}`,
+        404
+      );
+    }
+
+    // Step 3: Group tests by labId
+    const groupedTests = groupTestsByLabId(cart.tests);
+
+    // Step 4: Validate requestData and match dates to lab groups
+    const labDatesMap = {};
+    requestData.forEach((item) => {
+      labDatesMap[item.labId] = item.date;
     });
-  }
-  // Step 2: Fetch the user using their email
-  const user = await PatientModel.findOne({ email: session.customer_email });
-  if (!user) {
-    throw new ApiError(
-      `No user found with email ${session.customer_email}`,
-      404
+
+    const reservationsData = Object.keys(groupedTests).map((labId) => {
+      if (!labDatesMap[labId]) {
+        throw new ApiError(`No date provided for lab ${labId}`, 400);
+      }
+      return {
+        groupedTests: {
+          [labId]: groupedTests[labId],
+        },
+        userId: user._id,
+        date: labDatesMap[labId],
+        paymentMethod: "visa",
+        isPaid: true,
+        paidAt: Date.now(),
+      };
+    });
+
+    // Step 5: Create reservations for each lab group
+    await Promise.all(
+      reservationsData.map(async (reservation) => {
+        await createLabReservations(reservation);
+      })
     );
+
+    // Step 6: Clear cart and update totals
+    await updateCartAfterReservation(cart);
+  } catch (error) {
+    console.error("Error creating reservations:", error);
+    throw new ApiError("Internal server error", 500);
   }
-  // Step 3: Group tests by labId for separate reservations
-  const groupedTests = groupTestsByLabId(cart.tests, date); // Pass date here
-
-  // Step 4: Create reservations for each lab group
-  await createLabReservations({
-    groupedTests,
-    userId: user._id,
-    date,
-    paymentMethod: "visa",
-    isPaid: true,
-    paidAt: Date.now(),
-  });
-
-  // Step 5: Clear cart and update totals
-  await updateCartAfterReservation(cart);
 };
 
 const createCardDoctorReservation = async (session, req) => {

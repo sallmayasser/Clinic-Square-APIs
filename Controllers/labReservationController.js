@@ -11,8 +11,9 @@ exports.updateLabReservation = factory.updateOne(LabReservationModel);
 
 exports.createLabReservation = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
-  const { date } = req.body; // Take the date from request body
+  const { data } = req.body; 
   const paymentMethod = "cash";
+
   // Step 1: Get the user's cart
   const cart = await cartModel.findOne({ user: userId });
 
@@ -23,18 +24,54 @@ exports.createLabReservation = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Step 2: Group tests by labId for separate reservations
-  const groupedTests = this.groupTestsByLabId(cart.tests, date); // Pass date here
+  // Step 2: Group tests by labId
+  const groupedTests = this.groupTestsByLabId(cart.tests);
 
-  // Step 3: Create reservations for each lab group
-  await this.createLabReservations({
-    groupedTests,
-    userId,
-    date,
-    paymentMethod,
-    isPaid: false,
-    paidAt: null,
-  }); // Pass date here
+  // Step 3: Validate input and create reservations for each lab
+  for (const item of data) {
+    const { labId, date } = item;
+
+    if (!groupedTests[labId]) {
+      return res.status(400).json({
+        message: `No tests found in your cart for lab with ID ${labId}.`,
+      });
+    }
+
+    // Prepare the reservation data
+    const requestedTests = groupedTests[labId];
+
+    // Calculate total cost for the lab
+    const totalCost = requestedTests.reduce((acc, test) => acc + test.price, 0);
+
+    // Step 3a: Check for duplicate reservations for all tests
+    for (const test of requestedTests) {
+      const duplicateReservation = await LabReservationModel.findOne({
+        patient: userId,
+        lab: labId,
+        "requestedTests.testDetails": test.testDetails,
+        date: date, // Check if any test already reserved on this date
+      });
+
+      if (duplicateReservation) {
+        throw new ApiError(
+          `You have already reserved the test with ID ${test.testDetails} at this lab on ${date}.`,
+          400
+        );
+      }
+    }
+
+    // Step 3b: Create the reservation for the lab
+    await LabReservationModel.create({
+      patient: userId,
+      lab: labId,
+      date, // Use the date from the input
+      requestedTests,
+      paymentMethod,
+      totalCost,
+      isPaid: false,
+      paidAt: null,
+    });
+  }
 
   // Step 4: Clear cart and update totals
   await this.updateCartAfterReservation(cart);
