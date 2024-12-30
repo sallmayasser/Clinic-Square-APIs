@@ -324,7 +324,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     if (event.data.object.metadata.type === "test") {
       // create reservation
-      createCardReservation(event.data.object, req, res);
+      createCardReservation(event.data.object);
     } else if (event.data.object.metadata.type === "D-reservation") {
       // create reservation
       createCardDoctorReservation(event.data.object, req);
