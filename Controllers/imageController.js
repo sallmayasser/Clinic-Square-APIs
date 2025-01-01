@@ -144,23 +144,25 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
   if (req.files.testResult) {
     const { testId } = req.body;
     const reservationId = req.params.id;
-    await Promise.all(
+
+    // Fetch the reservation by reservationId
+    const reservation = await LabReservationModel.findById(reservationId);
+    if (!reservation) {
+      return next(new ApiError("Reservation not found", 404));
+    }
+
+    // Locate the test within requestedTests array by testId
+    const test = reservation.requestedTests.id(testId);
+    if (!test) {
+      return next(new ApiError("Test not found in reservation", 404));
+    }
+
+    // Process all files and collect their URLs
+    const fileUrls = await Promise.all(
       req.files.testResult.map(async (pdf, index) => {
         // Ensure the uploaded file is a PDF
         if (pdf.mimetype !== "application/pdf") {
-          return next(new ApiError("Test result must be a PDF file", 400));
-        }
-
-        // Fetch the reservation by reservationId
-        const reservation = await LabReservationModel.findById(reservationId);
-        if (!reservation) {
-          return next(new ApiError("Reservation not found", 404));
-        }
-
-        // Locate the test within requestedTests array by testId
-        const test = reservation.requestedTests.id(testId);
-        if (!test) {
-          return next(new ApiError("Test not found in reservation", 404));
+          throw new ApiError("Test result must be a PDF file", 400);
         }
 
         // Upload PDF to Firebase
@@ -175,13 +177,15 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
           pdf.buffer,
           metadata
         );
-        const downloadURL = await getDownloadURL(snapshot.ref);
-
-        // Add the file URL to testResult array in the requested test
-        test.testResult.push(downloadURL);
-        await reservation.save();
+        return getDownloadURL(snapshot.ref);
       })
     );
+
+    // Append all file URLs to the testResult array
+    test.testResult.push(...fileUrls);
+
+    // Save the document once
+    await reservation.save();
   }
   // handle medicine image
   if (req.files.photo) {
