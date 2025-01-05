@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema(
       },
     ],
     totalCost: {
-      type: String,
+      type: Number,
     },
     state: {
       type: String,

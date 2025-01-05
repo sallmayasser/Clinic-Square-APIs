@@ -17,6 +17,10 @@ exports.createDoctorValidator = [
     .withMessage("Too short Doctor name")
     .isLength({ max: 32 })
     .withMessage("Too long Doctor name")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage(
+      "Doctor name can only contain letters and spaces don't add Dr. it added automatically"
+    )
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;

@@ -57,6 +57,8 @@ exports.updateMedicineValidator = [
     .withMessage("Medicine name is too short")
     .isLength({ max: 32 })
     .withMessage("Medicine name is too long")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("medicine name can only contain letters and spaces")
     .custom((val, { req }) => {
       req.check.slug = slugify(val);
       return true;
