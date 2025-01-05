@@ -18,6 +18,8 @@ exports.createPharmacyValidator = [
     .withMessage("Too short Pharmacy name")
     .isLength({ max: 32 })
     .withMessage("Too long Pharmacy name")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("pharmacy name can only contain letters and spaces")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;

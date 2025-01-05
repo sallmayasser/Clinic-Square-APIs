@@ -18,6 +18,8 @@ exports.createLabValidator = [
     .withMessage("Too short Lab name")
     .isLength({ max: 32 })
     .withMessage("Too long Lab name")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("lab name can only contain letters and spaces")
     .custom((val, { req }) =>
       LabModel.findOne({ name: val }).then((Lab) => {
         if (Lab) {
@@ -99,7 +101,7 @@ exports.createLabValidator = [
         if (!day.startTime || !day.endTime) {
           throw new Error("Start time and end time are required");
         }
-        if (new Date(day.startTime) >= new Date(day.endTime)) {
+        if (new Date(day.startTime) > new Date(day.endTime)) {
           throw new Error("Start time must be before end time");
         }
         if (day.limit < 1) {

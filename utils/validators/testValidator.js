@@ -18,6 +18,8 @@ exports.createTestValidator = [
     .withMessage("Too short Test name")
     .isLength({ max: 32 })
     .withMessage("Too long Test name")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("test name can only contain letters and spaces")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
