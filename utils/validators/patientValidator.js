@@ -18,6 +18,8 @@ exports.createPatientValidator = [
     .withMessage("Too short Patient name")
     .isLength({ max: 32 })
     .withMessage("Too long Patient name")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("Patient name can only contain letters and spaces")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;

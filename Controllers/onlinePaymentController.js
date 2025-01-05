@@ -113,8 +113,8 @@ exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
       },
     ],
     mode: "payment",
-    success_url: `${req.protocol}://${req.get("host")}/patient/order`,
-    cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
+    success_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/my-activity`,
+    cancel_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/cart`,
     customer_email: req.user.email,
     client_reference_id: req.params.cartId,
     metadata: {
@@ -212,15 +212,15 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
       },
     ],
     mode: "payment",
-    success_url: `${req.protocol}://${req.get("host")}/patient/order`,
-    cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
+    success_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/my-activity?labsPage=1&activeTab=labs`,
+    cancel_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/cart`,
     customer_email: req.user.email,
     client_reference_id: req.params.cartId,
     metadata: {
       type,
       requestDataArray: JSON.stringify(requestData),
       //shippingPrice,
-     // totalOrderPrice, // Include total order price in metadata
+      // totalOrderPrice, // Include total order price in metadata
     },
   });
 
@@ -293,8 +293,8 @@ exports.checkoutSessionDoctor = asyncHandler(async (req, res, next) => {
       },
     ],
     mode: "payment",
-    success_url: `${req.protocol}://${req.get("host")}/patient/order`,
-    cancel_url: `${req.protocol}://${req.get("host")}/patient/cart`,
+    success_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/my-activity`,
+    cancel_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/cart`,
     customer_email: req.user.email,
     client_reference_id: doctor,
     metadata: { date, type, patientId },
@@ -426,6 +426,7 @@ const createCardReservation = async (session) => {
 
     // Step 6: Clear cart and update totals
     await updateCartAfterReservation(cart);
+
   } catch (error) {
     console.error("Error creating reservations:", error);
     throw new ApiError("Internal server error", 500);
