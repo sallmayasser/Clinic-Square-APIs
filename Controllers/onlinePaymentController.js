@@ -324,7 +324,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   if (event.type === "checkout.session.completed") {
     if (event.data.object.metadata.type === "test") {
       // create reservation
-      createCardReservation(event.data.object, req, res);
+      createCardReservation(event.data.object);
     } else if (event.data.object.metadata.type === "D-reservation") {
       // create reservation
       createCardDoctorReservation(event.data.object, req);
@@ -416,17 +416,17 @@ const createCardReservation = async (session) => {
         paidAt: Date.now(),
       };
     });
-    console.log(reservationsData);
+
     // Step 5: Create reservations for each lab group
     await Promise.all(
       reservationsData.map(async (reservation) => {
         await createLabReservations(reservation);
       })
     );
-console.log("before step 6 ")
+
     // Step 6: Clear cart and update totals
     await updateCartAfterReservation(cart);
-    console.log("after step 6 ")
+
   } catch (error) {
     console.error("Error creating reservations:", error);
     throw new ApiError("Internal server error", 500);
