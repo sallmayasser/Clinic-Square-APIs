@@ -18,8 +18,8 @@ exports.createTestValidator = [
     .withMessage("Too short Test name")
     .isLength({ max: 32 })
     .withMessage("Too long Test name")
-    .matches(/^[A-Za-z0-9\s]+$/)
-    .withMessage("test name can only contain letters, spaces and numbers")
+ .matches(/^[A-Za-z0-9\s\(\)]+$/)
+    .withMessage("test name can only contain letters, parentheses, spaces and numbers")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -41,8 +41,8 @@ exports.updateTestValidator = [
     .withMessage("Too short Test name")
     .isLength({ max: 32 })
     .withMessage("Too long Test name")
-    .matches(/^[A-Za-z0-9\s]+$/)
-    .withMessage("test name can only contain letters, spaces and numbers")
+    .matches(/^[A-Za-z0-9\s\(\)]+$/)
+    .withMessage("test name can only contain letters, parentheses, spaces and numbers")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
