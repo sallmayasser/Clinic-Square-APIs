@@ -15,8 +15,8 @@ exports.createMedicineValidator = [
     .withMessage("Name is required")
     .isString()
     .withMessage("Name must be a string")
-    .matches(/^[A-Za-z0-9\s]+$/)
-    .withMessage("medicine name can only contain letters, spaces and numbers"),
+    .matches(/^[A-Za-z0-9\s\(\)]+$/)
+    .withMessage("medicine name can only contain letters, parentheses, spaces and numbers"),
   check("photo")
     .notEmpty()
     .withMessage("Photo is required")
@@ -59,8 +59,8 @@ exports.updateMedicineValidator = [
     .withMessage("Medicine name is too short")
     .isLength({ max: 32 })
     .withMessage("Medicine name is too long")
-    .matches(/^[A-Za-z0-9\s]+$/)
-    .withMessage("medicine name can only contain letters, spaces and numbers")
+    .matches(/^[A-Za-z0-9\s\(\)]+$/)
+    .withMessage("medicine name can only contain letters, parentheses, spaces and numbers")
     .custom((val, { req }) => {
       req.check.slug = slugify(val);
       return true;
