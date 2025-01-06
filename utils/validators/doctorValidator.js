@@ -17,9 +17,9 @@ exports.createDoctorValidator = [
     .withMessage("Too short Doctor name")
     .isLength({ max: 32 })
     .withMessage("Too long Doctor name")
-    .matches(/^[A-Za-z\s]+$/)
+    .matches(/^[A-Za-z0-9\s]+$/)
     .withMessage(
-      "Doctor name can only contain letters and spaces don't add Dr. it added automatically"
+      "Doctor name can only contain letters, numbers, and spaces. Do not add 'Dr.'; it is added automatically."
     )
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
@@ -143,6 +143,23 @@ exports.updateDoctorValidator = [
         }
       })
     ),
+    check("name")
+    .optional()
+    .notEmpty()
+    .withMessage("Doctor name required")
+    .isLength({ min: 3 })
+    .withMessage("Too short Doctor name")
+    .isLength({ max: 32 })
+    .withMessage("Too long Doctor name")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage(
+      "Doctor name can only contain letters, numbers, and spaces. Do not add 'Dr.'; it is added automatically."
+    )  .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
+
+ 
   // Phone validation
   check("phoneNumbers")
     .optional()

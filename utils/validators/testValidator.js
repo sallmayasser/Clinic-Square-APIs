@@ -18,8 +18,8 @@ exports.createTestValidator = [
     .withMessage("Too short Test name")
     .isLength({ max: 32 })
     .withMessage("Too long Test name")
-    .matches(/^[A-Za-z\s]+$/)
-    .withMessage("test name can only contain letters and spaces")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage("test name can only contain letters, spaces and numbers")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -33,6 +33,20 @@ exports.deleteTestValidator = [
 ];
 exports.updateTestValidator = [
   check("id").isMongoId().withMessage("Invalid Test id format"),
+  check("name")
+  .optional()
+    .notEmpty()
+    .withMessage("Test name required")
+    .isLength({ min: 3 })
+    .withMessage("Too short Test name")
+    .isLength({ max: 32 })
+    .withMessage("Too long Test name")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage("test name can only contain letters, spaces and numbers")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   validatorMiddleware,
 ];
 

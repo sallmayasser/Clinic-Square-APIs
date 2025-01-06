@@ -18,8 +18,8 @@ exports.createLabValidator = [
     .withMessage("Too short Lab name")
     .isLength({ max: 32 })
     .withMessage("Too long Lab name")
-    .matches(/^[A-Za-z\s]+$/)
-    .withMessage("lab name can only contain letters and spaces")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage("lab name can only contain letters, spaces and numbers")
     .custom((val, { req }) =>
       LabModel.findOne({ name: val }).then((Lab) => {
         if (Lab) {
@@ -136,6 +136,8 @@ exports.updateLabValidator = [
     .withMessage("Too short Lab name")
     .isLength({ max: 32 })
     .withMessage("Too long Lab name")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage("lab name can only contain letters, spaces and numbers")
     .custom((val, { req }) =>
       LabModel.findOne({ name: val }).then((Lab) => {
         if (Lab) {
