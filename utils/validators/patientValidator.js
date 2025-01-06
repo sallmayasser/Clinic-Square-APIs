@@ -18,8 +18,8 @@ exports.createPatientValidator = [
     .withMessage("Too short Patient name")
     .isLength({ max: 32 })
     .withMessage("Too long Patient name")
-    .matches(/^[A-Za-z\s]+$/)
-    .withMessage("Patient name can only contain letters and spaces")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage("Patient name can only contain letters, spaces and numbers")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -93,6 +93,21 @@ exports.updatePatientValidator = [
     .optional()
     .isArray()
     .withMessage("Phone numbers must be an array"),
+
+    check("name")
+    .optional()
+    .notEmpty()
+    .withMessage("Patient name required")
+    .isLength({ min: 3 })
+    .withMessage("Too short Patient name")
+    .isLength({ max: 32 })
+    .withMessage("Too long Patient name")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage("Patient name can only contain letters, spaces and numbers")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
 
   // Validate each phone number in the array
   check("phoneNumbers.*")

@@ -113,7 +113,7 @@ exports.checkoutSessionMedicine = asyncHandler(async (req, res, next) => {
       },
     ],
     mode: "payment",
-    success_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/my-activity`,
+    success_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/my-activity?pharmaciesPage=1&activeTab=pharmacies`,
     cancel_url: `${req.protocol}://clinic-square-frontend.vercel.app/en/patient/cart`,
     customer_email: req.user.email,
     client_reference_id: req.params.cartId,
@@ -220,7 +220,7 @@ exports.checkoutSessionTests = asyncHandler(async (req, res, next) => {
       type,
       requestDataArray: JSON.stringify(requestData),
       ////shippingPrice,
-     // // totalOrderPrice, // Include total order price in metadata
+      // // totalOrderPrice, // Include total order price in metadata
     },
   });
 
@@ -416,17 +416,16 @@ const createCardReservation = async (session) => {
         paidAt: Date.now(),
       };
     });
-    console.log(reservationsData);
+
     // Step 5: Create reservations for each lab group
     await Promise.all(
       reservationsData.map(async (reservation) => {
         await createLabReservations(reservation);
       })
     );
-console.log("before step 6 ")
+
     // Step 6: Clear cart and update totals
     await updateCartAfterReservation(cart);
-    console.log("after step 6 ")
   } catch (error) {
     console.error("Error creating reservations:", error);
     throw new ApiError("Internal server error", 500);

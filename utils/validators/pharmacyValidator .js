@@ -18,8 +18,8 @@ exports.createPharmacyValidator = [
     .withMessage("Too short Pharmacy name")
     .isLength({ max: 32 })
     .withMessage("Too long Pharmacy name")
-    .matches(/^[A-Za-z\s]+$/)
-    .withMessage("pharmacy name can only contain letters and spaces")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage("pharmacy name can only contain letters, spaces and numbers")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -86,6 +86,23 @@ exports.updatePharmacyValidator = [
         }
       })
     ),
+
+    check("name")
+    .optional()
+    .notEmpty()
+    .withMessage("Pharmacy name required")
+    .isLength({ min: 3 })
+    .withMessage("Too short Pharmacy name")
+    .isLength({ max: 32 })
+    .withMessage("Too long Pharmacy name")
+    .matches(/^[A-Za-z0-9\s]+$/)
+    .withMessage("pharmacy name can only contain letters, spaces and numbers")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
+
+
   // Phone validation
   check("phoneNumbers")
     .optional()
