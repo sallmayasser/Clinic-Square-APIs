@@ -60,11 +60,7 @@ exports.updateMedicineValidator = [
     .isLength({ max: 32 })
     .withMessage("Medicine name is too long")
     .matches(/^[A-Za-z0-9\s\(\)]+$/)
-    .withMessage("medicine name can only contain letters, parentheses, spaces and numbers")
-    .custom((val, { req }) => {
-      req.check.slug = slugify(val);
-      return true;
-    }),
+    .withMessage("medicine name can only contain letters, parentheses, spaces and numbers"),
 
   // Optional cost validation
   check("cost")
