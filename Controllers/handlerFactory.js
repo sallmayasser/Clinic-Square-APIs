@@ -137,34 +137,11 @@ exports.getAll = (Model, populateOpt, modelName = "") =>
     const { mongooseQuery, paginationResult } = apiFeatures;
     const documents = await mongooseQuery;
     // console.log(documents)
-    let filteredResult=[];
-    if(req.query.keyword){
-      const keywordActor=Object.entries(req.query.keyword)[0][0]
-      if (keywordActor!=='0')
-      {
-        if( keywordActor.includes(".")){
-          filteredResult=documents
-        }
-        else{
-          // console.log(documents.map(d=>d.medicine))
-          filteredResult = documents.filter(doc => doc[`${keywordActor}`]!== null);
-    
-        }
-      }
-      else {
-        filteredResult=documents
-      }
-     
-      res
-      .status(200)
-      .json({ results: filteredResult.length, paginationResult, data: filteredResult });
-    }
    
-    else{
       res
       .status(200)
       .json({ results: documents.length, paginationResult, data: documents });
-    }
+    
     });
 
 exports.createFilterObj = (req, res, next, filterType) => {
