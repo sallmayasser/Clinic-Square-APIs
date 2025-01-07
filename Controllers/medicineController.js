@@ -9,18 +9,17 @@ exports.addMedicine = AsyncHandler(async (req, res, next) => {
   const { name } = req.body;
   const exist = await MedicineModel.findOne({ name });
   if (exist) {
-    return next(new ApiError("this tmedicineest is already exist", 409));
+    return next(new ApiError("this medicine is already exist", 409));
   }
-  const newDoc = await factory.createOne(MedicineModel);
-
+  const newDoc = await MedicineModel.create(req.body);
   res.status(201).json({
     status: "success",
     data: newDoc,
   });
 });
 exports.deleteMedicine = AsyncHandler(async (req, res, next) => {
-    const { id } = req.params;
-    
+  const { id } = req.params;
+
   await PharmacyMedicineModel.deleteMany({ medicine: id });
 
   const document = await MedicineModel.findByIdAndDelete(id);
