@@ -79,7 +79,8 @@
            populateOption = {
             path:currentPath,
             select: "-password",
-          match: { name : {$regex: name, $options: "i" } },
+            match: { name : {$regex: name, $options: "i" }},
+
 
           }:populateOption = {
               path:currentPath,
@@ -100,7 +101,14 @@
 
         if (populateOption) {
           this.mongooseQuery = this.mongooseQuery.populate(populateOption);
+          // console.log(await this.mongooseQuery.clone().populate(populateOption))
         }
+        const results = await this.mongooseQuery.clone();
+         const filteredResults = results.filter(doc => doc[path] !== null); 
+        // Reassign this.mongooseQuery with the filtered results
+         const filteredIds = filteredResults.map(doc => doc._id);
+          this.mongooseQuery = this.mongooseQuery.find({ _id: { $in: filteredIds } }); 
+          this.countDocuments = await this.mongooseQuery.clone().countDocuments(); return this;
         // this.mongooseQuery=this.mongooseQuery.find()
       }
     }
