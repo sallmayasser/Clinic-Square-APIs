@@ -18,7 +18,7 @@ exports.createTestValidator = [
     .withMessage("Too short Test name")
     .isLength({ max: 32 })
     .withMessage("Too long Test name")
-    .matches(/^[a-zA-Z\s\(\)\[\]]+$/)
+    .matches(/^[A-Za-z0-9\s\(\)]+$/)
     .withMessage(
       "test name can only contain letters, spaces, brackets and numbers"
     )
@@ -43,7 +43,7 @@ exports.updateTestValidator = [
     .withMessage("Too short Test name")
     .isLength({ max: 32 })
     .withMessage("Too long Test name")
-    .matches(/^[a-zA-Z\s\(\)\[\]]+$/)
+    .matches(/^[A-Za-z0-9\s\(\)]+$/)
     .withMessage(
       "test name can only contain letters, spaces , brackets and numbers"
     )
