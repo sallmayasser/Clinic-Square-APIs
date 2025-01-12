@@ -184,16 +184,16 @@
       }
       return this;
     }
-    async groupBy() {
+    async groupBy(id,role) {
       if (this.queryString.groupBy) {
         const groupByFields = Object.entries(this.queryString.groupBy)[0]; // Get the first key-value pair
         const [granularityOrField, fields] = groupByFields;
-        const regex = /\b\w*cost\w*\b/i; 
+        const regex = /\b\w*cost\w*\b/i;
     
         // Ensure `fields` is an array (split it if it's a string)
         let fieldsArray = typeof fields === 'string' ? fields.split(',') : fields;
-        const CostSum=fieldsArray.find(field => regex.test(field)?field:null);
-         fieldsArray = fieldsArray.filter(word => !regex.test(word));
+        const CostSum = fieldsArray.find(field => (regex.test(field) ? field : null));
+        fieldsArray = fieldsArray.filter(word => !regex.test(word));
     
         if (!fieldsArray || fieldsArray.length === 0) {
           throw new Error("At least one field is required for grouping.");
@@ -237,19 +237,22 @@
     
         // Handle Non-Date Fields (e.g., 'doctor', 'patient')
         const nonDateFields = fieldsArray.filter(field => !validFields.includes(field));
-        console.log(nonDateFields)
         nonDateFields.forEach(field => {
           groupId[field] = `$${field}`;
           sort[`_id.${field}`] = 1;
         });
     
+        // Add filtering by userId if it exists
+        const matchStage = role!=='admin'&&id ? { $match: { id } } : { $match: {} };
+    
         // Build the aggregation pipeline
         const pipeline = [
+          matchStage, // Add the match stage here
           {
             $group: {
               _id: groupId,
               count: { $sum: 1 },
-              totalCost: { $sum: CostSum!==undefined?`$${CostSum}`:"" }, // Accumulate the total cost
+              totalCost: { $sum: CostSum !== undefined ? `$${CostSum}` : "" }, // Accumulate the total cost
             },
           },
           {

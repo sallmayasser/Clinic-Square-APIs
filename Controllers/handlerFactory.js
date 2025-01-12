@@ -117,7 +117,6 @@ exports.getAll = (Model, populateOpt, modelName = "") =>
     if (req.filterObj) {
       filter = req.filterObj;
     }
-
     // Build query
     let query = Model.find(filter);
     if (populateOpt) {
@@ -131,7 +130,7 @@ exports.getAll = (Model, populateOpt, modelName = "") =>
     await apiFeatures.limitFields();
     await apiFeatures.sort();
     await apiFeatures.populate();
-    await apiFeatures.groupBy();
+    await apiFeatures.groupBy(req.user.id,req.user.role);
 
     // Execute query
     const { mongooseQuery, paginationResult } = apiFeatures;
