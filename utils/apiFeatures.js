@@ -244,7 +244,7 @@ class ApiFeatures {
       });
   
       // Add filtering by userId if it exists
-      const matchStage = role!=='admin'&&id ?  { $match: {doctor: new mongoose.Types.ObjectId(id) } }: { $match: {} };
+      const matchStage = role!=='admin'&&id ?  { $match: {[role]: new mongoose.Types.ObjectId(id) } }: { $match: {} };
       // Build the aggregation pipeline
       const pipeline = [
        matchStage,
